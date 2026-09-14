@@ -12,6 +12,7 @@
   [hidden] { display: none !important; }
 </style>
 <title>เจาะโครงสร้าง IIS</title>
+<title>เจาะโครงสร้าง IIS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600&family=Kanit:wght@500;600&family=Source+Code+Pro:wght@400;500&display=swap">
@@ -223,6 +224,8 @@
   @keyframes flowDash { to { stroke-dashoffset: -24; } }
   svg .flow      { stroke-dasharray: 8 4; animation: flowDash 1.1s linear infinite; }
   svg .flow-slow { stroke-dasharray: 6 6; animation: flowDash 2s linear infinite; }
+  /* เส้นความสัมพันธ์ — คงลายประเดิมไว้ แต่เคลื่อนช้ากว่าเพื่อให้ยังแยกจากเส้นการไหลได้ */
+  svg .flow-rel  { stroke-dasharray: 4 4; animation: flowDash 2.8s linear infinite; }
   /* ---- จุดบอกลำดับ ---- */
   @keyframes pulseDot { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
   svg .dot { animation: pulseDot 2s ease-in-out infinite; }
@@ -509,7 +512,7 @@
 
               <rect class="bx" x="60" y="368" width="256" height="34" rx="3"/>
               <text class="tm" x="188" y="390" text-anchor="middle">applicationHost.config</text>
-              <line class="ln" x1="250" y1="368" x2="250" y2="348" marker-end="url(#a1)"/>
+              <line class="ln flow" x1="250" y1="368" x2="250" y2="348" marker-end="url(#a1)"/>
               <text class="tm" x="258" y="364">อ่าน</text>
 
               <rect class="bx-a" x="470" y="272" width="210" height="50" rx="3"/>
@@ -522,7 +525,7 @@
               <path class="ln-a flow-slow" d="M316 330 L 400 330 L 400 300 L 464 300" marker-end="url(#a1a)"/>
               <text class="ta" x="322" y="322">สร้าง / รีไซเคิล</text>
 
-              <path class="ln dash" d="M130 306 L 130 242" marker-end="url(#a1)"/>
+              <path class="ln flow-rel" d="M130 306 L 130 242" marker-end="url(#a1)"/>
               <text class="tm" x="40" y="262">ตั้งค่า HTTP.sys</text>
 
               <path class="ln flow" d="M382 202 L 382 256 L 430 256 L 430 288 L 464 288" marker-end="url(#a1a)"/>
@@ -662,9 +665,9 @@
               <text class="t" x="516" y="204">ReportsPool</text>
               <text class="tm" x="516" y="222">w3wp.exe · หน่วยความจำแยกกัน</text>
 
-              <path class="ln-a dash" d="M408 144 L 494 144" marker-end="url(#a2a)"/>
-              <path class="ln dash" d="M408 208 L 494 208" marker-end="url(#a2)"/>
-              <path class="ln dash" d="M408 272 L 462 272 L 462 216 L 494 216" marker-end="url(#a2)"/>
+              <path class="ln-a flow-rel" d="M408 144 L 494 144" marker-end="url(#a2a)"/>
+              <path class="ln flow-rel" d="M408 208 L 494 208" marker-end="url(#a2)"/>
+              <path class="ln flow-rel" d="M408 272 L 462 272 L 462 216 L 494 216" marker-end="url(#a2)"/>
 
               <text class="tl" x="500" y="266">ขอบเขตความเสียหาย</text>
               <text class="tm" x="500" y="288">แอปใน pool หนึ่งหยุดทำงาน</text>
@@ -889,7 +892,7 @@
               <line class="ln-a flow" x1="368" y1="77" x2="386" y2="77" marker-end="url(#i1)"/>
               <line class="ln-p flow" x1="552" y1="77" x2="570" y2="77" marker-end="url(#i2)"/>
 
-              <path class="ln-a dash" d="M288 110 L 288 150 L 472 150 L 472 116" marker-end="url(#i1)"/>
+              <path class="ln-a flow-rel" d="M288 110 L 288 150 L 472 150 L 472 116" marker-end="url(#i1)"/>
               <text class="ta" x="300" y="166">ARR ต้องพึ่งพา URL Rewrite จึงติดตั้งสลับลำดับไม่ได้</text>
 
               <line class="ln dash" x1="24" y1="192" x2="736" y2="192"/>
@@ -1068,7 +1071,7 @@ Invoke-WebRequest http://localhost -UseBasicParsing | Select-Object StatusCode</
               <rect class="bx" x="24" y="192" width="210" height="52" rx="3"/>
               <text class="tm" x="40" y="214">IIS AppPool\CorpWebPool</text>
               <text class="tm" x="40" y="232">บัญชีเสมือนที่ต้องมีสิทธิ์อ่าน</text>
-              <path class="ln dash" d="M234 218 L 269 218" marker-end="url(#p2)"/>
+              <path class="ln flow-rel" d="M234 218 L 269 218" marker-end="url(#p2)"/>
             </svg>
           </div>
           <figcaption>
@@ -1401,7 +1404,7 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
               <rect class="bx" x="295" y="222" width="441" height="52" rx="3"/>
               <text class="tm" x="311" y="243">X-Forwarded-For: 10.20.30.40</text>
               <text class="tm" x="311" y="262">IP เดิมเดินทางต่อได้ในรูปเฮดเดอร์เท่านั้น</text>
-              <path class="ln-a dash" d="M380 128 L 380 160 L 260 160 L 260 248 L 289 248" marker-end="url(#h2)"/>
+              <path class="ln-a flow-rel" d="M380 128 L 380 160 L 260 160 L 260 248 L 289 248" marker-end="url(#h2)"/>
               <text class="ta" x="24" y="252">IIS เป็นผู้ใส่ให้</text>
             </svg>
           </div>
@@ -1703,9 +1706,9 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
               <text class="tm" x="396" y="192">ไฟล์บันทึกของเซิร์ฟเวอร์นั้นเอง</text>
               <text class="tm" x="396" y="210">ตำแหน่งขึ้นกับซอฟต์แวร์ที่ใช้</text>
 
-              <line class="ln dash" x1="270" y1="62" x2="374" y2="62" marker-end="url(#a4)"/>
-              <line class="ln dash" x1="270" y1="128" x2="374" y2="128" marker-end="url(#a4)"/>
-              <line class="ln dash" x1="270" y1="194" x2="374" y2="194" marker-end="url(#a4)"/>
+              <line class="ln flow-rel" x1="270" y1="62" x2="374" y2="62" marker-end="url(#a4)"/>
+              <line class="ln flow-rel" x1="270" y1="128" x2="374" y2="128" marker-end="url(#a4)"/>
+              <line class="ln flow-rel" x1="270" y1="194" x2="374" y2="194" marker-end="url(#a4)"/>
             </svg>
           </div>
           <figcaption>
