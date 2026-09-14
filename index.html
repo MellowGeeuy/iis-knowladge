@@ -364,7 +364,7 @@
 <div class="shell">
   <aside class="sidebar" id="sidebar">
     <span class="mark">เจาะโครงสร้าง <span>IIS</span></span>
-    <span class="side-sub">13 ส่วน · 14 แผนภาพ</span>
+    <span class="side-sub">13 ส่วน · 15 แผนภาพ</span>
     <nav class="pagenav" id="pagenav" aria-label="สารบัญ"></nav>
   </aside>
 
@@ -392,7 +392,7 @@
         </p>
         <div class="cover-meta">
           <div><b>ขอบเขต</b> ชั้น IIS เป็นหลัก</div>
-          <div><b>เนื้อหา</b> 13 ส่วน · แผนภาพ 14 รูป</div>
+          <div><b>เนื้อหา</b> 13 ส่วน · แผนภาพ 15 รูป</div>
           <div><b>อ้างอิง</b> 32 รายการ · เปิดอ่านเต็มทุกหน้า</div>
         </div>
       </div>
@@ -444,7 +444,7 @@
               <tr><td class="n">04–06</td><td>การติดตั้งและกำหนดค่า</td><td>ติดตั้งโมดูล สร้าง Application Pool และ Site และกำหนดกฎใน web.config</td></tr>
               <tr><td class="n">07–09</td><td>การใช้งานจริง</td><td>การส่งต่อข้อมูลผู้เรียก การกำหนด HTTPS และแนวทางวิเคราะห์ปัญหา</td></tr>
               <tr><td class="n">10–12</td><td>ฝั่งแอปพลิเคชัน</td><td>การเตรียม Spring Boot และ React ให้ค่าตรงกับ IIS · Tomcat และการพัฒนาแบบแยกส่วน</td></tr>
-              <tr><td class="n">13</td><td>ภาพรวมทั้งระบบ</td><td>ร้อยทุกส่วนเข้าด้วยกันเป็นเส้นทางเดียว พร้อมตารางค่าที่ต้องตรงกัน</td></tr>
+              <tr><td class="n">13</td><td>Full Stack Architecture</td><td>ร้อยทุกส่วนเข้าด้วยกัน ชื่อเรียกของสถาปัตยกรรม เหตุผลที่เลือก และค่าที่ต้องตรงกัน</td></tr>
             </tbody>
           </table>
         </div>
@@ -2707,95 +2707,197 @@ service.bat install MyService</pre>
     </section>
 
     <!-- ============ หน้า 14 ============ -->
-    <section class="pg" id="s13" hidden data-num="13" data-group="ภาพรวมทั้งระบบ" data-title="ทุกส่วนประกอบกัน" data-full="ภาพรวมทั้งระบบเมื่อทุกส่วนทำงานร่วมกัน">
+    <section class="pg" id="s13" hidden data-num="13" data-group="Full Stack" data-title="Full Stack Architecture" data-full="Full Stack Architecture">
       <div class="col">
-        <div class="sec-head"><span class="sec-no">13</span><h2>ภาพรวมทั้งระบบ</h2></div>
+        <div class="sec-head"><span class="sec-no">13</span><h2>Full Stack Architecture</h2></div>
         <p class="sec-sub">ร้อยทุกส่วนที่ผ่านมาเข้าด้วยกัน — React, IIS, Tomcat และ Spring Boot ในเส้นทางเดียว</p>
         <p>
-          ส่วนก่อนหน้าอธิบายแต่ละชิ้นแยกกัน ส่วนนี้นำมาประกอบเป็นภาพเดียว
-          เพื่อให้เห็นว่า request หนึ่งครั้งเดินทางผ่านอะไรบ้าง ใครรับผิดชอบช่วงไหน
-          และค่าใดที่ต้องตรงกันตลอดเส้นทาง
+          ส่วนที่ 01 ถึง 12 อธิบายแต่ละชิ้นแยกกันว่าคืออะไรและตั้งค่าอย่างไร
+          ส่วนนี้นำทั้งหมดมาประกอบเป็นภาพเดียว เพื่อตอบสามคำถามที่เหลือ คือ
+          <strong>สถาปัตยกรรมแบบนี้เรียกว่าอะไร · ทำไมถึงเลือกแบบนี้ ·
+          และค่าใดบ้างที่ต้องตรงกันตลอดเส้นทาง</strong>
+        </p>
+
+        <h3>สถาปัตยกรรมแบบนี้เรียกว่าอะไร</h3>
+        <p>
+          รูปแบบที่เราใช้มีชื่อเรียกอยู่แล้ว การรู้ชื่อมีประโยชน์เวลาค้นหาข้อมูลเพิ่มเติม
+          หรือคุยกับคนนอกทีม เพราะคำเหล่านี้เป็นคำที่ใช้กันทั่วไปในวงการ
+        </p>
+        <dl class="defs">
+          <div>
+            <dt>Decoupled architecture<small>บางที่เรียก HEADLESS</small></dt>
+            <dd>
+              การแยกหน้าบ้านกับหลังบ้านออกเป็นคนละโปรเจกต์ที่ build และ deploy แยกกัน
+              โดยสื่อสารกันผ่าน HTTP เท่านั้น <strong>ทั้งสองฝั่งไม่รู้จักโค้ดของกันและกันเลย</strong>
+              รู้เพียงว่าต้องเรียก URL ไหนและจะได้ข้อมูลรูปแบบใดกลับมา
+            </dd>
+          </div>
+          <div>
+            <dt>Client-side rendering<small>CSR</small></dt>
+            <dd>
+              หน้าจอถูกประกอบขึ้นในเบราว์เซอร์ของผู้ใช้ ไม่ได้ประกอบมาจากเซิร์ฟเวอร์
+              สิ่งที่เซิร์ฟเวอร์ส่งไปคือไฟล์ JavaScript กับ HTML เปล่า ๆ หนึ่งไฟล์
+              ตามที่อธิบายไว้ในส่วนที่ 12
+            </dd>
+          </div>
+          <div>
+            <dt>Reverse proxy<small>IIS ทำหน้าที่นี้</small></dt>
+            <dd>
+              ตัวกลางที่รับ request แทนเซิร์ฟเวอร์จริง แล้วส่งต่อให้เบื้องหลัง
+              ผู้ใช้เห็นแค่ปลายทางเดียวคือ IIS ไม่รู้ว่าข้างหลังมีอะไรอยู่กี่ตัว
+            </dd>
+          </div>
+          <div>
+            <dt>Same-origin deployment<small>ผลที่ได้</small></dt>
+            <dd>
+              เมื่อทั้งไฟล์หน้าเว็บและ API อยู่ใต้โดเมนเดียวกัน เบราว์เซอร์ถือว่าเป็นต้นทางเดียวกัน
+              <strong>จึงไม่ต้องตั้งค่า CORS และ cookie ทำงานได้ตามปกติ</strong>
+              ซึ่งเป็นเหตุผลสำคัญข้อหนึ่งที่วาง IIS ไว้ด้านหน้า
+            </dd>
+          </div>
+        </dl>
+
+        <h3>ทำไมถึงเลือกแบบนี้</h3>
+        <p>
+          ทางเลือกอื่นมีอยู่ และไม่ได้แย่กว่าเสมอไป แต่ในเงื่อนไขของงานนี้ Decoupled ได้เปรียบ
+          ด้วยเหตุผลสี่ข้อ
+        </p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>เงื่อนไขของงาน</th><th>ทำไม Decoupled ถึงเข้าทาง</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>IIS เป็นข้อกำหนดขององค์กร ไม่ใช่ตัวเลือก</td>
+                <td>สถาปัตยกรรมนี้ต้องการ reverse proxy อยู่แล้ว จึงใช้สิ่งที่มีอยู่ให้เป็นประโยชน์ได้พอดี โดย IIS ไม่ต้องรันโค้ดใดเลย</td>
+              </tr>
+              <tr>
+                <td>เป็นการรื้อหน้าจอใหม่ทั้งหมด</td>
+                <td>ช่วงแรกหน้าจอจะถูกแก้บ่อยกว่าหลังบ้านมาก การแยกทำให้<strong>แก้หน้าจอแล้วคัดลอกไฟล์ทับได้เลย ไม่ต้อง build ฝั่ง Java ใหม่</strong></td>
+              </tr>
+              <tr>
+                <td>เป็นระบบภายในองค์กร</td>
+                <td>ข้อเสียหลักของ CSR คือ SEO และความเร็วตอนเปิดครั้งแรก ซึ่งแทบไม่มีผลกับระบบที่พนักงานเปิดใช้ประจำ</td>
+              </tr>
+              <tr>
+                <td>ทีมแบ่งงานกันได้</td>
+                <td>คนทำหน้าบ้านกับหลังบ้านทำงานคนละ repository และคนละจังหวะได้ ไม่ต้องรอกัน</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout stop">
+          <span class="ttl">ราคาที่ต้องจ่าย — ต้องรู้ไว้ก่อน</span>
+          <p>
+            ไม่มีสถาปัตยกรรมใดได้มาฟรี สามข้อนี้คือสิ่งที่แลกไปและต้องระวังตลอดอายุของระบบ
+          </p>
+          <ul>
+            <li><strong>มีของต้องดูแลสองชิ้น</strong> — IIS site กับ Tomcat service
+              เวลามีปัญหาต้องแยกให้ออกก่อนว่าอยู่ชั้นไหน ใช้วิธีในส่วนที่ 09</li>
+            <li><strong>มีค่าที่ต้องตรงกันหกคู่</strong> — ผิดคู่เดียวก็ใช้งานไม่ได้
+              ดูตารางท้ายส่วนนี้</li>
+            <li><strong>เครื่อง dev ไม่เหมือนเซิร์ฟเวอร์จริง</strong> — ตอนพัฒนาไม่มี IIS อยู่ในเส้นทางเลย
+              บั๊กบางประเภทจึงโผล่เฉพาะตอนขึ้นระบบ ซึ่งเป็นข้อที่กัดจริงที่สุดในทางปฏิบัติ</li>
+          </ul>
+        </div>
+
+        <h3>เส้นทางของ request ตามลำดับเวลา</h3>
+        <p>
+          แผนภาพด้านล่างอ่านจากซ้ายไปขวาตามเวลา แต่ละแถวคือผู้เล่นหนึ่งราย
+          ตัวเลขคือลำดับเหตุการณ์ สังเกตความต่างของสองช่วง —
+          <strong>ช่วงโหลดหน้าเว็บจบที่ IIS ไม่ลงไปถึง Tomcat เลย</strong>
         </p>
       </div>
 
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 430" role="img" aria-label="แผนภาพภาพรวมทั้งระบบ แสดงเบราว์เซอร์ที่โหลดไฟล์ React จาก IIS แล้วเรียก /api ซึ่ง IIS ส่งต่อไปยัง Tomcat ที่รันแอป Spring Boot และเชื่อมต่อฐานข้อมูล">
+            <svg viewBox="0 0 760 452" role="img" aria-label="แผนภาพลำดับเวลาแบบ swimlane สี่แถว คือเบราว์เซอร์ IIS Tomcat และ Spring Boot เวลาไหลจากซ้ายไปขวา ช่วงแรกคือการโหลดหน้าเว็บซึ่งจบที่ IIS ไม่ลงไปถึง Tomcat ช่วงที่สองคือการเรียกข้อมูลซึ่งลงไปถึง Spring Boot แล้วส่งผลกลับขึ้นมา">
               <defs>
-                <marker id="f1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="f1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-c"/>
                 </marker>
-                <marker id="f2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="f2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
                 </marker>
-                <marker id="f3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="f3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-p"/>
-                </marker>
-                <marker id="f4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M0,0 L10,5 L0,10 z" class="hd"/>
                 </marker>
               </defs>
 
-              <text class="tl" x="24" y="22">เครื่องผู้ใช้</text>
-              <rect class="bx-c" x="24" y="34" width="150" height="150" rx="7"/>
-              <text class="t" x="99" y="62" text-anchor="middle">เบราว์เซอร์</text>
-              <line class="ln dash" x1="40" y1="76" x2="158" y2="76"/>
-              <text class="tm" x="40" y="98">React</text>
-              <text class="tm" x="40" y="116">ทำงานในเบราว์เซอร์</text>
-              <text class="tm" x="40" y="140">router จัดการ</text>
-              <text class="tm" x="40" y="158">เส้นทางฝั่งไคลเอนต์</text>
-              <text class="tm" x="40" y="176">ส่วนที่ 12</text>
+              <!-- หัวช่วงเวลา -->
+              <rect class="bx-c" x="150" y="14" width="250" height="26" rx="7"/>
+              <text class="tm" x="275" y="32" text-anchor="middle">ครั้งแรก · โหลดหน้าเว็บ</text>
+              <rect class="bx-a" x="414" y="14" width="326" height="26" rx="7"/>
+              <text class="tm" x="577" y="32" text-anchor="middle">จากนั้น · ทุกครั้งที่ต้องใช้ข้อมูล</text>
+              <line class="ln dash" x1="407" y1="46" x2="407" y2="392"/>
 
-              <line class="ln dash" x1="200" y1="14" x2="200" y2="416"/>
-              <text class="tl" x="212" y="22">Windows Server</text>
+              <!-- เลนที่ 1 เบราว์เซอร์ -->
+              <rect class="band" x="150" y="54" width="590" height="60" rx="7"/>
+              <text class="t" x="16" y="82">เบราว์เซอร์</text>
+              <text class="tm" x="16" y="100">React ทำงานที่นี่</text>
 
-              <rect class="bx-a" x="230" y="34" width="190" height="150" rx="7"/>
-              <text class="t" x="325" y="62" text-anchor="middle">IIS</text>
-              <line class="ln dash" x1="246" y1="76" x2="404" y2="76"/>
-              <text class="tm" x="246" y="98">รับ TLS ที่พอร์ต 443</text>
-              <text class="tm" x="246" y="118">ส่งไฟล์ static เอง</text>
-              <text class="tm" x="246" y="138">ส่งต่อ /api ด้วย ARR</text>
-              <text class="tm" x="246" y="158">บันทึก log ทุก request</text>
-              <text class="tm" x="246" y="176">ส่วนที่ 01–09</text>
+              <!-- เลนที่ 2 IIS -->
+              <rect class="band" x="150" y="126" width="590" height="60" rx="7"/>
+              <text class="t" x="16" y="154">IIS</text>
+              <text class="tm" x="16" y="172">ส่วนที่ 01–09</text>
 
-              <rect class="bx-p" x="452" y="34" width="190" height="150" rx="7"/>
-              <text class="t" x="547" y="62" text-anchor="middle">Tomcat</text>
-              <line class="ln dash" x1="468" y1="76" x2="626" y2="76"/>
-              <text class="tm" x="468" y="98">รับที่ 127.0.0.1:8080</text>
-              <text class="tm" x="468" y="118">รันไฟล์ .war</text>
-              <text class="tm" x="468" y="138">จัดการ servlet</text>
-              <text class="tm" x="468" y="158">ส่วนที่ 11</text>
+              <!-- เลนที่ 3 Tomcat -->
+              <rect class="band" x="150" y="198" width="590" height="60" rx="7"/>
+              <text class="t" x="16" y="226">Tomcat</text>
+              <text class="tm" x="16" y="244">ส่วนที่ 11</text>
 
-              <rect class="bx-p" x="452" y="212" width="190" height="96" rx="7"/>
-              <text class="t" x="547" y="240" text-anchor="middle">Spring Boot</text>
-              <line class="ln dash" x1="468" y1="254" x2="626" y2="254"/>
-              <text class="tm" x="468" y="276">ตรรกะของระบบ</text>
-              <text class="tm" x="468" y="296">ส่วนที่ 10</text>
+              <!-- เลนที่ 4 Spring Boot -->
+              <rect class="band" x="150" y="270" width="590" height="60" rx="7"/>
+              <text class="t" x="16" y="298">Spring Boot</text>
+              <text class="tm" x="16" y="316">ส่วนที่ 10</text>
 
-              <rect class="bx" x="452" y="336" width="190" height="66" rx="7"/>
-              <text class="t" x="547" y="364" text-anchor="middle">ฐานข้อมูล</text>
-              <text class="tm" x="547" y="384" text-anchor="middle">อยู่นอกขอบเขตเอกสาร</text>
+              <!-- ══ ช่วงที่ 1 ══ -->
+              <line class="ln-c flow" x1="196" y1="108" x2="196" y2="132" marker-end="url(#f1)"/>
+              <circle class="bx-c" cx="196" cy="70" r="11"/>
+              <text class="tm" x="196" y="74" text-anchor="middle">1</text>
+              <text class="tm" x="212" y="126">ขอหน้าเว็บ</text>
 
-              <line class="ln-c flow" x1="174" y1="86" x2="224" y2="86" marker-end="url(#f1)"/>
-              <text class="tm" x="178" y="78">https</text>
+              <path class="ln-a flow-rel" d="M290 132 L 290 108" marker-end="url(#f2)"/>
+              <circle class="bx-a" cx="290" cy="166" r="11"/>
+              <text class="tm" x="290" y="170" text-anchor="middle">2</text>
+              <text class="tm" x="306" y="150">ส่ง index.html จากดิสก์</text>
 
-              <path class="ln-a flow" d="M420 78 L 446 78" marker-end="url(#f2)"/>
-              <text class="ta" x="424" y="70">/api</text>
+              <circle class="bx-c" cx="366" cy="84" r="11"/>
+              <text class="tm" x="366" y="88" text-anchor="middle">3</text>
+              <text class="tm" x="216" y="102">React เริ่มทำงานในเบราว์เซอร์</text>
 
-              <line class="ln-p flow" x1="547" y1="184" x2="547" y2="206" marker-end="url(#f3)"/>
-              <line class="ln flow" x1="547" y1="308" x2="547" y2="330" marker-end="url(#f4)"/>
+              <text class="ta" x="164" y="356">ช่วงนี้ไม่ลงไปถึง Tomcat เลย</text>
+              <text class="tm" x="164" y="374">เพราะเป็นไฟล์ static ที่ IIS ตอบเองได้</text>
 
-              <path class="ln-a flow-rel" d="M325 184 L 325 240 L 240 240" marker-end="url(#f2)"/>
-              <text class="tm" x="246" y="262">ไฟล์ static</text>
-              <text class="tm" x="246" y="280">จากดิสก์ของเซิร์ฟเวอร์</text>
-              <rect class="bx-a" x="230" y="292" width="190" height="52" rx="7"/>
-              <text class="tm" x="246" y="314">D:\apps\corp-web</text>
-              <text class="tm" x="246" y="332">index.html · assets</text>
+              <!-- ══ ช่วงที่ 2 ══ -->
+              <line class="ln-c flow" x1="452" y1="108" x2="452" y2="132" marker-end="url(#f1)"/>
+              <circle class="bx-c" cx="452" cy="70" r="11"/>
+              <text class="tm" x="452" y="74" text-anchor="middle">4</text>
+              <text class="tm" x="468" y="126">GET /api/orders</text>
 
-              <line class="ln dash" x1="24" y1="374" x2="180" y2="374"/>
-              <text class="tl" x="24" y="396">ทุกอย่างอยู่ใต้</text>
-              <text class="tm" x="24" y="416">โดเมนเดียวกัน · ไม่ต้องตั้ง CORS</text>
+              <line class="ln-a flow" x1="452" y1="180" x2="452" y2="204" marker-end="url(#f2)"/>
+              <circle class="bx-a" cx="536" cy="152" r="11"/>
+              <text class="tm" x="536" y="156" text-anchor="middle">5</text>
+              <text class="tm" x="552" y="156">ส่งต่อไป 127.0.0.1:8080</text>
+
+              <line class="ln-p flow" x1="452" y1="252" x2="452" y2="276" marker-end="url(#f3)"/>
+              <circle class="bx-p" cx="536" cy="224" r="11"/>
+              <text class="tm" x="536" y="228" text-anchor="middle">6</text>
+              <text class="tm" x="552" y="228">Tomcat เรียกโค้ดใน .war</text>
+
+              <circle class="bx-p" cx="536" cy="296" r="11"/>
+              <text class="tm" x="536" y="300" text-anchor="middle">7</text>
+              <text class="tm" x="552" y="300">ประมวลผลและอ่านฐานข้อมูล</text>
+
+              <path class="ln-a flow-rel" d="M714 276 L 714 108" marker-end="url(#f2)"/>
+              <circle class="bx-a" cx="714" cy="348" r="11"/>
+              <text class="tm" x="714" y="352" text-anchor="middle">8</text>
+              <text class="tm" x="560" y="374">ส่งข้อมูลกลับตามทางเดิม</text>
+              <text class="tm" x="560" y="392">ผ่าน IIS ถึงเบราว์เซอร์</text>
+
+              <line class="ln dash" x1="16" y1="410" x2="744" y2="410"/>
+              <text class="tm" x="16" y="432">ทุกขั้นเรียกผ่านโดเมนเดียวกันคือ https://app.corp.local จึงไม่ต้องตั้งค่า CORS และ cookie ทำงานตามปกติ</text>
             </svg>
           </div>
           <figcaption>
@@ -2803,6 +2905,70 @@ service.bat install MyService</pre>
             เส้นแนวนอนด้านบนคือเส้นทางของ request ที่เรียก API
             ส่วนเส้นที่วกกลับลงมาคือการส่งไฟล์ static ซึ่งจบที่ IIS ไม่ได้ออกไปไกลกว่านั้น
             สังเกตว่า React อยู่ฝั่งเครื่องผู้ใช้ ไม่ได้อยู่บนเซิร์ฟเวอร์
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="breakout">
+        <figure>
+          <div class="fig-frame">
+            <svg viewBox="0 0 760 330" role="img" aria-label="แผนภาพเปรียบเทียบสิ่งที่รันจริงบนเครื่อง ตอนพัฒนามีสองโปรเซสคือ Node ที่รัน Vite และ JVM ที่รัน Spring Boot โดยไม่มี IIS ตอนใช้งานจริงบนเซิร์ฟเวอร์มี w3wp ของ IIS กับ JVM ของ Tomcat และไฟล์ static วางอยู่บนดิสก์">
+              <defs>
+                <marker id="g1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
+                </marker>
+              </defs>
+
+              <text class="tl" x="16" y="20">เครื่องของผู้พัฒนา</text>
+              <rect class="bx-c" x="16" y="32" width="300" height="230" rx="7"/>
+
+              <rect class="bx" x="36" y="56" width="260" height="70" rx="7"/>
+              <text class="tm" x="52" y="78">โปรเซสที่ 1 · Node.js</text>
+              <text class="t" x="52" y="100">Vite dev server</text>
+              <text class="tm" x="52" y="118">:5173 · เสิร์ฟจากหน่วยความจำ</text>
+
+              <rect class="bx" x="36" y="140" width="260" height="70" rx="7"/>
+              <text class="tm" x="52" y="162">โปรเซสที่ 2 · JVM</text>
+              <text class="t" x="52" y="184">Spring Boot</text>
+              <text class="tm" x="52" y="202">:8080 · Tomcat ที่ฝังมาในแอป</text>
+
+              <text class="ta" x="36" y="238">ไม่มี IIS · ไม่มีไฟล์ .war</text>
+              <text class="tm" x="36" y="256">ไม่มีโฟลเดอร์ผลลัพธ์ของ build</text>
+
+              <text class="tl" x="444" y="20">Windows Server</text>
+              <rect class="bx-a" x="444" y="32" width="300" height="230" rx="7"/>
+
+              <rect class="bx" x="464" y="56" width="260" height="70" rx="7"/>
+              <text class="tm" x="480" y="78">โปรเซสที่ 1 · w3wp.exe</text>
+              <text class="t" x="480" y="100">IIS</text>
+              <text class="tm" x="480" y="118">:443 · อ่านไฟล์จากดิสก์</text>
+
+              <rect class="bx" x="464" y="140" width="260" height="70" rx="7"/>
+              <text class="tm" x="480" y="162">โปรเซสที่ 2 · JVM</text>
+              <text class="t" x="480" y="184">Tomcat</text>
+              <text class="tm" x="480" y="202">:8080 loopback · รัน .war</text>
+
+              <text class="ta" x="464" y="238">ไม่มี Vite · ไม่มีซอร์สโค้ด</text>
+              <text class="tm" x="464" y="256">ไม่มี node_modules</text>
+
+              <path class="ln-a flow" d="M320 110 L 440 110" marker-end="url(#g1)"/>
+              <text class="ta" x="330" y="100">build หน้าบ้าน</text>
+              <text class="tm" x="330" y="128">ได้ไฟล์ static ไปวางบนดิสก์</text>
+
+              <path class="ln-a flow" d="M320 180 L 440 180" marker-end="url(#g1)"/>
+              <text class="ta" x="330" y="170">build หลังบ้าน</text>
+              <text class="tm" x="330" y="198">ได้ .war ไปวางใน webapps</text>
+
+              <line class="ln dash" x1="16" y1="282" x2="744" y2="282"/>
+              <text class="tm" x="16" y="304">ทั้งสองฝั่งมีสองโปรเซสเท่ากัน แต่เป็นคนละตัวกัน — Vite หายไปตอนขึ้นเซิร์ฟเวอร์ ส่วน IIS ไม่เคยมีอยู่บนเครื่องพัฒนา</text>
+              <text class="tm" x="16" y="322">นี่คือเหตุผลที่ต้องทดสอบผลลัพธ์ของ build ก่อนนำขึ้นจริง ตามวิธีในส่วนที่ 12</text>
+            </svg>
+          </div>
+          <figcaption>
+            <b>รูปที่ 15 — สิ่งที่รันจริงบนเครื่อง เทียบสองสภาพแวดล้อม</b> ·
+            แผนภาพนี้ไม่ได้แสดงเส้นทางของ request แต่แสดงว่า
+            <strong>มีโปรแกรมอะไรทำงานอยู่บ้างและอยู่ที่ไหน</strong>
+            ซึ่งเป็นคนละคำถามกับรูปก่อนหน้า และเป็นสิ่งที่ต้องรู้เวลาเปิดเครื่องทำงานจริง
           </figcaption>
         </figure>
       </div>
