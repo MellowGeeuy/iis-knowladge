@@ -362,7 +362,7 @@
 <div class="shell">
   <aside class="sidebar" id="sidebar">
     <span class="mark">เจาะโครงสร้าง <span>IIS</span></span>
-    <span class="side-sub">11 ส่วน · 11 แผนภาพ</span>
+    <span class="side-sub">12 ส่วน · 13 แผนภาพ</span>
     <nav class="pagenav" id="pagenav" aria-label="สารบัญ"></nav>
   </aside>
 
@@ -390,8 +390,8 @@
         </p>
         <div class="cover-meta">
           <div><b>ขอบเขต</b> ชั้น IIS เป็นหลัก</div>
-          <div><b>เนื้อหา</b> 11 ส่วน · แผนภาพ 4 รูป</div>
-          <div><b>อ้างอิง</b> Microsoft · Spring · Tomcat · Vite</div>
+          <div><b>เนื้อหา</b> 12 ส่วน · แผนภาพ 13 รูป</div>
+          <div><b>อ้างอิง</b> 32 รายการ · เปิดอ่านเต็มทุกหน้า</div>
         </div>
       </div>
 
@@ -404,7 +404,7 @@
         <p>
           ส่วนที่ 01 ถึง 09 เรียกปลายทางว่า <em>เซิร์ฟเวอร์ปลายทาง</em> แบบกลาง ๆ
           จึงใช้ได้โดยไม่ขึ้นกับว่าแอปพลิเคชันเบื้องหลังพัฒนาด้วยเทคโนโลยีใด
-          ส่วนที่ 10 และ 11 จึงค่อยลงรายละเอียดเฉพาะกรณีที่ปลายทางคือ
+          ส่วนที่ 10 ถึง 12 จึงค่อยลงรายละเอียดเฉพาะกรณีที่ปลายทางคือ
           <strong>Spring Boot บน Apache Tomcat</strong> และหน้าบ้านเป็น <strong>React</strong>
           โดยจำกัดเฉพาะค่าที่ต้องตั้งให้สอดคล้องกับ IIS
         </p>
@@ -441,7 +441,7 @@
               <tr><td class="n">01–03</td><td>พื้นฐานและสถาปัตยกรรม</td><td>องค์ประกอบภายในของ IIS หน่วยการจัดการ และหน้าที่สองประการที่ IIS รับผิดชอบ</td></tr>
               <tr><td class="n">04–06</td><td>การติดตั้งและกำหนดค่า</td><td>ติดตั้งโมดูล สร้าง Application Pool และ Site และกำหนดกฎใน web.config</td></tr>
               <tr><td class="n">07–09</td><td>การใช้งานจริง</td><td>การส่งต่อข้อมูลผู้เรียก การกำหนด HTTPS และแนวทางวิเคราะห์ปัญหา</td></tr>
-              <tr><td class="n">10–11</td><td>ฝั่งแอปพลิเคชัน</td><td>การเตรียม Spring Boot บน Tomcat และ React ให้ค่าตรงกับที่ IIS ตั้งไว้</td></tr>
+              <tr><td class="n">10–12</td><td>ฝั่งแอปพลิเคชัน</td><td>การเตรียม Spring Boot และ React ให้ค่าตรงกับ IIS · Tomcat และการพัฒนาแบบแยกส่วน</td></tr>
             </tbody>
           </table>
         </div>
@@ -2132,9 +2132,329 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
     </section>
 
     <!-- ============ หน้า 12 ============ -->
-    <section class="pg" id="s11" hidden data-num="11" data-group="React" data-title="React" data-full="การเตรียม React ให้ทำงานกับ IIS">
+    <section class="pg" id="s12" hidden data-num="11" data-group="Java" data-title="Tomcat" data-full="Tomcat และการพัฒนาแบบแยกส่วน">
       <div class="col">
-        <div class="sec-head"><span class="sec-no">11</span><h2>การเตรียม React ให้ทำงานกับ IIS</h2></div>
+        <div class="sec-head"><span class="sec-no">11</span><h2>Tomcat และการพัฒนาแบบแยกส่วน</h2></div>
+        <p class="sec-sub">เซิร์ฟเวอร์ปลายทางคืออะไร และตอนพัฒนาต่างจากตอนใช้งานจริงอย่างไร</p>
+        <p>
+          ตลอดส่วนที่ 01 ถึง 09 เราเรียกปลายทางว่า <em>เซิร์ฟเวอร์ปลายทาง</em> โดยไม่ระบุว่าเป็นอะไร
+          ส่วนนี้อธิบายว่าเมื่อปลายทางคือ Tomcat แล้วมันคืออะไร ทำงานอย่างไร
+          และเหตุใดสภาพแวดล้อมตอนพัฒนาจึงต่างจากตอนใช้งานจริง
+        </p>
+
+        <h3>Tomcat คืออะไร</h3>
+        <p>
+          เอกสารของ Apache นิยาม Tomcat ว่าเป็น
+          <strong>ซอฟต์แวร์โอเพนซอร์สที่ implement เทคโนโลยี Jakarta EE บางส่วน</strong>
+          พูดให้ตรงกับบริบทของเอกสารฉบับนี้คือ มันทำหน้าที่แบบเดียวกับ IIS แต่สำหรับโค้ด Java
+        </p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>บทบาท</th><th>IIS</th><th>Tomcat</th></tr></thead>
+            <tbody>
+              <tr><td>รับ request จากเครือข่าย</td><td>ทำได้</td><td>ทำได้</td></tr>
+              <tr><td>ส่งไฟล์ static</td><td>ทำได้</td><td>ทำได้</td></tr>
+              <tr><td>เรียกใช้โค้ดแอปพลิเคชัน</td><td class="kw">.NET</td><td class="kw">Java</td></tr>
+              <tr><td>หน่วยที่นำขึ้นเซิร์ฟเวอร์</td><td class="kw">โฟลเดอร์ + web.config</td><td class="kw">ไฟล์ .war</td></tr>
+              <tr><td>ไฟล์ตั้งค่าหลัก</td><td class="kw">applicationHost.config</td><td class="kw">server.xml</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout tip">
+          <span class="ttl">จุดที่ต้องเข้าใจให้ตรงกัน</span>
+          <p>
+            <strong>IIS ไม่รู้จัก Tomcat เลย</strong> — สิ่งที่ IIS เห็นคือ
+            <code>http://127.0.0.1:8080</code> ซึ่งเป็นปลายทาง HTTP ธรรมดา
+            ไม่ได้รับรู้ว่าอีกฝั่งเป็น Tomcat, Node หรืออย่างอื่น
+            นั่นคือเหตุผลที่เนื้อหาส่วนที่ 01 ถึง 09 ใช้ได้โดยไม่ขึ้นกับเทคโนโลยีของปลายทาง
+          </p>
+        </div>
+
+        <h3>ทำไมต้องเป็นเวอร์ชัน 11</h3>
+        <p>
+          ความต่างระหว่างเวอร์ชันไม่ใช่แค่ความใหม่ แต่คือ <strong>สเปกที่ implement</strong>
+          และ <strong>เวอร์ชัน Java ขั้นต่ำ</strong> ซึ่งเป็นข้อจำกัดแบบตายตัว
+        </p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Tomcat</th><th>รุ่นล่าสุด</th><th>Java ที่รองรับ</th><th>Servlet</th></tr></thead>
+            <tbody>
+              <tr><td class="k">11.0.x</td><td class="k">11.0.25</td><td class="k">17 ขึ้นไป</td><td class="k">6.1</td></tr>
+              <tr><td class="k">10.1.x</td><td class="k">10.1.59</td><td class="k">11 ขึ้นไป</td><td class="k">6.0</td></tr>
+              <tr><td class="k">9.0.x</td><td class="k">9.0.121</td><td class="k">8 ขึ้นไป</td><td class="k">4.0</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">
+          เอกสารระบุว่า Tomcat 11.0.x เป็นสายที่อยู่ระหว่างการพัฒนาหลักในปัจจุบัน
+          พัฒนาต่อจาก 10.1.x และ implement <strong>Servlet 6.1 · JSP 4.0 · EL 6.0 ·
+          WebSocket 2.2 · Authentication 3.1</strong> ซึ่งเป็นชุดที่แพลตฟอร์ม Jakarta EE 11 กำหนด
+        </p>
+
+        <div class="callout stop">
+          <span class="ttl">โซ่ของความเข้ากันได้ที่ต้องตรงกันทั้งเส้น</span>
+          <p>
+            เอกสารของ Spring Boot ระบุ servlet container ที่รองรับไว้ว่า <strong>Tomcat 11.0.x
+            ที่ Servlet 6.1</strong> และเขียนไว้ด้วยว่าสามารถ deploy ไปยัง
+            <strong>container ใดก็ได้ที่รองรับ Servlet 6.1 ขึ้นไป</strong>
+          </p>
+          <p>
+            อีกด้านหนึ่ง เอกสารระบุว่า Spring Boot รุ่นปัจจุบัน <strong>ต้องการ Java อย่างน้อย 17
+            และใช้ได้ถึง Java 26</strong> พร้อมกับ Spring Framework 7.0.9 ขึ้นไป
+            ตัวเลขทั้งหมดนี้จึงล็อกกันเป็นชุดเดียว หากเซิร์ฟเวอร์เป็น Tomcat 10.1
+            ซึ่งอยู่ที่ Servlet 6.0 จะใช้ Spring Boot รุ่นนี้ไม่ได้
+          </p>
+        </div>
+      </div>
+
+      <div class="breakout">
+        <figure>
+          <div class="fig-frame">
+            <svg viewBox="0 0 760 300" role="img" aria-label="แผนภาพโครงสร้างไดเรกทอรีของ Tomcat แสดงโฟลเดอร์ bin conf logs และ webapps พร้อมระบุว่าไฟล์ war ถูกวางใน webapps และกลายเป็น context path ที่ IIS ส่ง request ไปหา">
+              <defs>
+                <marker id="t1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
+                </marker>
+                <marker id="t2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-p"/>
+                </marker>
+              </defs>
+
+              <text class="tl" x="24" y="24">CATALINA_HOME — รากของการติดตั้ง Tomcat</text>
+              <rect class="bx" x="24" y="38" width="420" height="200" rx="3"/>
+
+              <rect class="bx" x="44" y="58" width="180" height="46" rx="2"/>
+              <text class="tm" x="58" y="78">/bin</text>
+              <text class="tm" x="58" y="94">สคริปต์เริ่มและหยุดการทำงาน</text>
+
+              <rect class="bx" x="244" y="58" width="180" height="46" rx="2"/>
+              <text class="tm" x="258" y="78">/conf</text>
+              <text class="tm" x="258" y="94">server.xml เป็นไฟล์หลัก</text>
+
+              <rect class="bx" x="44" y="116" width="180" height="46" rx="2"/>
+              <text class="tm" x="58" y="136">/logs</text>
+              <text class="tm" x="58" y="152">ที่เก็บ log ตามค่าเริ่มต้น</text>
+
+              <rect class="bx-a" x="244" y="116" width="180" height="46" rx="2"/>
+              <text class="tm" x="258" y="136">/webapps</text>
+              <text class="tm" x="258" y="152">ที่วางแอปพลิเคชัน</text>
+
+              <rect class="bx-a" x="244" y="176" width="180" height="42" rx="2"/>
+              <text class="tm" x="258" y="196">corp-api.war</text>
+              <text class="tm" x="258" y="211">วางไฟล์ลงที่นี่</text>
+              <line class="ln-a flow" x1="334" y1="162" x2="334" y2="172" marker-end="url(#t1)"/>
+
+              <path class="ln-a flow" d="M444 197 L 500 197" marker-end="url(#t1)"/>
+
+              <rect class="bx-p" x="504" y="118" width="232" height="120" rx="3"/>
+              <text class="tl" x="520" y="140">ผลที่ได้</text>
+              <text class="tm" x="520" y="164">context path  /corp-api</text>
+              <text class="tm" x="520" y="184">พร้อมรับที่พอร์ต 8080</text>
+              <line class="ln dash" x1="520" y1="196" x2="720" y2="196"/>
+              <text class="tm" x="520" y="216">ตรงกับปลายทางในกฎ rewrite</text>
+              <text class="tm" x="520" y="231">ของ IIS ตามส่วนที่ 06</text>
+
+              <line class="ln dash" x1="24" y1="256" x2="736" y2="256"/>
+              <text class="tm" x="24" y="278">CATALINA_BASE ใช้เมื่อต้องการหลาย instance บนเครื่องเดียว โดย CATALINA_HOME เก็บไฟล์ที่ใช้ร่วมกัน ส่วน BASE เก็บค่าตั้งของแต่ละ instance</text>
+            </svg>
+          </div>
+          <figcaption>
+            <b>รูปที่ 12 — โครงสร้างของ Tomcat และตำแหน่งที่ไฟล์ WAR ไปอยู่</b> ·
+            การวางไฟล์ลงใน <code>webapps</code> เพียงอย่างเดียวทำให้เกิด context path ขึ้นมา
+            ซึ่งเป็นค่าที่ต้องตรงกับกฎ rewrite ฝั่ง IIS
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="col">
+        <h3>การนำ WAR ขึ้นเซิร์ฟเวอร์</h3>
+        <p>
+          เอกสารของ Tomcat ระบุว่า เมื่อแอตทริบิวต์ <code>autoDeploy</code> ของ Host เป็น
+          <code>true</code> — ซึ่งเป็นค่าเริ่มต้น — Host
+          <strong>จะพยายาม deploy และปรับปรุงแอปพลิเคชันให้เองแบบพลวัต
+          เช่นเมื่อมีไฟล์ .WAR ใหม่ถูกวางลงใน appBase</strong>
+          ครอบคลุมทั้งการ deploy ครั้งแรกและการ deploy ซ้ำของแอปที่เคยติดตั้งแล้ว
+        </p>
+        <p class="note">
+          หมายความว่าการนำขึ้นระบบในกรณีปกติคือ <strong>คัดลอกไฟล์ <code>.war</code>
+          ลงใน <code>webapps</code></strong> โดยไม่ต้องรีสตาร์ท Tomcat
+          ต่างจากฝั่ง IIS ที่การเปลี่ยน <code>web.config</code> มีผลทันทีเช่นกัน
+          ทั้งสองฝั่งจึงไม่ต้องหยุดบริการเพื่ออัปเดตตามปกติ
+        </p>
+
+        <h3>การทำให้ Tomcat ทำงานเป็น Windows Service</h3>
+        <p>
+          เพื่อให้ Tomcat เริ่มทำงานเองเมื่อเปิดเครื่อง ต้องติดตั้งเป็น service
+          เอกสารระบุว่าใช้สคริปต์ <code>service.bat</code> และ
+          <strong>ต้องมีสิทธิ์ระดับ Administrator จึงจะรันสคริปต์นี้ได้</strong>
+        </p>
+        <div class="code">
+          <div class="code-head"><span>cmd (Admin)</span><span class="where">รูปแบบจากเอกสาร Tomcat</span></div>
+<pre>service.bat install
+
+<span class="c">:: หรือระบุชื่อ service เองได้</span>
+service.bat install MyService</pre>
+        </div>
+        <p class="note">
+          เอกสารระบุว่า <code>Tomcat11w</code> เป็นโปรแกรมแบบกราฟิกสำหรับ
+          เฝ้าดูและกำหนดค่า Tomcat service · ส่วนไฟล์ <code>catalina.out</code>
+          จะรับทุกอย่างที่ถูกเขียนลง <code>System.out</code> และ <code>System.err</code>
+          ซึ่งรวมถึง exception ที่ไม่ถูกดักจับ จึงเป็นไฟล์แรกที่ควรเปิดดูเมื่อแอปไม่ทำงาน
+          ตามตารางในส่วนที่ 09
+        </p>
+      </div>
+
+      <div class="breakout">
+        <figure>
+          <div class="fig-frame">
+            <svg viewBox="0 0 760 340" role="img" aria-label="แผนภาพเปรียบเทียบสภาพแวดล้อมสองแบบ ตอนพัฒนาเบราว์เซอร์เรียก Vite dev server ที่พอร์ต 5173 ซึ่งส่งต่อ slash api ไปยัง Spring Boot ที่พอร์ต 8080 ส่วนตอนใช้งานจริงเบราว์เซอร์เรียก IIS ที่พอร์ต 443 ซึ่งส่งไฟล์ static เองและส่งต่อ slash api ไปยัง Tomcat">
+              <defs>
+                <marker id="d1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-c"/>
+                </marker>
+                <marker id="d2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-p"/>
+                </marker>
+                <marker id="d3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
+                </marker>
+              </defs>
+
+              <text class="tl" x="24" y="22">ตอนพัฒนา — เครื่องของผู้พัฒนา</text>
+              <rect class="band" x="24" y="34" width="712" height="116" rx="4"/>
+
+              <rect class="bx-c" x="44" y="56" width="140" height="72" rx="3"/>
+              <text class="t" x="114" y="84" text-anchor="middle">เบราว์เซอร์</text>
+              <text class="tm" x="114" y="106" text-anchor="middle">localhost:5173</text>
+
+              <line class="ln-c flow" x1="184" y1="92" x2="240" y2="92" marker-end="url(#d1)"/>
+
+              <rect class="bx-c" x="244" y="56" width="200" height="72" rx="3"/>
+              <text class="t" x="344" y="80" text-anchor="middle">Vite dev server</text>
+              <text class="tm" x="344" y="100" text-anchor="middle">พอร์ตเริ่มต้น 5173</text>
+              <text class="tm" x="344" y="116" text-anchor="middle">server.proxy ส่งต่อ /api</text>
+
+              <line class="ln-p flow" x1="444" y1="92" x2="500" y2="92" marker-end="url(#d2)"/>
+              <text class="tm" x="450" y="83">/api</text>
+
+              <rect class="bx-p" x="504" y="56" width="212" height="72" rx="3"/>
+              <text class="t" x="610" y="80" text-anchor="middle">Spring Boot</text>
+              <text class="tm" x="610" y="100" text-anchor="middle">Tomcat ที่ฝังมา · 8080</text>
+              <text class="tm" x="610" y="116" text-anchor="middle">รันด้วย IDE หรือ mvn</text>
+
+              <text class="tl" x="24" y="186">ตอนใช้งานจริง — Windows Server</text>
+              <rect class="band" x="24" y="198" width="712" height="116" rx="4"/>
+
+              <rect class="bx-c" x="44" y="220" width="140" height="72" rx="3"/>
+              <text class="t" x="114" y="248" text-anchor="middle">เบราว์เซอร์</text>
+              <text class="tm" x="114" y="270" text-anchor="middle">app.corp.local</text>
+
+              <line class="ln-c flow" x1="184" y1="256" x2="240" y2="256" marker-end="url(#d1)"/>
+              <text class="tm" x="190" y="247">:443</text>
+
+              <rect class="bx-a" x="244" y="220" width="200" height="72" rx="3"/>
+              <text class="t" x="344" y="244" text-anchor="middle">IIS</text>
+              <text class="tm" x="344" y="264" text-anchor="middle">ส่งไฟล์ static เอง</text>
+              <text class="tm" x="344" y="280" text-anchor="middle">กฎ rewrite ส่งต่อ /api</text>
+
+              <line class="ln-p flow" x1="444" y1="256" x2="500" y2="256" marker-end="url(#d2)"/>
+              <text class="tm" x="450" y="247">/api</text>
+
+              <rect class="bx-p" x="504" y="220" width="212" height="72" rx="3"/>
+              <text class="t" x="610" y="244" text-anchor="middle">Tomcat</text>
+              <text class="tm" x="610" y="264" text-anchor="middle">ติดตั้งแยก · 127.0.0.1:8080</text>
+              <text class="tm" x="610" y="280" text-anchor="middle">รันไฟล์ .war</text>
+
+              <path class="ln-a flow-rel" d="M344 150 L 344 194" marker-end="url(#d3)"/>
+              <text class="ta" x="354" y="178">ตัวส่งต่อเปลี่ยนตัว แต่เส้นทางที่โค้ดเรียกเหมือนเดิม</text>
+            </svg>
+          </div>
+          <figcaption>
+            <b>รูปที่ 13 — สองสภาพแวดล้อมที่มีรูปร่างเดียวกัน</b> ·
+            ตำแหน่งของตัวส่งต่อเปลี่ยนจาก Vite dev server เป็น IIS
+            และปลายทางเปลี่ยนจาก Tomcat ที่ฝังมากับ Spring Boot เป็น Tomcat ที่ติดตั้งแยก
+            แต่โค้ดฝั่งหน้าบ้านยังเรียก <code>/api</code> เหมือนเดิมทั้งสองกรณี
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="col">
+        <h3>เหตุผลที่แยก frontend กับ backend ตอนพัฒนา</h3>
+        <p>
+          บนเครื่องของผู้พัฒนา ทั้งสองฝั่งรันเป็นคนละโปรเซสและคนละพอร์ต
+          เอกสารของ Vite ระบุว่า <strong>พอร์ตเริ่มต้นของ dev server คือ 5173</strong>
+          และหากพอร์ตนั้นถูกใช้อยู่แล้ว Vite จะลองหาพอร์ตว่างถัดไปให้เอง
+          ส่วนฝั่ง Spring Boot รันแยกต่างหากที่พอร์ตของตัวเอง
+        </p>
+        <p>
+          การแยกเช่นนี้ทำให้แต่ละฝั่ง <strong>รีโหลดตัวเองได้โดยไม่กระทบอีกฝั่ง</strong>
+          ฝั่งหน้าบ้านเห็นผลทันทีเมื่อแก้ไฟล์ ส่วนฝั่งหลังบ้าน
+          เอกสาร Spring Boot ระบุว่าแอปที่ใช้ <code>spring-boot-devtools</code>
+          <strong>จะรีสตาร์ทอัตโนมัติเมื่อไฟล์บน classpath เปลี่ยนแปลง</strong>
+          ซึ่งเอกสารอธิบายว่าเป็นประโยชน์เมื่อทำงานใน IDE เพราะได้ผลตอบกลับที่รวดเร็วมาก
+        </p>
+
+        <div class="callout">
+          <span class="ttl">สิ่งที่ทำให้ทั้งสองสภาพแวดล้อมเขียนโค้ดชุดเดียวกันได้</span>
+          <p>
+            กุญแจอยู่ที่การใช้ <strong>พาธเดียวกันทั้งสองฝั่ง</strong> คือ <code>/api</code>
+            โดยตอนพัฒนาให้ <code>server.proxy</code> ของ Vite เป็นผู้ส่งต่อ
+            และตอนใช้งานจริงให้กฎ rewrite ของ IIS เป็นผู้ส่งต่อ
+            โค้ดหน้าบ้านจึงไม่ต้องมีเงื่อนไขแยกตามสภาพแวดล้อม
+          </p>
+        </div>
+
+        <div class="tbl">
+          <table>
+            <thead><tr><th>ประเด็น</th><th>ตอนพัฒนา</th><th>ตอนใช้งานจริง</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>ผู้ให้บริการไฟล์หน้าบ้าน</td>
+                <td class="kw">Vite dev server</td>
+                <td class="kw">IIS</td>
+              </tr>
+              <tr>
+                <td>ผู้ส่งต่อ /api</td>
+                <td class="kw">server.proxy</td>
+                <td class="kw">กฎ rewrite + ARR</td>
+              </tr>
+              <tr>
+                <td>Tomcat ที่ใช้</td>
+                <td class="kw">ที่ฝังมากับ Spring Boot</td>
+                <td class="kw">ติดตั้งแยกบนเครื่อง</td>
+              </tr>
+              <tr>
+                <td>รูปแบบที่ส่งมอบ</td>
+                <td class="kw">ไม่มี — รันจากซอร์ส</td>
+                <td class="kw">ไฟล์ static และ .war</td>
+              </tr>
+              <tr>
+                <td>การเห็นผลหลังแก้โค้ด</td>
+                <td class="kw">ทันที · devtools รีสตาร์ทให้</td>
+                <td class="kw">ต้อง build และนำขึ้นใหม่</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout stop">
+          <span class="ttl">ความต่างที่ต้องระวังเมื่อขึ้นระบบจริง</span>
+          <p>
+            สิ่งที่ทำงานได้บนเครื่องพัฒนาอาจไม่ทำงานบนเซิร์ฟเวอร์ เพราะ
+            <strong>ตอนพัฒนาไม่มี IIS อยู่ในเส้นทางเลย</strong>
+            กฎ rewrite ทั้งหมดในส่วนที่ 06 · การกำหนด base path ในส่วนที่ 12 ·
+            การรับเฮดเดอร์ forwarded ในส่วนที่ 07 และ 10 ·
+            รวมถึงชนิดไฟล์ที่ IIS ไม่รู้จักในส่วนที่ 06
+            ล้วนเป็นประเด็นที่ปรากฏเฉพาะตอนใช้งานจริงทั้งสิ้น
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 13 ============ -->
+    <section class="pg" id="s11" hidden data-num="12" data-group="React" data-title="React" data-full="การเตรียม React ให้ทำงานกับ IIS">
+      <div class="col">
+        <div class="sec-head"><span class="sec-no">12</span><h2>การเตรียม React ให้ทำงานกับ IIS</h2></div>
         <p class="sec-sub">ผลลัพธ์ของการ build และค่าที่ต้องตรงกับการตั้งค่า IIS</p>
         <p>
           ส่วนนี้จำกัดเฉพาะจุดที่หน้าบ้านมาบรรจบกับ IIS คือ
@@ -2382,7 +2702,7 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
       </div>
     </section>
 
-    <!-- ============ หน้า 13 ============ -->
+    <!-- ============ หน้า 14 ============ -->
     <section class="pg" id="ref" hidden data-num="—" data-group="อ้างอิง" data-title="อ้างอิง" data-full="แหล่งอ้างอิง">
       <div class="col refs">
         <div class="sec-head"><span class="sec-no">—</span><h2>แหล่งอ้างอิง</h2></div>
@@ -2519,7 +2839,7 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
           </li>
         </ol>
 
-        <h3>React และ Vite · ส่วนที่ 11</h3>
+        <h3>React และ Vite · ส่วนที่ 12</h3>
         <ol start="21">
           <li>
             Vite — Building for Production — หัวข้อ Public Base Path
@@ -2548,6 +2868,47 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
             ข้อกำหนดให้โฮสต์ส่งทุก URL ไปยัง <code>index.html</code>
             และข้อความเรื่องอาการ 404 ที่เส้นทางซึ่งถูกต้อง<span class="doc">REACT ROUTER</span><br>
             <span class="src">reactrouter.com/how-to/spa</span>
+          </li>
+        </ol>
+
+        <h3>Tomcat และการพัฒนา · ส่วนที่ 11</h3>
+        <ol start="26">
+          <li>
+            Apache Tomcat — Which Version Do I Want? — ตารางเวอร์ชัน Tomcat
+            กับสเปกและเวอร์ชัน Java ที่รองรับ และข้อความว่า Tomcat 11.0.x
+            implement Servlet 6.1 ตามที่ Jakarta EE 11 กำหนด<span class="doc">APACHE</span><br>
+            <span class="src">tomcat.apache.org/whichversion.html</span>
+          </li>
+          <li>
+            Apache Tomcat 11 — Introduction — นิยามของ Tomcat โครงสร้างไดเรกทอรี
+            <code>/bin</code> <code>/conf</code> <code>/logs</code> <code>/webapps</code>
+            และความต่างของ <code>CATALINA_HOME</code> กับ <code>CATALINA_BASE</code><span class="doc">APACHE</span><br>
+            <span class="src">tomcat.apache.org/tomcat-11.0-doc/introduction.html</span>
+          </li>
+          <li>
+            Apache Tomcat 11 — Deployer How To — พฤติกรรมของ <code>autoDeploy</code>
+            เมื่อมีไฟล์ .WAR ถูกวางลงใน appBase<span class="doc">APACHE</span><br>
+            <span class="src">tomcat.apache.org/tomcat-11.0-doc/deployer-howto.html</span>
+          </li>
+          <li>
+            Apache Tomcat 11 — Windows Service How To — สคริปต์ <code>service.bat</code>
+            ข้อกำหนดเรื่องสิทธิ์ Administrator และโปรแกรม <code>Tomcat11w</code><span class="doc">APACHE</span><br>
+            <span class="src">tomcat.apache.org/tomcat-11.0-doc/windows-service-howto.html</span>
+          </li>
+          <li>
+            Apache Tomcat 11 — Logging — บทบาทของไฟล์ <code>catalina.out</code>
+            ที่รับทุกอย่างซึ่งเขียนลง <code>System.out</code> และ <code>System.err</code><span class="doc">APACHE</span><br>
+            <span class="src">tomcat.apache.org/tomcat-11.0-doc/logging.html</span>
+          </li>
+          <li>
+            Spring Boot — System Requirements — เวอร์ชัน Java ที่ต้องใช้
+            และรายการ servlet container ที่รองรับพร้อมเลขเวอร์ชัน Servlet<span class="doc">SPRING</span><br>
+            <span class="src">docs.spring.io/spring-boot/system-requirements.html</span>
+          </li>
+          <li>
+            Spring Boot — Developer Tools — การรีสตาร์ทอัตโนมัติเมื่อไฟล์บน classpath
+            เปลี่ยนแปลง<span class="doc">SPRING</span><br>
+            <span class="src">docs.spring.io/spring-boot/reference/using/devtools.html</span>
           </li>
         </ol>
 
