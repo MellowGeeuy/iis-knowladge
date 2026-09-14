@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="กลไกการทำงานภายในของ IIS หน่วยการจัดการ การติดตั้งโมดูล การกำหนดกฎการเขียน URL และแนวทางวิเคราะห์ปัญหา สำหรับการนำเว็บแอปพลิเคชันขึ้นให้บริการบน Windows Server">
+<meta name="description" content="กลไกการทำงานภายในของ IIS หน่วยการจัดการ การติดตั้งโมดูล การกำหนดกฎการเขียน URL แนวทางวิเคราะห์ปัญหา และการเตรียม Spring Boot บน Tomcat ให้ทำงานกับ IIS">
 <meta name="color-scheme" content="light dark">
 <style>
   /* reset พื้นฐาน — เดิมมาจาก runtime ของ Artifact จึงต้องประกาศเองเมื่อโฮสต์บน GitHub Pages */
@@ -306,22 +306,28 @@
           และแนวทางวิเคราะห์ปัญหา สำหรับการนำเว็บแอปพลิเคชันขึ้นให้บริการบน Windows Server
         </p>
         <div class="cover-meta">
-          <div><b>ขอบเขต</b> เฉพาะชั้น IIS</div>
-          <div><b>เนื้อหา</b> 9 ส่วน · แผนภาพ 4 รูป</div>
-          <div><b>อ้างอิง</b> เอกสาร Microsoft Learn</div>
+          <div><b>ขอบเขต</b> ชั้น IIS เป็นหลัก</div>
+          <div><b>เนื้อหา</b> 10 ส่วน · แผนภาพ 4 รูป</div>
+          <div><b>อ้างอิง</b> Microsoft Learn · Spring Boot · Tomcat</div>
         </div>
       </div>
 
       <div class="col">
         <h3>วัตถุประสงค์ของเอกสาร</h3>
         <p>
-          เอกสารฉบับนี้อธิบาย <strong>ชั้น IIS เพียงชั้นเดียว</strong> คือส่วนที่รับ request จากผู้ใช้
+          เอกสารฉบับนี้อธิบาย <strong>ชั้น IIS</strong> คือส่วนที่รับ request จากผู้ใช้
           ตัดสินใจว่าจะตอบด้วยไฟล์บนดิสก์หรือส่งต่อไปยังเซิร์ฟเวอร์อื่น และบันทึกผลลัพธ์ไว้
         </p>
         <p>
-          สิ่งที่อยู่นอกขอบเขต ได้แก่ การพัฒนาโปรแกรม การตั้งค่าเซิร์ฟเวอร์ปลายทางที่ IIS ส่ง request ไปให้
-          และการออกแบบฐานข้อมูล เนื้อหาทั้งหมดจึงใช้ได้โดยไม่ขึ้นกับว่าแอปพลิเคชันเบื้องหลัง
-          พัฒนาด้วยเทคโนโลยีใด
+          ส่วนที่ 01 ถึง 09 เรียกปลายทางว่า <em>เซิร์ฟเวอร์ปลายทาง</em> แบบกลาง ๆ
+          จึงใช้ได้โดยไม่ขึ้นกับว่าแอปพลิเคชันเบื้องหลังพัฒนาด้วยเทคโนโลยีใด
+          ส่วนที่ 10 จึงค่อยลงรายละเอียดเฉพาะกรณีที่ปลายทางคือ
+          <strong>Spring Boot บน Apache Tomcat</strong>
+          โดยจำกัดเฉพาะค่าที่ต้องตั้งให้สอดคล้องกับ IIS
+        </p>
+        <p>
+          สิ่งที่อยู่นอกขอบเขต ได้แก่ การพัฒนาแอปพลิเคชัน การออกแบบฐานข้อมูล
+          และกติกาทางธุรกิจของระบบ
         </p>
         <p>
           ชื่อ site พาธของไฟล์ และหมายเลขพอร์ตที่ปรากฏในคำสั่งทั้งหมด เป็น
@@ -352,6 +358,7 @@
               <tr><td class="n">01–03</td><td>พื้นฐานและสถาปัตยกรรม</td><td>องค์ประกอบภายในของ IIS หน่วยการจัดการ และหน้าที่สองประการที่ IIS รับผิดชอบ</td></tr>
               <tr><td class="n">04–06</td><td>การติดตั้งและกำหนดค่า</td><td>ติดตั้งโมดูล สร้าง Application Pool และ Site และกำหนดกฎใน web.config</td></tr>
               <tr><td class="n">07–09</td><td>การใช้งานจริง</td><td>การส่งต่อข้อมูลผู้เรียก การกำหนด HTTPS และแนวทางวิเคราะห์ปัญหา</td></tr>
+              <tr><td class="n">10</td><td>ฝั่งแอปพลิเคชัน</td><td>การเตรียม Spring Boot บน Tomcat ให้ค่าตรงกับที่ IIS ตั้งไว้</td></tr>
             </tbody>
           </table>
         </div>
@@ -1433,6 +1440,255 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
     </section>
 
     <!-- ============ หน้า 11 ============ -->
+    <section class="pg" id="s10" hidden data-title="Spring Boot" data-full="การเตรียม Spring Boot ให้ทำงานกับ IIS">
+      <div class="col">
+        <div class="sec-head"><span class="sec-no">10</span><h2>การเตรียม Spring Boot ให้ทำงานกับ IIS</h2></div>
+        <p class="sec-sub">งานฝั่งแอปพลิเคชันที่ต้องสอดคล้องกับการตั้งค่า IIS ในส่วนก่อนหน้า</p>
+        <p>
+          ส่วนที่ 01 ถึง 09 อธิบายเฉพาะชั้น IIS โดยเรียกปลายทางว่า <em>เซิร์ฟเวอร์ปลายทาง</em>
+          เพื่อให้ใช้ได้กับทุกเทคโนโลยี ส่วนนี้ลงรายละเอียดเฉพาะกรณีที่ปลายทางคือ
+          <strong>Spring Boot ที่ทำงานบน Apache Tomcat</strong>
+          โดยจำกัดเฉพาะจุดที่ต้องตั้งค่าให้สอดคล้องกับ IIS เท่านั้น
+          มิได้ครอบคลุมการพัฒนาแอปพลิเคชัน
+        </p>
+
+        <h3>ขอบเขตที่ IIS ไม่เกี่ยวข้อง</h3>
+        <p>
+          ประเด็นที่ต้องเข้าใจก่อนคือ <strong><code>w3wp.exe</code> ไม่ได้ประมวลผลโค้ด Java เลย</strong>
+          JVM ที่รัน Spring Boot อยู่ในโปรเซสของ Tomcat ซึ่งแยกจากกันโดยสิ้นเชิง
+          IIS เพียงเปิดการเชื่อมต่อ HTTP ไปยังพอร์ตที่ Tomcat รับฟัง แล้วส่งผลลัพธ์กลับมาให้ผู้ใช้
+          ตามที่อธิบายไว้ในส่วนที่ 03
+        </p>
+        <div class="callout tip">
+          <span class="ttl">ผลในทางปฏิบัติ</span>
+          <ul>
+            <li>การรีสตาร์ท IIS <strong>ไม่กระทบสถานะที่เก็บอยู่ในหน่วยความจำของแอปพลิเคชัน Java</strong>
+              และการ redeploy ไฟล์ WAR ก็ไม่กระทบไฟล์ static ที่ IIS ให้บริการอยู่</li>
+            <li>การกำหนดหน่วยความจำเป็นคนละเรื่องกัน — ค่าของ Application Pool
+              ควบคุมเฉพาะ <code>w3wp.exe</code> ส่วนขนาด heap ของ JVM กำหนดที่ Tomcat</li>
+            <li>ด้วยเหตุผลเดียวกัน <strong>จึงไม่ต้องติดตั้ง .NET Hosting Bundle</strong>
+              ซึ่งมีไว้ให้ IIS เรียกใช้โค้ด .NET ภายในโปรเซสของตนเอง
+              โมดูลที่จำเป็นมีเพียง URL Rewrite และ ARR ตามส่วนที่ 04</li>
+          </ul>
+        </div>
+
+        <h3>ส่งมอบเป็น WAR ไม่ใช่ JAR</h3>
+        <p>
+          โดยค่าเริ่มต้น Spring Boot สร้างไฟล์ JAR ที่มี Tomcat ฝังอยู่ภายในและรันตัวเองได้
+          แต่เมื่อปลายทางคือ Tomcat ที่ติดตั้งแยกบนเครื่อง สิ่งที่ต้องส่งมอบคือไฟล์ WAR
+          เอกสารของ Spring Boot กำหนดขั้นตอนการแปลงไว้ดังนี้
+        </p>
+
+        <div class="steps">
+          <div class="st">
+            <h4>ให้คลาสหลักสืบทอด SpringBootServletInitializer</h4>
+            <p>และ override เมธอด <code>configure</code></p>
+            <div class="code">
+              <div class="code-head"><span>MyApplication.java</span><span class="where">ตัวอย่างจากเอกสาร Spring Boot</span></div>
+<pre><span class="t">@SpringBootApplication</span>
+<span class="t">public class</span> MyApplication <span class="t">extends</span> SpringBootServletInitializer {
+
+  <span class="t">@Override</span>
+  <span class="t">protected</span> SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+    <span class="t">return</span> application.sources(MyApplication.class);
+  }
+
+  <span class="t">public static void</span> main(String[] args) {
+    SpringApplication.run(MyApplication.class, args);
+  }
+
+}</pre>
+            </div>
+            <p class="note">
+              เอกสารคงเมธอด <code>main</code> ไว้ในตัวอย่างด้วย
+              โดยระบุว่าเมื่อไฟล์ WAR ใช้งานได้แล้ว สามารถทำให้ไฟล์นั้นรันได้เองด้วยการเพิ่มเมธอด
+              <code>main</code> เข้าไปในคลาส
+            </p>
+          </div>
+
+          <div class="st">
+            <h4>เปลี่ยน packaging เป็น war</h4>
+            <div class="code">
+              <div class="code-head"><span>pom.xml</span><span class="where">maven</span></div>
+<pre><span class="t">&lt;packaging&gt;</span>war<span class="t">&lt;/packaging&gt;</span></pre>
+            </div>
+          </div>
+
+          <div class="st">
+            <h4>ประกาศ servlet container ที่ฝังมาให้เป็น provided</h4>
+            <div class="code">
+              <div class="code-head"><span>pom.xml</span><span class="where">maven</span></div>
+<pre><span class="t">&lt;dependency&gt;</span>
+  <span class="t">&lt;groupId&gt;</span>org.springframework.boot<span class="t">&lt;/groupId&gt;</span>
+  <span class="t">&lt;artifactId&gt;</span>spring-boot-starter-tomcat<span class="t">&lt;/artifactId&gt;</span>
+  <span class="t">&lt;scope&gt;</span>provided<span class="t">&lt;/scope&gt;</span>
+<span class="t">&lt;/dependency&gt;</span></pre>
+            </div>
+            <p class="note">
+              ขั้นนี้ทำให้ Tomcat ที่ฝังมากับ Spring Boot ไม่ถูกบรรจุลงในไฟล์ WAR
+              จึงไม่ไปซ้อนทับกับ Tomcat ที่ติดตั้งอยู่บนเครื่องจริง
+            </p>
+          </div>
+        </div>
+
+        <div class="callout stop">
+          <span class="ttl">ข้อจำกัดที่เอกสารระบุไว้</span>
+          <p>
+            <strong>แอปพลิเคชันที่ใช้ Spring WebFlux ไม่รองรับการ deploy แบบ WAR</strong>
+            เอกสารให้เหตุผลว่า WebFlux ไม่ได้ผูกกับ servlet API โดยตรง
+            และถูก deploy บนเซิร์ฟเวอร์ Reactor Netty ที่ฝังมาให้เป็นค่าเริ่มต้น
+            หากระบบใช้ WebFlux จะต้องเลือกสถาปัตยกรรมอื่นแทนการวางบน Tomcat
+          </p>
+        </div>
+
+        <h3>context path มาจากชื่อไฟล์ WAR</h3>
+        <p>
+          ค่า <code>/corp-api</code> ที่ปรากฏในกฎ rewrite ของส่วนที่ 06
+          ไม่ได้ตั้งขึ้นลอย ๆ แต่ถูกกำหนดโดย <strong>ชื่อไฟล์ WAR ที่วางไว้ใน Tomcat</strong>
+          เอกสารของ Tomcat ระบุกฎการตั้งชื่อไว้ว่า หาก context path เป็นสตริงว่าง
+          ชื่อฐานของไฟล์จะเป็น <code>ROOT</code> ซึ่งเป็นตัวพิมพ์ใหญ่เสมอ
+          กรณีอื่นชื่อฐานคือ context path ที่ตัดเครื่องหมาย <code>/</code> นำหน้าออก
+          แล้วแทนที่ <code>/</code> ที่เหลือด้วย <code>#</code>
+        </p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>context path</th><th>ชื่อไฟล์ WAR</th><th>URL ที่ Tomcat รับ</th></tr></thead>
+            <tbody>
+              <tr><td class="k">/foo</td><td class="k">foo.war</td><td class="k">/foo/...</td></tr>
+              <tr><td class="k">/foo/bar</td><td class="k">foo#bar.war</td><td class="k">/foo/bar/...</td></tr>
+              <tr><td class="k">สตริงว่าง</td><td class="k">ROOT.war</td><td class="k">/...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">
+          ตามตัวอย่างในเอกสาร ยังมีรูปแบบระบุเวอร์ชันด้วย <code>##</code> เช่น
+          <code>foo##42.war</code> สำหรับ context path <code>/foo</code> เวอร์ชัน 42
+        </p>
+        <div class="callout">
+          <span class="ttl">ความเชื่อมโยงกับกฎ rewrite</span>
+          <p>
+            หากเปลี่ยนชื่อไฟล์ WAR ต้องแก้ปลายทางในกฎ <code>api-to-backend</code> ของส่วนที่ 06 ให้ตรงกัน
+            เช่นเปลี่ยนเป็น <code>ROOT.war</code> ปลายทางจะกลายเป็น
+            <code>http://127.0.0.1:8080/{R:1}</code> โดยไม่มีส่วน <code>/corp-api</code>
+            นี่คือข้อดีของการแยกสองค่านี้ออกจากกัน — <strong>แก้ที่ไฟล์เดียวโดยไม่ต้องแตะโค้ด</strong>
+          </p>
+        </div>
+        <div class="callout stop">
+          <span class="ttl">อย่ากำหนด Context ใน server.xml</span>
+          <p>
+            เอกสารของ Tomcat ระบุว่า <strong>ไม่แนะนำให้วางองค์ประกอบ
+            <code>&lt;Context&gt;</code> ไว้ใน <code>server.xml</code> โดยตรง</strong>
+            เพราะทำให้การแก้ไขค่ามีผลกระทบมากขึ้น เนื่องจากไฟล์ <code>conf/server.xml</code>
+            ไม่สามารถโหลดใหม่ได้โดยไม่รีสตาร์ท Tomcat
+            อีกทั้งค่า Context เริ่มต้นจะเขียนทับค่าที่กำหนดไว้ตรงนั้น
+          </p>
+          <p>
+            เอกสารยังระบุว่าแอตทริบิวต์ <code>path</code>
+            <strong>ต้องใช้เฉพาะเมื่อกำหนด Context แบบคงที่ใน server.xml เท่านั้น</strong>
+            ในกรณีอื่นค่า path จะถูกอนุมานจากชื่อไฟล์ให้เอง
+          </p>
+        </div>
+
+        <h3>จำกัดการรับฟังของ Tomcat</h3>
+        <p>
+          ส่วนที่ 03 และ 07 ตั้งอยู่บนเงื่อนไขว่าเซิร์ฟเวอร์ปลายทางเข้าถึงได้จาก IIS เท่านั้น
+          เอกสารของ HTTP Connector ระบุว่าแอตทริบิวต์ <code>address</code>
+          ใช้กำหนดว่าจะรับฟังที่ที่อยู่ใด และ
+          <strong>โดยค่าเริ่มต้น connector จะรับฟังทุกที่อยู่ในเครื่อง</strong>
+          การจำกัดขอบเขตจึงต้องระบุแอตทริบิวต์นี้เอง
+        </p>
+        <div class="code">
+          <div class="code-head"><span>conf/server.xml</span><span class="where">Tomcat</span></div>
+<pre><span class="t">&lt;Connector</span> port=<span class="s">"8080"</span> protocol=<span class="s">"HTTP/1.1"</span>
+           address=<span class="s">"127.0.0.1"</span> <span class="t">/&gt;</span></pre>
+        </div>
+        <p class="note">
+          เอกสารอธิบายเฉพาะหน้าที่ของแอตทริบิวต์นี้ ไม่ได้ยกตัวอย่างการใช้
+          <code>127.0.0.1</code> เพื่อความปลอดภัยไว้โดยตรง ค่าดังกล่าวจึงเป็นการนำแอตทริบิวต์
+          มาใช้ให้ตรงกับข้อกำหนดด้านความปลอดภัยในส่วนที่ 07 ของเอกสารฉบับนี้
+        </p>
+
+        <h3>การรับค่าเฮดเดอร์ที่ IIS ส่งมา</h3>
+        <p>
+          ส่วนที่ 07 อธิบายว่า IIS ส่งข้อมูลผู้เรียกต่อมาในรูปเฮดเดอร์
+          ฝั่ง Spring Boot ต้องถูกกำหนดค่าให้นำเฮดเดอร์เหล่านั้นมาใช้ด้วย มิฉะนั้นจะถูกละเลย
+          เอกสารระบุ property ชื่อ <code>server.forward-headers-strategy</code> ซึ่งรับค่าได้สามแบบ
+        </p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>ค่า</th><th>พฤติกรรมตามเอกสาร</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="k">NATIVE</td>
+                <td>ตัว web server จัดการเฮดเดอร์ forwarded เอง เอกสารระบุว่าการตั้งค่านี้
+                  <strong>เพียงพอสำหรับเฮดเดอร์ที่ใช้กันทั่วไปคือ <code>X-Forwarded-For</code>
+                  และ <code>X-Forwarded-Proto</code></strong></td>
+              </tr>
+              <tr>
+                <td class="k">FRAMEWORK</td>
+                <td>ใช้ตัวกรองของ Spring Framework จัดการแทน คือ <code>ForwardedHeaderFilter</code>
+                  สำหรับ servlet stack และ <code>ForwardedHeaderTransformer</code> สำหรับ reactive stack</td>
+              </tr>
+              <tr>
+                <td class="k">NONE</td>
+                <td>ไม่ประมวลผลเฮดเดอร์ forwarded</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="code">
+          <div class="code-head"><span>application.properties</span><span class="where">Spring Boot</span></div>
+<pre>server.forward-headers-strategy=NATIVE</pre>
+        </div>
+        <div class="callout stop">
+          <span class="ttl">คำเตือนด้านความปลอดภัยจากเอกสาร</span>
+          <p>
+            เอกสารของ Spring Boot เตือนไว้เมื่อกล่าวถึงการตั้งค่า proxy ของ Tomcat ว่า
+            <strong>สามารถเชื่อถือ proxy ทุกตัวได้ด้วยการตั้ง <code>internal-proxies</code>
+            เป็นค่าว่าง แต่ห้ามทำเช่นนั้นในระบบที่ใช้งานจริง</strong>
+            เนื่องจากจะเปิดช่องให้ผู้เรียกปลอมแปลงหมายเลข IP และเฮดเดอร์ forwarded ได้
+          </p>
+          <p>
+            ข้อนี้สอดคล้องกับข้อกำหนดสองข้อในส่วนที่ 07 คือ
+            proxy ต้องเขียนทับเฮดเดอร์เสมอ และปลายทางต้องเข้าถึงได้จาก proxy เท่านั้น
+          </p>
+        </div>
+
+        <h3>สรุปค่าที่ต้องตรงกันทั้งสองฝั่ง</h3>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>รายการ</th><th>ฝั่ง IIS</th><th>ฝั่ง Spring Boot และ Tomcat</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>พอร์ตปลายทาง</td>
+                <td class="kw">ปลายทางในกฎ rewrite (ส่วน 06)</td>
+                <td class="kw">port ของ Connector</td>
+              </tr>
+              <tr>
+                <td>พาธปลายทาง</td>
+                <td class="kw">/corp-api ในกฎ rewrite</td>
+                <td class="kw">ชื่อไฟล์ WAR</td>
+              </tr>
+              <tr>
+                <td>ขอบเขตการเข้าถึง</td>
+                <td class="kw">เรียกผ่าน 127.0.0.1</td>
+                <td class="kw">address ของ Connector</td>
+              </tr>
+              <tr>
+                <td>ข้อมูลผู้เรียก</td>
+                <td class="kw">เฮดเดอร์ forwarded (ส่วน 07)</td>
+                <td class="kw">server.forward-headers-strategy</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">
+          หากค่าใดค่าหนึ่งในตารางไม่ตรงกัน อาการที่พบจะตรงกับรายการในตารางวิเคราะห์ปัญหาของส่วนที่ 09
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 12 ============ -->
     <section class="pg" id="ref" hidden data-title="อ้างอิง" data-full="แหล่งอ้างอิง">
       <div class="col refs">
         <div class="sec-head"><span class="sec-no">—</span><h2>แหล่งอ้างอิง</h2></div>
@@ -1538,6 +1794,34 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
             ค่า <code>-SslFlags</code> ทั้งสี่ค่า และตัวอย่างการผูกใบรับรองด้วย
             <code>AddSslCertificate</code><span class="doc">MICROSOFT</span><br>
             <span class="src">learn.microsoft.com/en-us/powershell/module/webadministration/</span>
+          </li>
+        </ol>
+
+        <h3>Spring Boot และ Apache Tomcat · ส่วนที่ 10</h3>
+        <ol start="17">
+          <li>
+            Spring Boot — Traditional Deployment — ขั้นตอนสร้างไฟล์ WAR ที่ deploy ได้
+            ทั้งการสืบทอด <code>SpringBootServletInitializer</code>, การเปลี่ยน packaging
+            การประกาศ <code>spring-boot-starter-tomcat</code> เป็น <code>provided</code>
+            และข้อจำกัดของ Spring WebFlux<span class="doc">SPRING</span><br>
+            <span class="src">docs.spring.io/spring-boot/how-to/deployment/traditional-deployment.html</span>
+          </li>
+          <li>
+            Spring Boot — Embedded Web Servers — property
+            <code>server.forward-headers-strategy</code> ค่า NATIVE, FRAMEWORK, NONE
+            และคำเตือนเรื่องการเชื่อถือ proxy ทุกตัว<span class="doc">SPRING</span><br>
+            <span class="src">docs.spring.io/spring-boot/how-to/webserver.html</span>
+          </li>
+          <li>
+            Apache Tomcat 11 — The Context Container — กฎการอนุมาน context path
+            จากชื่อไฟล์ WAR, กรณีพิเศษ <code>ROOT</code>, การใช้ <code>#</code>
+            และข้อไม่แนะนำให้กำหนด Context ใน <code>server.xml</code><span class="doc">APACHE</span><br>
+            <span class="src">tomcat.apache.org/tomcat-11.0-doc/config/context.html</span>
+          </li>
+          <li>
+            Apache Tomcat 11 — The HTTP Connector — แอตทริบิวต์ <code>address</code>
+            และข้อความว่าโดยค่าเริ่มต้น connector รับฟังทุกที่อยู่ในเครื่อง<span class="doc">APACHE</span><br>
+            <span class="src">tomcat.apache.org/tomcat-11.0-doc/config/http.html</span>
           </li>
         </ol>
 
