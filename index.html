@@ -1,0 +1,1632 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="กลไกการทำงานภายในของ IIS หน่วยการจัดการ การติดตั้งโมดูล การกำหนดกฎการเขียน URL และแนวทางวิเคราะห์ปัญหา สำหรับการนำเว็บแอปพลิเคชันขึ้นให้บริการบน Windows Server">
+<meta name="color-scheme" content="light dark">
+<style>
+  /* reset พื้นฐาน — เดิมมาจาก runtime ของ Artifact จึงต้องประกาศเองเมื่อโฮสต์บน GitHub Pages */
+  body { margin: 0; padding: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+<title>เจาะโครงสร้าง IIS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600&family=Kanit:wght@500;600&family=Source+Code+Pro:wght@400;500&display=swap">
+<style>
+  :root {
+    /* โทนกระดาษคราฟท์และผ้าลินิน — ไม่มีขาวจัดและไม่มีดำสนิท */
+    --paper:#F2EFE8; --surface:#FBFAF6; --surface-2:#E8E3D8;
+    --ink:#2E2B26; --ink-soft:#5E584E; --ink-faint:#918A7C;
+    --line:#DAD3C5; --line-soft:#E7E2D6;
+    --accent:#7A2E2E; --accent-soft:#F1E7E3; --on-accent:#FBFAF6;
+    --client:#4A5A6B; --client-soft:#E6E9EC;
+    --app:#6E5A3A; --app-soft:#EFE9DC;
+    --warn:#8A6524; --warn-bg:#F4ECDC;
+    --stop:#8C3A2E; --stop-bg:#F4E5E1;
+    --code-bg:#EDE9DE; --code-com:#968F80; --code-key:#7A2E2E; --code-str:#5A6B3A;
+    --radius:3px;
+    --text:760px; --wide:1080px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:#1B1916; --surface:#232019; --surface-2:#2C2820;
+      --ink:#EAE5DA; --ink-soft:#B3AB99; --ink-faint:#8A8273;
+      --line:#3A342B; --line-soft:#2F2A23;
+      --accent:#D99184; --accent-soft:#2F211E; --on-accent:#1B1916;
+      --client:#93A6B6; --client-soft:#1F252A;
+      --app:#C3A97C; --app-soft:#2A2318;
+      --warn:#D3A863; --warn-bg:#2B2416;
+      --stop:#DE9182; --stop-bg:#2F201C;
+      --code-bg:#1F1C17; --code-com:#8A8273; --code-key:#D99184; --code-str:#A8BA82;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:#1B1916; --surface:#232019; --surface-2:#2C2820;
+    --ink:#EAE5DA; --ink-soft:#B3AB99; --ink-faint:#8A8273;
+    --line:#3A342B; --line-soft:#2F2A23;
+    --accent:#D99184; --accent-soft:#2F211E; --on-accent:#1B1916;
+    --client:#93A6B6; --client-soft:#1F252A;
+    --app:#C3A97C; --app-soft:#2A2318;
+    --warn:#D3A863; --warn-bg:#2B2416;
+    --stop:#DE9182; --stop-bg:#2F201C;
+    --code-bg:#1F1C17; --code-com:#8A8273; --code-key:#D99184; --code-str:#A8BA82;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Anuphan, "Segoe UI", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.9;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: Kanit, Anuphan, system-ui, sans-serif;
+    font-weight: 500;
+    text-wrap: balance;
+    line-height: 1.42;
+    margin: 0;
+  }
+  code, pre, .mono { font-family: "Source Code Pro", ui-monospace, "Cascadia Mono", monospace; font-variant-numeric: tabular-nums; }
+
+  /* ---------- แถบบน ---------- */
+  .topbar { position: sticky; top: 0; z-index: 20; background: var(--paper); border-bottom: 1px solid var(--line); }
+  .topbar-in { max-width: var(--wide); margin: 0 auto; padding-inline: 20px; padding-block: 10px 0; }
+  .topbar-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; }
+  .mark { font-family: Kanit, Anuphan, sans-serif; font-weight: 600; font-size: 14.5px; white-space: nowrap; }
+  .mark span { color: var(--accent); }
+  .counter { font-family: "Source Code Pro", monospace; font-size: 11.5px; color: var(--ink-faint); white-space: nowrap; }
+
+  .pagenav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: thin; margin-top: 8px; padding-bottom: 2px; }
+  .pagenav button {
+    font-family: "Source Code Pro", monospace; font-size: 11.5px;
+    color: var(--ink-soft); background: transparent; border: 0;
+    border-bottom: 2px solid transparent;
+    padding: 5px 10px 6px; white-space: nowrap; cursor: pointer;
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .pagenav button .num { color: var(--ink-faint); font-size: 10px; }
+  .pagenav button:hover { color: var(--accent); }
+  .pagenav button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .pagenav button[aria-current="true"] { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+  .pagenav button[aria-current="true"] .num { color: var(--accent); }
+
+  /* ---------- โครงหน้า ---------- */
+  .page { max-width: var(--wide); margin: 0 auto; padding-inline: 20px; padding-block: 0 64px; }
+  .col { max-width: var(--text); margin-inline: auto; }
+  .breakout { max-width: var(--wide); margin-inline: auto; }
+
+  .pg { padding-block: 44px 0; }
+
+  .cover { padding-block: 52px 8px; }
+  .kicker {
+    font-family: "Source Code Pro", monospace; font-size: 11px;
+    letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px;
+  }
+  h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 600; letter-spacing: -.015em; }
+  .dek { margin-top: 16px; color: var(--ink-soft); font-size: 17px; max-width: 60ch; }
+  .cover-meta {
+    margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; gap: 10px 32px;
+    font-family: "Source Code Pro", monospace; font-size: 11.5px; color: var(--ink-faint);
+  }
+  .cover-meta b { color: var(--ink-soft); font-weight: 500; }
+
+  .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; }
+  .sec-no { font-family: "Source Code Pro", monospace; font-size: 12px; font-weight: 500; color: var(--accent); flex-shrink: 0; }
+  .sec-sub { color: var(--ink-soft); font-size: 15px; margin: 0 0 28px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+  h2 { font-size: clamp(23px, 3.2vw, 30px); font-weight: 600; letter-spacing: -.01em; }
+  h3 { font-size: 19px; font-weight: 600; margin-top: 40px; margin-bottom: 12px; }
+  h4 { font-size: 15.5px; font-weight: 600; margin-top: 24px; margin-bottom: 7px; }
+  p { margin: 0 0 15px; }
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 8px; }
+  li::marker { color: var(--ink-faint); }
+  a { color: var(--accent); text-underline-offset: 2px; }
+  strong { font-weight: 600; }
+  .note { font-size: 14px; color: var(--ink-soft); }
+
+  p code, li code, td code, .callout code, dd code, figcaption code, .note code {
+    background: var(--code-bg); border: 1px solid var(--line-soft); border-radius: 3px;
+    padding: 1px 5px; font-size: .85em; word-break: break-word;
+  }
+
+  /* ---------- รูป ---------- */
+  figure { margin: 26px 0 10px; }
+  figure svg { display: block; width: 100%; max-width: 100%; height: auto; }
+  .fig-frame { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 20px 18px; }
+  figcaption { margin-top: 12px; font-size: 13.5px; color: var(--ink-soft); line-height: 1.7; max-width: 74ch; }
+  figcaption b { color: var(--ink); font-weight: 600; }
+
+  svg .bx { fill: var(--surface); stroke: var(--line); stroke-width: 1.2; }
+  svg .bx-a { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.4; }
+  svg .bx-c { fill: var(--client-soft); stroke: var(--client); stroke-width: 1.2; }
+  svg .bx-p { fill: var(--app-soft); stroke: var(--app); stroke-width: 1.2; }
+  svg .band { fill: var(--surface-2); stroke: none; }
+  svg .t  { fill: var(--ink); font-family: Anuphan, sans-serif; font-size: 13px; }
+  svg .tm { fill: var(--ink-soft); font-family: "Source Code Pro", monospace; font-size: 11px; }
+  svg .tl { fill: var(--ink-faint); font-family: "Source Code Pro", monospace; font-size: 10px; letter-spacing: .1em; }
+  svg .ta { fill: var(--accent); font-family: "Source Code Pro", monospace; font-size: 11px; }
+  svg .ln { stroke: var(--ink-faint); stroke-width: 1.3; fill: none; }
+  svg .ln-a { stroke: var(--accent); stroke-width: 1.6; fill: none; }
+  svg .ln-c { stroke: var(--client); stroke-width: 1.4; fill: none; }
+  svg .ln-p { stroke: var(--app); stroke-width: 1.4; fill: none; }
+  svg .dash { stroke-dasharray: 4 4; }
+  svg .hd  { fill: var(--ink-faint); }
+  svg .hd-a { fill: var(--accent); }
+  svg .hd-c { fill: var(--client); }
+  svg .hd-p { fill: var(--app); }
+
+  /* ---------- ตาราง ---------- */
+  .tbl { overflow-x: auto; margin: 20px 0 8px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 560px; }
+  th, td { text-align: left; padding: 11px 15px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  thead th {
+    font-family: "Source Code Pro", monospace; font-size: 10.5px; letter-spacing: .08em;
+    text-transform: uppercase; font-weight: 500; color: var(--ink-faint);
+    background: var(--surface-2); border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.k { font-family: "Source Code Pro", monospace; font-size: 12.5px; white-space: nowrap; }
+  td.kw { font-family: "Source Code Pro", monospace; font-size: 12.5px; }
+  td.n { font-family: "Source Code Pro", monospace; font-size: 12px; color: var(--accent); font-weight: 500; width: 1%; }
+
+  /* ---------- นิยาม ---------- */
+  dl.defs { margin: 18px 0 8px; border-top: 1px solid var(--line); }
+  dl.defs > div { display: grid; grid-template-columns: 210px minmax(0,1fr); gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--line-soft); }
+  @media (max-width: 620px) { dl.defs > div { grid-template-columns: minmax(0,1fr); gap: 4px; } }
+  dl.defs dt { font-family: Kanit, Anuphan, sans-serif; font-weight: 600; font-size: 15.5px; }
+  dl.defs dt small { display: block; font-family: "Source Code Pro", monospace; font-size: 10.5px; font-weight: 400; color: var(--ink-faint); letter-spacing: .04em; margin-top: 1px; }
+  dl.defs dd { margin: 0; font-size: 14.5px; line-height: 1.72; }
+  dl.defs dd + dd { margin-top: 7px; }
+  dl.defs .eg {
+    padding: 8px 12px; background: var(--surface-2); border-radius: 3px;
+    font-family: "Source Code Pro", monospace; font-size: 12px; color: var(--ink-soft); line-height: 1.7;
+  }
+
+  /* ---------- โค้ด ---------- */
+  .code { background: var(--code-bg); border: 1px solid var(--line); border-radius: var(--radius); margin: 15px 0 20px; overflow: hidden; }
+  .code-head {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 7px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2);
+    font-family: "Source Code Pro", monospace; font-size: 11px; color: var(--ink-soft);
+  }
+  .code-head .where { color: var(--ink-faint); font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
+  .code pre { margin: 0; padding: 14px 16px; overflow-x: auto; font-size: 12.5px; line-height: 1.75; color: var(--ink); }
+  .code .c { color: var(--code-com); }
+  .code .t { color: var(--code-key); }
+  .code .s { color: var(--code-str); }
+
+  /* ---------- callout ---------- */
+  .callout {
+    border: 1px solid var(--line); background: var(--warn-bg);
+    border-radius: var(--radius); padding: 16px 20px; margin: 22px 0; font-size: 14.5px;
+  }
+  .callout.stop { background: var(--stop-bg); }
+  .callout.stop .ttl { color: var(--stop); }
+  .callout.tip { background: var(--accent-soft); }
+  .callout.tip .ttl { color: var(--accent); }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  .callout .ttl {
+    font-family: "Source Code Pro", monospace; font-size: 10.5px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--warn); display: block; margin-bottom: 6px;
+  }
+
+  /* ---------- ขั้นตอน ---------- */
+  .steps { counter-reset: st; margin-top: 10px; }
+  .st { position: relative; padding-left: 44px; padding-bottom: 30px; }
+  .st:last-child { padding-bottom: 0; }
+  .st::before {
+    counter-increment: st; content: counter(st);
+    position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--surface-2); color: var(--ink-soft);
+    font-family: "Source Code Pro", monospace; font-size: 12.5px; font-weight: 500;
+    display: grid; place-items: center;
+  }
+  .st h4 { margin-top: 0; }
+  .st > :last-child { margin-bottom: 0; }
+  .verify {
+    margin-top: 12px; padding: 12px 16px; border: 1px solid var(--line-soft);
+    background: var(--accent-soft); border-radius: var(--radius); font-size: 13.5px; line-height: 1.7;
+  }
+  .verify b {
+    font-family: "Source Code Pro", monospace; font-size: 10px; letter-spacing: .09em;
+    text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 3px;
+  }
+
+  /* ---------- อ้างอิง ---------- */
+  .refs { font-size: 14px; }
+  .refs h3 { font-size: 14px; color: var(--ink-soft); margin-top: 26px; margin-bottom: 8px; }
+  .refs ol { padding-left: 22px; }
+  .refs li { margin-bottom: 9px; line-height: 1.65; }
+  .refs .src { color: var(--ink-faint); font-family: "Source Code Pro", monospace; font-size: 10.5px; word-break: break-all; }
+  .doc {
+    display: inline-block; font-family: "Source Code Pro", monospace; font-size: 9.5px;
+    letter-spacing: .06em; padding: 0 5px; border: 1px solid var(--accent); color: var(--accent);
+    border-radius: 3px; margin-left: 6px; vertical-align: 1px;
+  }
+  .closing { border-top: 1px solid var(--line); margin-top: 30px; padding-top: 18px; font-size: 13px; color: var(--ink-faint); }
+
+  /* ---------- ปุ่มเปลี่ยนหน้า ---------- */
+  .pager {
+    max-width: var(--text); margin: 56px auto 0; padding-top: 22px; border-top: 1px solid var(--line);
+    display: flex; gap: 14px; align-items: stretch;
+  }
+  .pager button {
+    flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 3px;
+    padding: 13px 17px; border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--surface); color: var(--ink); cursor: pointer;
+    font-family: Anuphan, sans-serif; text-align: left;
+    transition: border-color .15s, background .15s;
+  }
+  .pager button:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  .pager button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .pager button:disabled { opacity: .34; cursor: default; }
+  .pager button.next { text-align: right; align-items: flex-end; }
+  .pager .dir { font-family: "Source Code Pro", monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+  .pager .ttl2 { font-family: Kanit, Anuphan, sans-serif; font-size: 14.5px; font-weight: 600; }
+  @media (max-width: 520px) { .pager { flex-direction: column; } .pager button.next { text-align: left; align-items: flex-start; } }
+
+  .hint {
+    max-width: var(--text); margin: 14px auto 0; text-align: center;
+    font-family: "Source Code Pro", monospace; font-size: 10.5px; color: var(--ink-faint);
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="topbar-row">
+      <div class="mark">เจาะโครงสร้าง <span>IIS</span></div>
+      <div class="counter" id="counter">หน้า 1 จาก 11</div>
+    </div>
+    <nav class="pagenav" id="pagenav" aria-label="สารบัญ"></nav>
+  </div>
+</div>
+
+<div class="page">
+  <main id="book">
+
+    <!-- ============ หน้า 1 ============ -->
+    <section class="pg cover" id="s0" data-title="ภาพรวม" data-full="ภาพรวมและขอบเขต">
+      <div class="col">
+        <div class="kicker">Internet Information Services</div>
+        <h1>เจาะโครงสร้าง IIS</h1>
+        <p class="dek">
+          กลไกการทำงานภายในของ IIS หน่วยการจัดการ การติดตั้งโมดูล การกำหนดกฎการเขียน URL
+          และแนวทางวิเคราะห์ปัญหา สำหรับการนำเว็บแอปพลิเคชันขึ้นให้บริการบน Windows Server
+        </p>
+        <div class="cover-meta">
+          <div><b>ขอบเขต</b> เฉพาะชั้น IIS</div>
+          <div><b>เนื้อหา</b> 9 ส่วน · แผนภาพ 4 รูป</div>
+          <div><b>อ้างอิง</b> เอกสาร Microsoft Learn</div>
+        </div>
+      </div>
+
+      <div class="col">
+        <h3>วัตถุประสงค์ของเอกสาร</h3>
+        <p>
+          เอกสารฉบับนี้อธิบาย <strong>ชั้น IIS เพียงชั้นเดียว</strong> คือส่วนที่รับ request จากผู้ใช้
+          ตัดสินใจว่าจะตอบด้วยไฟล์บนดิสก์หรือส่งต่อไปยังเซิร์ฟเวอร์อื่น และบันทึกผลลัพธ์ไว้
+        </p>
+        <p>
+          สิ่งที่อยู่นอกขอบเขต ได้แก่ การพัฒนาโปรแกรม การตั้งค่าเซิร์ฟเวอร์ปลายทางที่ IIS ส่ง request ไปให้
+          และการออกแบบฐานข้อมูล เนื้อหาทั้งหมดจึงใช้ได้โดยไม่ขึ้นกับว่าแอปพลิเคชันเบื้องหลัง
+          พัฒนาด้วยเทคโนโลยีใด
+        </p>
+        <p>
+          ชื่อ site พาธของไฟล์ และหมายเลขพอร์ตที่ปรากฏในคำสั่งทั้งหมด เป็น
+          <strong>ค่าตัวอย่างที่กำหนดขึ้นเพื่อให้คำสั่งเป็นรูปธรรม</strong>
+          เมื่อนำไปใช้งานจริงให้แทนที่ด้วยค่าที่องค์กรกำหนด
+        </p>
+
+        <h3>ค่าอ้างอิงที่ใช้ตลอดเอกสาร</h3>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>รายการ</th><th>ค่าที่ใช้</th></tr></thead>
+            <tbody>
+              <tr><td>โดเมนที่ผู้ใช้เรียก</td><td class="k">https://app.corp.local</td></tr>
+              <tr><td>IIS Site</td><td class="k">corp-web</td></tr>
+              <tr><td>Application Pool</td><td class="k">CorpWebPool</td></tr>
+              <tr><td>โฟลเดอร์ไฟล์ static</td><td class="k">D:\apps\corp-web</td></tr>
+              <tr><td>เซิร์ฟเวอร์ปลายทางของ proxy</td><td class="k">http://127.0.0.1:8080</td></tr>
+              <tr><td>พาธบนเซิร์ฟเวอร์ปลายทาง</td><td class="k">/corp-api</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>โครงสร้างเนื้อหา</h3>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>ส่วน</th><th>หัวข้อ</th><th>สาระสำคัญ</th></tr></thead>
+            <tbody>
+              <tr><td class="n">01–03</td><td>พื้นฐานและสถาปัตยกรรม</td><td>องค์ประกอบภายในของ IIS หน่วยการจัดการ และหน้าที่สองประการที่ IIS รับผิดชอบ</td></tr>
+              <tr><td class="n">04–06</td><td>การติดตั้งและกำหนดค่า</td><td>ติดตั้งโมดูล สร้าง Application Pool และ Site และกำหนดกฎใน web.config</td></tr>
+              <tr><td class="n">07–09</td><td>การใช้งานจริง</td><td>การส่งต่อข้อมูลผู้เรียก การกำหนด HTTPS และแนวทางวิเคราะห์ปัญหา</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 2 ============ -->
+    <section class="pg" id="s1" hidden data-title="องค์ประกอบ" data-full="องค์ประกอบภายในของ IIS">
+      <div class="col">
+        <div class="sec-head"><span class="sec-no">01</span><h2>องค์ประกอบภายในของ IIS</h2></div>
+        <p class="sec-sub">ความเข้าใจในส่วนนี้เป็นพื้นฐานของการวิเคราะห์ปัญหาในส่วนที่ 09</p>
+        <p>
+          IIS มักถูกเข้าใจว่าเป็นโปรแกรมเดียว แต่ในทางเทคนิคประกอบด้วยองค์ประกอบสามส่วนที่อยู่คนละระดับของระบบปฏิบัติการ
+          ส่วนหนึ่งทำงานในเคอร์เนลของ Windows ส่วนหนึ่งทำงานเป็น Windows Service
+          และอีกส่วนเป็นโปรเซสที่ถูกสร้างและยุติตามปริมาณการใช้งาน
+        </p>
+      </div>
+
+      <div class="breakout">
+        <figure>
+          <div class="fig-frame">
+            <svg viewBox="0 0 760 430" role="img" aria-label="แผนภาพองค์ประกอบของ IIS แบ่งเป็นชั้นเคอร์เนลที่มี HTTP.sys กับคิวและแคช และชั้นผู้ใช้ที่มี svchost.exe ซึ่งบรรจุ W3SVC และ WAS อ่านไฟล์ applicationHost.config แล้วสร้าง worker process w3wp.exe">
+              <defs>
+                <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd"/>
+                </marker>
+                <marker id="a1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
+                </marker>
+                <marker id="a1c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-c"/>
+                </marker>
+              </defs>
+
+              <rect class="bx-c" x="286" y="14" width="188" height="44" rx="3"/>
+              <text class="t" x="380" y="41" text-anchor="middle">เบราว์เซอร์ของผู้ใช้</text>
+              <line class="ln-c" x1="380" y1="58" x2="380" y2="112" marker-end="url(#a1c)"/>
+              <text class="tm" x="392" y="90">:443</text>
+
+              <rect class="band" x="30" y="118" width="700" height="104" rx="4"/>
+              <text class="tl" x="44" y="137">KERNEL MODE</text>
+              <rect class="bx-a" x="60" y="146" width="196" height="56" rx="3"/>
+              <text class="t" x="158" y="170" text-anchor="middle">HTTP.sys</text>
+              <text class="tm" x="158" y="188" text-anchor="middle">รับฟังพอร์ต 80 / 443</text>
+
+              <rect class="bx" x="296" y="146" width="172" height="56" rx="3"/>
+              <text class="t" x="382" y="170" text-anchor="middle">คิวของ request</text>
+              <text class="tm" x="382" y="188" text-anchor="middle">รอ worker ว่าง</text>
+
+              <rect class="bx" x="508" y="146" width="172" height="56" rx="3"/>
+              <text class="t" x="594" y="170" text-anchor="middle">แคชระดับเคอร์เนล</text>
+              <text class="tm" x="594" y="188" text-anchor="middle">ตอบโดยไม่ขึ้น user mode</text>
+
+              <line class="ln" x1="256" y1="174" x2="290" y2="174" marker-end="url(#a1)"/>
+              <line class="ln" x1="468" y1="174" x2="502" y2="174" marker-end="url(#a1)"/>
+
+              <line class="ln dash" x1="30" y1="238" x2="730" y2="238"/>
+
+              <rect class="band" x="30" y="252" width="700" height="162" rx="4"/>
+              <text class="tl" x="44" y="271">USER MODE</text>
+
+              <rect class="bx" x="60" y="280" width="256" height="74" rx="3"/>
+              <text class="tm" x="72" y="298">svchost.exe</text>
+              <rect class="bx" x="74" y="306" width="112" height="36" rx="3"/>
+              <text class="t" x="130" y="329" text-anchor="middle">W3SVC</text>
+              <rect class="bx" x="196" y="306" width="106" height="36" rx="3"/>
+              <text class="t" x="249" y="329" text-anchor="middle">WAS</text>
+
+              <rect class="bx" x="60" y="368" width="256" height="34" rx="3"/>
+              <text class="tm" x="188" y="390" text-anchor="middle">applicationHost.config</text>
+              <line class="ln" x1="250" y1="368" x2="250" y2="348" marker-end="url(#a1)"/>
+              <text class="tm" x="258" y="364">อ่าน</text>
+
+              <rect class="bx-a" x="470" y="272" width="210" height="50" rx="3"/>
+              <text class="t" x="575" y="295" text-anchor="middle">w3wp.exe</text>
+              <text class="tm" x="575" y="312" text-anchor="middle">pool ที่ 1</text>
+              <rect class="bx" x="470" y="342" width="210" height="50" rx="3"/>
+              <text class="t" x="575" y="365" text-anchor="middle">w3wp.exe</text>
+              <text class="tm" x="575" y="382" text-anchor="middle">pool ที่ 2</text>
+
+              <path class="ln-a" d="M316 330 L 400 330 L 400 300 L 464 300" marker-end="url(#a1a)"/>
+              <text class="ta" x="322" y="322">สร้าง / รีไซเคิล</text>
+
+              <path class="ln dash" d="M130 306 L 130 242" marker-end="url(#a1)"/>
+              <text class="tm" x="40" y="262">ตั้งค่า HTTP.sys</text>
+
+              <path class="ln" d="M382 202 L 382 256 L 430 256 L 430 288 L 464 288" marker-end="url(#a1a)"/>
+              <text class="tm" x="392" y="232">ส่ง request</text>
+            </svg>
+          </div>
+          <figcaption>
+            <b>รูปที่ 1 — ตำแหน่งขององค์ประกอบแต่ละส่วน</b> ·
+            request เข้าสู่ระบบที่ HTTP.sys ซึ่งเป็น device driver ระดับเคอร์เนล ไม่ใช่โปรแกรมที่เปิดใช้งานได้โดยตรง
+            ส่วน W3SVC และ WAS ทำงานภายใต้บัญชี <code>LocalSystem</code> ใน <code>svchost.exe</code> เดียวกัน
+            และ <code>w3wp.exe</code> คือโปรเซสที่ประมวลผล request จริง หนึ่งโปรเซสต่อหนึ่ง Application Pool
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="col">
+        <dl class="defs">
+          <div>
+            <dt>HTTP.sys<small>KERNEL-MODE DRIVER</small></dt>
+            <dd>
+              องค์ประกอบที่ <strong>รับฟังพอร์ต 80 และ 443 โดยตรง</strong>
+              เอกสารของ Microsoft ระบุคุณประโยชน์ไว้สามประการ ได้แก่
+              การแคชระดับเคอร์เนล ซึ่งตอบ request ที่แคชไว้โดยไม่ต้องสลับไปยัง user mode,
+              การจัดคิวระดับเคอร์เนล ซึ่งเก็บ request ไว้จนกว่าจะมี worker process พร้อมรับ
+              และการกรองความปลอดภัยเบื้องต้น
+            </dd>
+          </div>
+          <div>
+            <dt>W3SVC<small>WWW PUBLISHING SERVICE</small></dt>
+            <dd>
+              ตั้งแต่ IIS 7 เป็นต้นมา W3SVC <strong>ไม่ได้ทำหน้าที่จัดการ worker process อีกต่อไป</strong>
+              บทบาทที่คงเหลือคือเป็น listener adapter ของ HTTP.sys ได้แก่ การกำหนดค่าให้ HTTP.sys
+              การปรับปรุงค่าเมื่อ configuration เปลี่ยนแปลง และการแจ้ง WAS เมื่อมี request เข้าสู่คิว
+            </dd>
+          </div>
+          <div>
+            <dt>WAS<small>WINDOWS PROCESS ACTIVATION SERVICE</small></dt>
+            <dd>
+              องค์ประกอบที่ <strong>อ่าน <code>applicationHost.config</code> และบริหารจัดการ Application Pool
+              พร้อมทั้ง worker process</strong> เมื่อ pool ใดยังไม่มี worker process WAS จะเป็นผู้เริ่มการทำงานให้
+              และเมื่อไฟล์ configuration เปลี่ยนแปลง WAS จะได้รับการแจ้งเตือนและปรับปรุงค่าตาม
+            </dd>
+          </div>
+          <div>
+            <dt>w3wp.exe<small>WORKER PROCESS</small></dt>
+            <dd>
+              โปรเซสที่ประมวลผล request จริง โดยค่าเริ่มต้นมีหนึ่งโปรเซสต่อหนึ่ง Application Pool
+              ภายในประกอบด้วยลำดับของโมดูลที่ทำงานต่อเนื่องกัน ได้แก่ โมดูล static file,
+              โมดูล rewrite และโมดูล proxy เป็นต้น
+            </dd>
+          </div>
+        </dl>
+
+        <h3>ลำดับการประมวลผล request</h3>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>ขั้น</th><th>องค์ประกอบ</th><th>การทำงาน</th></tr></thead>
+            <tbody>
+              <tr><td class="n">1</td><td class="k">HTTP.sys</td><td>ดักจับ request ที่ส่งมาจากเบราว์เซอร์</td></tr>
+              <tr><td class="n">2</td><td class="k">HTTP.sys → WAS</td><td>ติดต่อ WAS เพื่อขอข้อมูลจาก configuration store</td></tr>
+              <tr><td class="n">3</td><td class="k">WAS</td><td>ร้องขอข้อมูลการตั้งค่าจาก <code>applicationHost.config</code></td></tr>
+              <tr><td class="n">4</td><td class="k">W3SVC</td><td>รับข้อมูลการตั้งค่าของ application pool และ site</td></tr>
+              <tr><td class="n">5</td><td class="k">W3SVC → HTTP.sys</td><td>นำข้อมูลการตั้งค่าไปกำหนดให้ HTTP.sys</td></tr>
+              <tr><td class="n">6</td><td class="k">WAS</td><td>เริ่มการทำงานของ worker process สำหรับ pool ที่เกี่ยวข้อง</td></tr>
+              <tr><td class="n">7</td><td class="k">w3wp.exe</td><td>ประมวลผลและส่ง response กลับไปยัง HTTP.sys</td></tr>
+              <tr><td class="n">8</td><td class="k">HTTP.sys</td><td>ส่ง response ถึงไคลเอนต์</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note" style="margin-top:10px">
+          ขั้นที่ 2 ถึง 5 เกิดขึ้นเฉพาะกรณีที่ยังไม่มีข้อมูลในแคช หรือ configuration เพิ่งมีการเปลี่ยนแปลง
+          request ในลำดับถัดไปจะเข้าสู่คิวของ worker process ที่ทำงานอยู่แล้วโดยตรง
+        </p>
+
+        <div class="callout tip">
+          <span class="ttl">ข้อสังเกตที่ใช้ในการวิเคราะห์ปัญหา</span>
+          <p>
+            request บางส่วนถูกปฏิเสธตั้งแต่ชั้น HTTP.sys ซึ่งยังไม่ถึง <code>w3wp.exe</code>
+            จึง <strong>ไม่ปรากฏในไฟล์บันทึกของ IIS</strong> แต่ถูกบันทึกในไฟล์ <code>httperr</code> แทน
+            ข้อเท็จจริงนี้อธิบายอาการที่ผู้ใช้แจ้งว่าเข้าใช้งานไม่ได้ แต่ไม่พบข้อมูลใดในไฟล์บันทึก
+            รายละเอียดอยู่ในส่วนที่ 09
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 3 ============ -->
+    <section class="pg" id="s2" hidden data-title="หน่วยจัดการ" data-full="หน่วยการจัดการทั้งสี่">
+      <div class="col">
+        <div class="sec-head"><span class="sec-no">02</span><h2>หน่วยการจัดการทั้งสี่</h2></div>
+        <p class="sec-sub">Site, Application และ Virtual Directory เป็นแกนของ URL ส่วน Application Pool เป็นแกนของโปรเซส ทั้งสองแกนเป็นอิสระต่อกัน</p>
+        <p>
+          ความเข้าใจที่คลาดเคลื่อนที่พบบ่อยที่สุดคือการมองว่า Application Pool อยู่ภายใต้ Site
+          ในความเป็นจริง Site กำหนดว่า URL ใดแมปไปยังไฟล์ใด ขณะที่ Pool กำหนดว่าโค้ดนั้นทำงานในโปรเซสใด
+          และ Application จาก Site ที่ต่างกันสามารถใช้ Pool ร่วมกันได้
+        </p>
+      </div>
+
+      <div class="breakout">
+        <figure>
+          <div class="fig-frame">
+            <svg viewBox="0 0 760 340" role="img" aria-label="แผนภาพแสดงว่า Site ประกอบด้วย Application และ Virtual Directory ซึ่งเป็นแกนของ URL ขณะที่ Application Pool เป็นแกนของโปรเซสแยกต่างหาก และแต่ละ Application ผูกกับ Pool ด้วยเส้นประ">
+              <defs>
+                <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd"/>
+                </marker>
+                <marker id="a2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
+                </marker>
+              </defs>
+
+              <text class="tl" x="30" y="22">แกนของ URL และไฟล์</text>
+              <text class="tl" x="500" y="22">แกนของโปรเซส</text>
+
+              <rect class="bx" x="30" y="36" width="400" height="278" rx="4"/>
+              <text class="t" x="46" y="62" style="font-weight:600">Site · corp-web</text>
+              <text class="tm" x="46" y="82">binding  *:443:app.corp.local</text>
+              <text class="tm" x="46" y="100">root     D:\apps\corp-web</text>
+
+              <rect class="bx-a" x="52" y="118" width="356" height="52" rx="3"/>
+              <text class="t" x="68" y="140">Application  /</text>
+              <text class="tm" x="68" y="158">D:\apps\corp-web · ไฟล์ static ของเว็บ</text>
+
+              <rect class="bx" x="52" y="182" width="356" height="52" rx="3"/>
+              <text class="t" x="68" y="204">Application  /reports</text>
+              <text class="tm" x="68" y="222">D:\apps\corp-reports · กำหนด pool แยกได้</text>
+
+              <rect class="bx" x="72" y="246" width="336" height="52" rx="3"/>
+              <text class="t" x="88" y="268">Virtual Directory  /reports/files</text>
+              <text class="tm" x="88" y="286">E:\archive · อยู่คนละไดรฟ์ได้</text>
+
+              <rect class="bx-a" x="500" y="118" width="230" height="52" rx="3"/>
+              <text class="t" x="516" y="140">CorpWebPool</text>
+              <text class="tm" x="516" y="158">w3wp.exe · No Managed Code</text>
+
+              <rect class="bx" x="500" y="182" width="230" height="52" rx="3"/>
+              <text class="t" x="516" y="204">ReportsPool</text>
+              <text class="tm" x="516" y="222">w3wp.exe · หน่วยความจำแยกกัน</text>
+
+              <path class="ln-a dash" d="M408 144 L 494 144" marker-end="url(#a2a)"/>
+              <path class="ln dash" d="M408 208 L 494 208" marker-end="url(#a2)"/>
+              <path class="ln dash" d="M408 272 L 462 272 L 462 216 L 494 216" marker-end="url(#a2)"/>
+
+              <text class="tl" x="500" y="266">ขอบเขตความเสียหาย</text>
+              <text class="tm" x="500" y="288">แอปใน pool หนึ่งหยุดทำงาน</text>
+              <text class="tm" x="500" y="306">ไม่กระทบ pool อื่น</text>
+            </svg>
+          </div>
+          <figcaption>
+            <b>รูปที่ 2 — ความสัมพันธ์ระหว่างสองแกน</b> ·
+            เส้นประแสดงการผูก Application เข้ากับ Pool จะสังเกตได้ว่า Virtual Directory ไม่มีเส้นเชื่อมของตนเอง
+            เนื่องจากทำงานในโปรเซสของ Application ที่ครอบอยู่ ข้อแตกต่างนี้เป็นเกณฑ์ในการตัดสินใจว่าควรสร้างหน่วยใด
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="col">
+        <dl class="defs">
+          <div>
+            <dt>Site</dt>
+            <dd>หน่วยระดับบนสุด มี binding เป็นของตนเอง และมี physical path เป็นรากของไฟล์</dd>
+            <dd class="eg">corp-web → D:\apps\corp-web → *:443:app.corp.local</dd>
+          </div>
+          <div>
+            <dt>Application</dt>
+            <dd>ขอบเขตเชิงตรรกะภายใน site ข้อแตกต่างจากโฟลเดอร์ทั่วไปคือ <strong>สามารถกำหนด Application Pool ของตนเองได้</strong></dd>
+            <dd class="eg">/reports → D:\apps\corp-reports → pool "ReportsPool"</dd>
+          </div>
+          <div>
+            <dt>Virtual Directory</dt>
+            <dd>การแมป URL ไปยังโฟลเดอร์จริงที่อยู่คนละตำแหน่งหรือคนละไดรฟ์ ต้องอยู่ภายใน Application เสมอ และ<strong>ใช้ pool ของ Application ที่ครอบอยู่</strong></dd>
+            <dd class="eg">/reports/files → E:\archive</dd>
+          </div>
+          <div>
+            <dt>Application Pool</dt>
+            <dd>ขอบเขตเชิงโปรเซส เทียบเท่ากับ <code>w3wp.exe</code> หนึ่งโปรเซส แอปพลิเคชันที่อยู่คนละ pool แยกหน่วยความจำและสิทธิ์ออกจากกันโดยสมบูรณ์</dd>
+            <dd>เอกสารของ Microsoft ระบุว่า pool ถูกออกแบบมาเพื่อ <strong>ป้องกันไม่ให้แอปพลิเคชันหนึ่งส่งผลกระทบต่อแอปพลิเคชันอื่นบนเครื่องเดียวกัน</strong></dd>
+          </div>
+        </dl>
+
+        <h3>Binding — องค์ประกอบสามส่วนที่ต้องไม่ซ้ำกัน</h3>
+        <p>
+          Binding กำหนดว่า request ลักษณะใดจะเข้าสู่ site นี้ ประกอบด้วย <strong>IP : พอร์ต : ชื่อโฮสต์</strong>
+          ชุดข้อมูลสามส่วนนี้ต้องไม่ซ้ำกับ site อื่นบนเครื่องเดียวกัน ซึ่งเป็นเหตุผลที่ระบบหลายระบบ
+          สามารถใช้พอร์ต 443 ร่วมกันได้ตราบใดที่ชื่อโฮสต์แตกต่างกัน
+        </p>
+        <div class="callout">
+          <span class="ttl">ข้อผิดพลาดที่พบบ่อย</span>
+          <p>
+            การกำหนด binding ของ IIS ให้ตรงกับพอร์ตที่เซิร์ฟเวอร์ปลายทางใช้งาน เช่นกำหนด site ไว้ที่ 8080
+            ขณะที่เซิร์ฟเวอร์ปลายทางก็รับฟังที่ 8080 เช่นกัน จะทำให้พอร์ตขัดแย้งกัน
+            และมีบริการหนึ่งไม่สามารถเริ่มทำงานได้ binding ของ IIS ควรเป็น<strong>พอร์ตที่ผู้ใช้เรียกเท่านั้น</strong>
+            ส่วนพอร์ตของเซิร์ฟเวอร์ปลายทางให้ระบุในกฎการส่งต่อ ตามส่วนที่ 06
+          </p>
+        </div>
+
+        <h3>ลำดับชั้นของไฟล์ configuration</h3>
+        <p>
+          ค่าที่อยู่ในลำดับล่างมีผลเหนือค่าที่อยู่ในลำดับบน ประเด็นสำคัญคือ <code>web.config</code>
+          อยู่ภายใน physical path ของแอปพลิเคชัน จึง <strong>ถูกนำติดไปพร้อมกับไฟล์</strong>
+          เมื่อคัดลอกโฟลเดอร์ไปยังเครื่องใหม่ กฎ rewrite จะถูกนำไปด้วยโดยอัตโนมัติ
+        </p>
+        <div class="code">
+          <div class="code-head"><span>ลำดับล่างมีผลเหนือกว่า</span><span class="where">configuration hierarchy</span></div>
+<pre><span class="c">machine.config                      ระดับ .NET ทั้งเครื่อง</span>
+<span class="t">applicationHost.config              ไฟล์หลักของ IIS — WAS อ่านไฟล์นี้</span>
+<span class="c">  %windir%\system32\inetsrv\config\</span>
+<span class="t">D:\apps\corp-web\web.config         ระดับ site — ตำแหน่งของกฎ rewrite</span>
+<span class="t">D:\apps\corp-web\sub\web.config     ระดับโฟลเดอร์ย่อย</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 4 ============ -->
+    <section class="pg" id="s3" hidden data-title="หน้าที่ของ IIS" data-full="หน้าที่สองประการของ IIS">
+      <div class="col">
+        <div class="sec-head"><span class="sec-no">03</span><h2>หน้าที่สองประการของ IIS</h2></div>
+        <p class="sec-sub">ส่งไฟล์จากดิสก์ และส่งต่อ request ไปยังเซิร์ฟเวอร์ปลายทาง</p>
+        <p>
+          เมื่อ request เข้าสู่ <code>w3wp.exe</code> ตามลำดับในส่วนที่ 01 แล้ว
+          IIS จะตัดสินใจอย่างใดอย่างหนึ่งในสองทางนี้เสมอ ทางแรกคือ
+          <strong>อ่านไฟล์จากดิสก์แล้วส่งกลับไปโดยตรง</strong> ซึ่งใช้กับไฟล์ HTML, JavaScript, CSS
+          และไฟล์ภาพ ทางที่สองคือ <strong>ส่ง request ต่อไปยังเซิร์ฟเวอร์อื่นแล้วนำผลลัพธ์กลับมาให้ผู้ใช้</strong>
+          ซึ่งคือการทำ reverse proxy
+        </p>
+        <p>
+          ตัวที่กำหนดว่าจะเลือกทางใด คือกฎการเขียน URL ที่จะกล่าวถึงในส่วนที่ 06
+          ผลลัพธ์ที่ได้คือ <strong>ทุกองค์ประกอบอยู่ภายใต้โดเมนเดียวกัน</strong> ในสายตาของเบราว์เซอร์
+          จึงไม่จำเป็นต้องกำหนดค่า CORS และ cookie ของการเข้าสู่ระบบทำงานได้ตามปกติ
+        </p>
+      </div>
+
+      <div class="breakout">
+        <figure>
+          <div class="fig-frame">
+            <svg viewBox="0 0 760 300" role="img" aria-label="แผนภาพเส้นทาง request สองเส้น เส้นแรกขอหน้าเว็บแล้ว IIS ตอบด้วยไฟล์จากดิสก์ เส้นที่สองขอ /api แล้ว IIS เขียน URL ใหม่ส่งต่อไปยังเซิร์ฟเวอร์ปลายทางที่ 127.0.0.1:8080">
+              <defs>
+                <marker id="a3c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-c"/>
+                </marker>
+                <marker id="a3a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
+                </marker>
+                <marker id="a3p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-p"/>
+                </marker>
+              </defs>
+
+              <rect class="bx-c" x="24" y="96" width="152" height="88" rx="3"/>
+              <text class="t" x="100" y="126" text-anchor="middle">เบราว์เซอร์</text>
+              <text class="tm" x="100" y="148" text-anchor="middle">GET /orders/1024</text>
+              <text class="tm" x="100" y="168" text-anchor="middle">GET /api/orders/1024</text>
+
+              <line class="ln-c" x1="176" y1="140" x2="234" y2="140" marker-end="url(#a3c)"/>
+              <text class="tm" x="180" y="131">:443</text>
+
+              <rect class="bx-a" x="236" y="58" width="184" height="164" rx="3"/>
+              <text class="t" x="328" y="84" text-anchor="middle" style="font-weight:600">IIS</text>
+              <text class="tm" x="328" y="104" text-anchor="middle">site: corp-web</text>
+              <line class="ln dash" x1="252" y1="118" x2="404" y2="118"/>
+              <text class="tm" x="252" y="140">กฎที่ 1</text>
+              <text class="tm" x="252" y="158">^api/(.*) → rewrite</text>
+              <text class="tm" x="252" y="184">กฎที่ 2</text>
+              <text class="tm" x="252" y="202">ไม่ตรงไฟล์ → index.html</text>
+
+              <rect class="bx" x="488" y="44" width="248" height="76" rx="3"/>
+              <text class="t" x="504" y="70">D:\apps\corp-web</text>
+              <text class="tm" x="504" y="90">index.html · assets/*.js · *.css</text>
+              <text class="tm" x="504" y="110">IIS อ่านจากดิสก์และตอบเอง</text>
+              <path class="ln-a" d="M420 98 L 452 98 L 452 82 L 482 82" marker-end="url(#a3a)"/>
+              <text class="ta" x="424" y="68">หน้าที่ที่ 1</text>
+
+              <rect class="bx-p" x="488" y="152" width="248" height="76" rx="3"/>
+              <text class="t" x="504" y="178">เซิร์ฟเวอร์ปลายทาง</text>
+              <text class="tm" x="504" y="198">127.0.0.1:8080/corp-api/...</text>
+              <text class="tm" x="504" y="218">ผูก loopback — เข้าถึงจากภายนอกไม่ได้</text>
+              <path class="ln-p" d="M420 168 L 452 168 L 452 190 L 482 190" marker-end="url(#a3p)"/>
+              <text class="tm" x="424" y="242">หน้าที่ที่ 2 · http ภายในเครื่อง</text>
+
+              <text class="tl" x="24" y="222">สิ่งที่ต้องเตรียม</text>
+              <text class="tm" x="24" y="244">1 · โฟลเดอร์ไฟล์ static</text>
+              <text class="tm" x="24" y="262">2 · web.config ที่มีกฎสองข้อ</text>
+              <text class="tm" x="24" y="280">3 · เซิร์ฟเวอร์ปลายทางที่ทำงานอยู่</text>
+            </svg>
+          </div>
+          <figcaption>
+            <b>รูปที่ 3 — สองหน้าที่ที่แยกจากกันตั้งแต่ชั้น IIS</b> ·
+            เส้นทางด้านบนจบที่ดิสก์ของเซิร์ฟเวอร์ ไม่ผ่านเซิร์ฟเวอร์ปลายทางเลย
+            การแก้ไขไฟล์ static จึงทำได้โดยไม่กระทบเซิร์ฟเวอร์ปลายทาง
+            ส่วนเส้นทางด้านล่างเป็นช่องทางเดียวที่เข้าถึงเซิร์ฟเวอร์ปลายทางได้
+            เนื่องจากเซิร์ฟเวอร์นั้นผูกไว้ที่ <code>127.0.0.1</code>
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="col">
+        <h3>เหตุผลของการผูกเซิร์ฟเวอร์ปลายทางไว้ที่ loopback</h3>
+        <p>
+          การกำหนดให้เซิร์ฟเวอร์ปลายทางรับฟังเฉพาะ <code>127.0.0.1</code> แทน <code>0.0.0.0</code>
+          ทำให้ <strong>ไม่มีผู้ใดเรียกเข้าไปได้โดยตรงจากเครือข่าย</strong> ทุก request
+          ต้องผ่าน IIS ซึ่งเป็นจุดเดียวที่บังคับใช้ TLS ตรวจสอบสิทธิ์ระดับเครือข่าย และบันทึก log
+          ข้อกำหนดนี้เป็นเงื่อนไขจำเป็นของแนวทางในส่วนที่ 07 ด้วย
+        </p>
+
+        <div class="callout">
+          <span class="ttl">เหตุผลของกฎ “ไม่ตรงไฟล์ ให้ส่ง index.html”</span>
+          <p>
+            เว็บแอปพลิเคชันที่จัดการเส้นทางฝั่งไคลเอนต์ หรือที่เรียกว่า SPA
+            ไม่ได้มีไฟล์ <code>/orders/1024.html</code> อยู่บนดิสก์จริง
+            หากผู้ใช้สั่ง refresh ที่หน้าดังกล่าว IIS จะไม่พบไฟล์และตอบกลับด้วยสถานะ <strong>404</strong>
+            กฎข้อที่สองจึงกำหนดว่า หาก path ที่ร้องขอไม่ใช่ไฟล์และไม่ใช่โฟลเดอร์จริง
+            ให้ส่ง <code>index.html</code> กลับไปแทน เพื่อให้โค้ดฝั่งไคลเอนต์ดำเนินการต่อ
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 5 ============ -->
+    <section class="pg" id="s4" hidden data-title="ติดตั้ง" data-full="การติดตั้งองค์ประกอบที่จำเป็น">
+      <div class="col">
+        <div class="sec-head"><span class="sec-no">04</span><h2>การติดตั้งองค์ประกอบที่จำเป็น</h2></div>
+        <p class="sec-sub">IIS มาตรฐานไม่รองรับการทำ reverse proxy ต้องติดตั้งโมดูลเพิ่มสองรายการ และลำดับการติดตั้งมีผลต่อการทำงาน</p>
+
+        <div class="callout tip">
+          <span class="ttl">ข้อกำหนดก่อนเริ่ม</span>
+          <p>
+            คำสั่งทั้งหมดในส่วนนี้ต้องดำเนินการผ่าน PowerShell ที่เปิดด้วยสิทธิ์ <strong>Run as administrator</strong>
+            เนื่องจากเอกสารของ <code>Install-WindowsFeature</code> ระบุว่า cmdlet นี้ต้องการสิทธิ์ระดับยกระดับ
+            หากเซิร์ฟเวอร์เป็นเครื่องเสมือน ควรจัดทำ snapshot ไว้ก่อนเพื่อให้สามารถย้อนกลับได้
+          </p>
+        </div>
+
+        <div class="steps">
+          <div class="st">
+            <h4>ติดตั้ง Web Server (IIS)</h4>
+            <div class="code">
+              <div class="code-head"><span>PowerShell (Admin)</span><span class="where">ขั้นที่ 1</span></div>
+<pre>Install-WindowsFeature -Name Web-Server -IncludeManagementTools</pre>
+            </div>
+            <p class="note">
+              เอกสารของ cmdlet ระบุว่า <strong>เครื่องมือจัดการจะไม่ถูกติดตั้งโดยค่าเริ่มต้น
+              เมื่อติดตั้งผ่าน <code>Install-WindowsFeature</code> ต้องเพิ่มพารามิเตอร์นี้จึงจะได้มาด้วย</strong>
+              ซึ่งต่างจากการติดตั้งผ่าน Add Roles and Features Wizard ที่ติดตั้งให้อยู่แล้ว
+            </p>
+            <p class="note">
+              หากต้องการให้เครื่องเริ่มระบบใหม่อัตโนมัติเมื่อการติดตั้งกำหนดให้ต้องทำ
+              สามารถเพิ่มพารามิเตอร์ <code>-Restart</code> ตามที่เอกสารระบุไว้
+            </p>
+            <div class="verify">
+              <b>ผลลัพธ์ที่ควรได้รับ</b>
+              ตรวจสอบสถานะด้วย <code>Get-WindowsFeature -Name Web-Server</code>
+              ซึ่งเป็น cmdlet ที่เอกสารระบุไว้ในรายการที่เกี่ยวข้อง
+            </div>
+          </div>
+
+          <div class="st">
+            <h4>ตรวจสอบสถานะของบริการ</h4>
+            <div class="code">
+              <div class="code-head"><span>PowerShell</span><span class="where">ขั้นที่ 2</span></div>
+<pre>Get-Service W3SVC, WAS | Select-Object Name, Status
+Invoke-WebRequest http://localhost -UseBasicParsing | Select-Object StatusCode</pre>
+            </div>
+            <div class="verify">
+              <b>ผลลัพธ์ที่ควรได้รับ</b>
+              ทั้ง <code>W3SVC</code> และ <code>WAS</code> มีสถานะ <code>Running</code>
+              ซึ่งเป็นองค์ประกอบสองส่วนตามรูปที่ 1 และคำสั่งที่สองคืนค่า <code>200</code>
+            </div>
+          </div>
+
+          <div class="st">
+            <h4>ติดตั้ง URL Rewrite</h4>
+            <p>
+              โมดูลนี้ไม่ได้ติดตั้งมาพร้อม IIS ต้องดาวน์โหลด standalone installer จากเว็บไซต์ IIS ของ Microsoft
+              เวอร์ชันปัจจุบันคือ <strong>URL Rewrite 2.1</strong> ซึ่งเป็นองค์ประกอบที่รองรับการกำหนดกฎ
+              <code>&lt;rewrite&gt;</code> ในไฟล์ <code>web.config</code>
+            </p>
+            <div class="verify">
+              <b>ผลลัพธ์ที่ควรได้รับ</b>
+              เปิด IIS Manager และเลือก node ของเซิร์ฟเวอร์ จะปรากฏไอคอน <em>URL Rewrite</em> ใน Features View
+            </div>
+          </div>
+
+          <div class="st">
+            <h4>ติดตั้ง Application Request Routing</h4>
+            <p>
+              <strong>Application Request Routing (ARR)</strong> เป็นองค์ประกอบที่ทำให้ IIS
+              สามารถส่ง request ต่อไปยังเซิร์ฟเวอร์อื่นได้ เวอร์ชันปัจจุบันคือ <strong>ARR 3</strong>
+            </p>
+            <div class="callout stop">
+              <span class="ttl">ลำดับการติดตั้ง</span>
+              <p>
+                เอกสารของ Microsoft ระบุไว้ชัดเจนว่า <strong>ARR มีความจำเป็นต้องพึ่งพา URL Rewrite
+                จึงต้องติดตั้ง URL Rewrite ก่อนการติดตั้ง ARR</strong>
+                เนื่องจาก ARR อาศัย URL Rewrite ในการตรวจสอบ request ขาเข้าเพื่อตัดสินใจเส้นทางการส่งต่อ
+                หากติดตั้งสลับลำดับ ให้ดำเนินการติดตั้ง ARR ซ้ำอีกครั้งหลังจากติดตั้ง URL Rewrite เรียบร้อยแล้ว
+              </p>
+            </div>
+          </div>
+
+          <div class="st">
+            <h4>เปิดใช้งาน Proxy</h4>
+            <p>
+              ขั้นตอนนี้เป็นจุดที่ถูกมองข้ามบ่อยที่สุด เอกสารของ Microsoft ระบุว่า
+              <strong>ความสามารถด้าน reverse proxy ถูกปิดไว้เป็นค่าเริ่มต้น จึงต้องเปิดใช้งานก่อน</strong>
+              ดำเนินการผ่าน IIS Manager โดยเลือก node ของเซิร์ฟเวอร์ เปิดรายการ
+              <em>Application Request Routing</em> แล้วเลือก <strong>Enable Proxy</strong>
+              โดยคงค่าอื่นไว้ตามค่าเริ่มต้น
+            </p>
+            <div class="callout">
+              <span class="ttl">อาการเมื่อข้ามขั้นตอนนี้</span>
+              <p>
+                กฎ rewrite ถูกกำหนดไว้อย่างถูกต้องทั้งหมด แต่ <code>/api</code> คืนค่าสถานะ
+                <strong>404</strong> หรือ <strong>500</strong> เนื่องจาก IIS ตีความ URL ปลายทาง
+                เป็นพาธภายในเครื่องแทนการส่งต่อออกไปภายนอก
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout">
+          <span class="ttl">การตรวจสอบโมดูลที่ติดตั้งแล้ว</span>
+          <p>
+            ใช้ <code>appcmd</code> เพื่อแสดงรายการโมดูลที่ลงทะเบียนกับ IIS
+            ซึ่งเป็นวิธีที่ตรงที่สุดในการยืนยันว่าการติดตั้งสมบูรณ์
+          </p>
+          <div class="code" style="margin-bottom:0">
+            <div class="code-head"><span>cmd (Admin)</span><span class="where">ตรวจสอบ</span></div>
+<pre>%windir%\system32\inetsrv\appcmd.exe list modules</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 6 ============ -->
+    <section class="pg" id="s5" hidden data-title="Pool &amp; Site" data-full="การสร้าง Application Pool และ Site">
+      <div class="col">
+        <div class="sec-head"><span class="sec-no">05</span><h2>การสร้าง Application Pool และ Site</h2></div>
+        <p class="sec-sub">มีค่าหนึ่งที่ต้องปรับจากค่าเริ่มต้นเสมอ</p>
+
+        <div class="steps">
+          <div class="st">
+            <h4>เตรียมโฟลเดอร์และวางไฟล์</h4>
+            <div class="code">
+              <div class="code-head"><span>PowerShell (Admin)</span><span class="where">ขั้นที่ 1</span></div>
+<pre>New-Item -ItemType Directory <span class="s">"D:\apps\corp-web"</span> -Force
+
+<span class="c"># คัดลอกไฟล์ static ทั้งชุดมาวางที่ตำแหน่งนี้</span>
+<span class="c"># ต้องมี index.html อยู่ที่ราก คือ D:\apps\corp-web\index.html</span></pre>
+            </div>
+          </div>
+
+          <div class="st">
+            <h4>สร้าง Application Pool</h4>
+            <div class="code">
+              <div class="code-head"><span>PowerShell (Admin)</span><span class="where">ขั้นที่ 2</span></div>
+<pre>Import-Module WebAdministration
+
+New-WebAppPool -Name <span class="s">"CorpWebPool"</span>
+
+<span class="c"># กำหนดเป็น No Managed Code — ค่าว่างหมายถึงไม่โหลด .NET runtime</span>
+Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <span class="s">""</span></pre>
+            </div>
+            <div class="callout">
+              <span class="ttl">เหตุผลของการกำหนด No Managed Code</span>
+              <p>
+                ค่าเริ่มต้นของ pool ที่สร้างใหม่คือการโหลด .NET CLR เข้าสู่โปรเซส
+                แต่ตามส่วนที่ 03 <code>w3wp.exe</code> ในสถาปัตยกรรมนี้ทำหน้าที่เพียงสองประการ
+                คือส่งไฟล์ static และส่ง request ต่อไปยังเซิร์ฟเวอร์ปลายทาง
+                โดยไม่มีโค้ด managed ที่ต้องประมวลผลภายในโปรเซสเลย
+                การกำหนดเป็นค่าว่างจึงเป็นการตัดองค์ประกอบที่ไม่ได้ใช้งานออก
+                ในหน้าจอ IIS Manager ค่านี้คือรายการ <strong>.NET CLR version → No Managed Code</strong>
+              </p>
+            </div>
+          </div>
+
+          <div class="st">
+            <h4>สร้าง Site และผูกกับ Application Pool</h4>
+            <div class="code">
+              <div class="code-head"><span>PowerShell (Admin)</span><span class="where">ขั้นที่ 3</span></div>
+<pre>New-Website -Name <span class="s">"corp-web"</span> `
+  -PhysicalPath <span class="s">"D:\apps\corp-web"</span> `
+  -ApplicationPool <span class="s">"CorpWebPool"</span> `
+  -HostHeader <span class="s">"app.corp.local"</span> -Port 80</pre>
+            </div>
+            <p class="note">
+              ในขั้นนี้กำหนดที่พอร์ต 80 ก่อนเพื่อการทดสอบ แล้วจึงเพิ่ม binding ของพอร์ต 443 ในส่วนที่ 08
+            </p>
+            <div class="verify">
+              <b>ผลลัพธ์ที่ควรได้รับ</b>
+              คำสั่ง <code>Get-Website</code> แสดงรายการ <code>corp-web</code> ในสถานะ <code>Started</code> ·
+              เมื่อเรียก <code>http://app.corp.local/</code> จากเบราว์เซอร์บนเซิร์ฟเวอร์ จะปรากฏหน้าแรก
+              โดยยังไม่สามารถเรียกหน้าย่อยได้ จนกว่าจะกำหนดกฎในส่วนที่ 06
+            </div>
+          </div>
+        </div>
+
+        <h3>สิทธิ์การเข้าถึงโฟลเดอร์</h3>
+        <p>
+          โดยค่าเริ่มต้น worker process ของแต่ละ pool ทำงานภายใต้บัญชีเสมือนชื่อ
+          <code>IIS AppPool\&lt;ชื่อ pool&gt;</code> ซึ่งถูกสร้างขึ้นอัตโนมัติพร้อมกับ pool
+          บัญชีนี้ต้องมีสิทธิ์อ่านโฟลเดอร์ที่เก็บไฟล์ static
+        </p>
+        <div class="code">
+          <div class="code-head"><span>cmd (Admin)</span><span class="where">ให้สิทธิ์อ่าน</span></div>
+<pre>icacls "D:\apps\corp-web" /grant "IIS AppPool\CorpWebPool":(OI)(CI)RX</pre>
+        </div>
+        <p class="note">
+          หากโฟลเดอร์อยู่ภายใต้พาธที่สืบทอดสิทธิ์มาอย่างครบถ้วนอยู่แล้ว ขั้นตอนนี้อาจไม่จำเป็น
+          ให้ตรวจสอบด้วยการเรียกหน้าเว็บก่อน หากได้รับสถานะ <code>401</code> หรือ <code>403</code>
+          จึงค่อยกำหนดสิทธิ์เพิ่ม
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 7 ============ -->
+    <section class="pg" id="s6" hidden data-title="web.config" data-full="การกำหนดกฎใน web.config">
+      <div class="col">
+        <div class="sec-head"><span class="sec-no">06</span><h2>การกำหนดกฎใน web.config</h2></div>
+        <p class="sec-sub">ลำดับของกฎมีผลต่อการทำงานโดยตรง การสลับลำดับทำให้ระบบทำงานผิดพลาด</p>
+        <p>
+          จัดวางไฟล์นี้ไว้ที่ <code>D:\apps\corp-web\web.config</code>
+          ซึ่งเป็นรากของ site ตำแหน่งเดียวกับ <code>index.html</code>
+        </p>
+
+        <div class="code">
+          <div class="code-head"><span>D:\apps\corp-web\web.config</span><span class="where">ทั้งไฟล์</span></div>
+<pre><span class="t">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="t">&lt;configuration&gt;</span>
+  <span class="t">&lt;system.webServer&gt;</span>
+    <span class="t">&lt;rewrite&gt;</span>
+      <span class="t">&lt;rules&gt;</span>
+
+        <span class="c">&lt;!-- กฎที่ 1 : ส่ง /api ต่อไปยังเซิร์ฟเวอร์ปลายทาง --&gt;</span>
+        <span class="t">&lt;rule</span> name=<span class="s">"api-to-backend"</span> stopProcessing=<span class="s">"true"</span><span class="t">&gt;</span>
+          <span class="t">&lt;match</span> url=<span class="s">"^api/(.*)"</span> <span class="t">/&gt;</span>
+          <span class="t">&lt;action</span> type=<span class="s">"Rewrite"</span>
+                  url=<span class="s">"http://127.0.0.1:8080/corp-api/{R:1}"</span> <span class="t">/&gt;</span>
+        <span class="t">&lt;/rule&gt;</span>
+
+        <span class="c">&lt;!-- กฎที่ 2 : path ที่ไม่ใช่ไฟล์จริง ให้ส่ง index.html --&gt;</span>
+        <span class="t">&lt;rule</span> name=<span class="s">"spa-fallback"</span> stopProcessing=<span class="s">"true"</span><span class="t">&gt;</span>
+          <span class="t">&lt;match</span> url=<span class="s">".*"</span> <span class="t">/&gt;</span>
+          <span class="t">&lt;conditions</span> logicalGrouping=<span class="s">"MatchAll"</span><span class="t">&gt;</span>
+            <span class="t">&lt;add</span> input=<span class="s">"{REQUEST_FILENAME}"</span> matchType=<span class="s">"IsFile"</span>      negate=<span class="s">"true"</span> <span class="t">/&gt;</span>
+            <span class="t">&lt;add</span> input=<span class="s">"{REQUEST_FILENAME}"</span> matchType=<span class="s">"IsDirectory"</span> negate=<span class="s">"true"</span> <span class="t">/&gt;</span>
+          <span class="t">&lt;/conditions&gt;</span>
+          <span class="t">&lt;action</span> type=<span class="s">"Rewrite"</span> url=<span class="s">"/index.html"</span> <span class="t">/&gt;</span>
+        <span class="t">&lt;/rule&gt;</span>
+
+      <span class="t">&lt;/rules&gt;</span>
+    <span class="t">&lt;/rewrite&gt;</span>
+  <span class="t">&lt;/system.webServer&gt;</span>
+<span class="t">&lt;/configuration&gt;</span></pre>
+        </div>
+
+        <h3>คำอธิบายรายองค์ประกอบ</h3>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>องค์ประกอบ</th><th>ความหมาย</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="kw">^api/(.*)</td>
+                <td>จับคู่ path ที่ขึ้นต้นด้วย <code>api/</code> โดยวงเล็บทำหน้าที่สร้าง capture group เพื่อเก็บส่วนที่เหลือไว้</td>
+              </tr>
+              <tr>
+                <td class="kw">{R:1}</td>
+                <td>back-reference ไปยัง capture group ลำดับแรก ซึ่งคือส่วนที่อยู่หลัง <code>api/</code></td>
+              </tr>
+              <tr>
+                <td class="kw">type="Rewrite"</td>
+                <td>เขียน URL ใหม่และส่งต่อภายในเซิร์ฟเวอร์ ซึ่ง<strong>ต่างจาก</strong> <code>Redirect</code> ที่จะสั่งให้เบราว์เซอร์เรียกใหม่เอง และทำให้พอร์ตภายในเปิดเผยสู่ภายนอก</td>
+              </tr>
+              <tr>
+                <td class="kw">stopProcessing="true"</td>
+                <td>เมื่อกฎนี้จับคู่สำเร็จ ให้ยุติการประมวลผล ไม่ต้องพิจารณากฎลำดับถัดไป</td>
+              </tr>
+              <tr>
+                <td class="kw">IsFile / IsDirectory<br>+ negate="true"</td>
+                <td>เงื่อนไขที่ระบุว่า path นี้<strong>ไม่ใช่</strong>ไฟล์จริงและ<strong>ไม่ใช่</strong>โฟลเดอร์จริง ซึ่งเป็นวิธีแยกเส้นทางฝั่งไคลเอนต์ออกจากไฟล์ <code>.js</code> และ <code>.css</code> ที่มีอยู่บนดิสก์</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout stop">
+          <span class="ttl">ลำดับของกฎมีผลต่อการทำงาน</span>
+          <p>
+            หากจัดวางกฎ <code>spa-fallback</code> ไว้ก่อน กฎดังกล่าวจะจับคู่กับ <code>/api/orders/1024</code> ด้วย
+            เนื่องจาก path นั้นไม่ใช่ไฟล์จริงเช่นเดียวกัน ส่งผลให้ระบบคืนค่า <code>index.html</code>
+            แทนข้อมูล JSON อาการที่ปรากฏคือ <strong>การเรียก request สำเร็จด้วยสถานะ 200
+            แต่ข้อมูลที่ได้รับเป็น HTML</strong> ซึ่งเป็นปัญหาที่ตรวจหาสาเหตุได้ยาก
+            หลักการคือกฎที่มีเงื่อนไขเฉพาะเจาะจงกว่าต้องอยู่ก่อนกฎที่มีเงื่อนไขกว้างกว่าเสมอ
+          </p>
+        </div>
+
+        <div class="callout">
+          <span class="ttl">path ภายนอกไม่จำเป็นต้องตรงกับ path ภายใน</span>
+          <p>
+            จะสังเกตได้ว่าการเรียกจากภายนอกใช้ <code>/api/orders/1024</code>
+            ขณะที่เซิร์ฟเวอร์ปลายทางรับเป็น <code>/corp-api/orders/1024</code>
+            โดยมีกฎ rewrite ทำหน้าที่แปลง ซึ่งเป็นข้อดีในเชิงปฏิบัติ คือ
+            <strong>สามารถเปลี่ยนพาธของเซิร์ฟเวอร์ปลายทางได้โดยไม่ต้องแก้ไขโค้ดฝั่งหน้าบ้าน</strong>
+            เพียงแก้ไขค่าเดียวในไฟล์ <code>web.config</code>
+          </p>
+        </div>
+
+        <h3>ชนิดไฟล์ที่ IIS ไม่รู้จัก</h3>
+        <p>
+          IIS ตรวจสอบนามสกุลไฟล์กับรายการ MIME type ที่กำหนดไว้ก่อนส่งออกเสมอ
+          เอกสารของ <code>&lt;mimeMap&gt;</code> ระบุพฤติกรรมนี้ไว้ว่า
+          <strong>IIS จะไม่ส่งคืนชนิดไฟล์ที่ไม่ได้เพิ่มไว้ในองค์ประกอบ <code>&lt;staticContent&gt;</code>
+          หรือไม่มี mapping ใน <code>&lt;handlers&gt;</code></strong>
+          และอธิบายว่าเป็นพฤติกรรมที่ออกแบบมาเพื่อป้องกันการเข้าถึงไฟล์ที่ไม่ได้ประกาศไว้ใน configuration
+        </p>
+        <p>
+          รหัสสถานะที่ได้รับในกรณีนี้คือ <strong><code>404.3</code></strong>
+          ซึ่งเอกสารรายการรหัสสถานะของ IIS นิยามไว้ว่า <em>MIME type restriction</em>
+          หมายถึง MIME mapping ปัจจุบันสำหรับนามสกุลที่ร้องขอไม่ถูกต้องหรือยังไม่ได้กำหนดค่า
+        </p>
+        <p>
+          วิธีแก้คือประกาศนามสกุลนั้นเพิ่มในไฟล์ <code>web.config</code> เดียวกัน
+          เอกสารกำหนดว่าแต่ละรายการต้องประกอบด้วยสองส่วน คือ
+          <strong>นามสกุลไฟล์ที่ไม่ซ้ำกันในแอตทริบิวต์ <code>fileExtension</code></strong> และ
+          <strong>ชนิดของไฟล์ในแอตทริบิวต์ <code>mimeType</code></strong>
+          ตัวอย่างด้านล่างคัดมาจากเอกสารทางการโดยตรง
+        </p>
+        <div class="code">
+          <div class="code-head"><span>web.config</span><span class="where">ตัวอย่างจากเอกสาร Microsoft</span></div>
+<pre><span class="t">&lt;configuration&gt;</span>
+  <span class="t">&lt;system.webServer&gt;</span>
+    <span class="t">&lt;staticContent&gt;</span>
+      <span class="t">&lt;mimeMap</span> fileExtension=<span class="s">".syx"</span> mimeType=<span class="s">"application/octet-stream"</span> <span class="t">/&gt;</span>
+      <span class="t">&lt;mimeMap</span> fileExtension=<span class="s">".tab"</span> mimeType=<span class="s">"text/plain"</span> <span class="t">/&gt;</span>
+    <span class="t">&lt;/staticContent&gt;</span>
+  <span class="t">&lt;/system.webServer&gt;</span>
+<span class="t">&lt;/configuration&gt;</span></pre>
+        </div>
+        <p class="note">
+          ให้แทนนามสกุลและชนิดไฟล์ด้วยค่าที่ระบบต้องใช้จริง
+          โดยตรวจสอบก่อนว่านามสกุลใดที่ IIS บนเซิร์ฟเวอร์นั้นยังไม่รู้จัก
+          ซึ่งดูรายการที่มีอยู่ได้จาก IIS Manager ที่รายการ <em>MIME Types</em>
+          ตามขั้นตอนที่เอกสารระบุไว้ แล้วจึงประกาศเฉพาะรายการที่ขาด
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 8 ============ -->
+    <section class="pg" id="s7" hidden data-title="เฮดเดอร์" data-full="การส่งข้อมูลผู้เรียกไปยังเซิร์ฟเวอร์ปลายทาง">
+      <div class="col">
+        <div class="sec-head"><span class="sec-no">07</span><h2>การส่งข้อมูลผู้เรียกไปยังเซิร์ฟเวอร์ปลายทาง</h2></div>
+        <p class="sec-sub">เมื่อมี proxy คั่นกลาง เซิร์ฟเวอร์ปลายทางจะได้รับ IP ของ IIS แทน IP ของผู้ใช้</p>
+        <p>
+          ประเด็นนี้เป็นผลสืบเนื่องที่เกิดขึ้นกับสถาปัตยกรรม reverse proxy ทุกรูปแบบ
+          และส่งผลกระทบต่อสองเรื่องที่มักพบเมื่อระบบเริ่มใช้งานจริง ได้แก่
+          การบันทึก IP ที่คลาดเคลื่อนในไฟล์บันทึกของเซิร์ฟเวอร์ปลายทาง
+          และลิงก์ที่เซิร์ฟเวอร์นั้นสร้างขึ้นเองซึ่งชี้กลับไปยังชื่อโฮสต์ภายใน
+        </p>
+
+        <h3>หมายเลข IP ของผู้ใช้</h3>
+        <p>
+          เมื่อ IIS ส่ง request ต่อไปยังเซิร์ฟเวอร์ปลายทาง การเชื่อมต่อในช่วงนั้นเกิดจาก IIS เอง
+          เซิร์ฟเวอร์ปลายทางจึงเห็น IP ต้นทางเป็นของ IIS ไม่ใช่ของผู้ใช้
+          ข้อมูล IP เดิมจะเดินทางต่อไปได้ก็ต่อเมื่อถูกใส่ไว้ในเฮดเดอร์
+        </p>
+        <p>
+          เฮดเดอร์ที่ IIS ใช้กับข้อมูลนี้คือ <code>X-Forwarded-For</code>
+          ซึ่งยืนยันได้จากรายการรหัสสถานะของ IIS ที่กำหนดรหัสย่อย <code>400.10</code>
+          ไว้ตั้งแต่ IIS 8.0 โดยมีนิยามว่า <em>Invalid X-Forwarded-For (XFF) header</em>
+          กล่าวคือ <strong>IIS ตรวจสอบความถูกต้องของเฮดเดอร์นี้และปฏิเสธ request
+          เมื่อค่าไม่ถูกต้อง</strong>
+        </p>
+        <p class="note">
+          ก่อนนำไปใช้จริง ให้ทดสอบด้วยการอ่านเฮดเดอร์ที่เซิร์ฟเวอร์ปลายทางได้รับจริงหนึ่งครั้ง
+          เพื่อยืนยันว่ามีค่านี้เดินทางมาถึงและอยู่ในรูปแบบที่แอปพลิเคชันอ่านได้
+        </p>
+
+        <h3>ชื่อโฮสต์เดิม</h3>
+        <p>
+          ค่า <code>preserveHostHeader</code> ทำให้ request ที่ส่งต่อไปยังเซิร์ฟเวอร์ปลายทาง
+          <strong>มีเฮดเดอร์ Host เช่นเดียวกับที่ได้รับเข้ามาที่ IIS</strong>
+          แทนที่จะเป็นค่าที่ถูกแก้ไขเพื่อการ routing ของ ARR
+          เอกสารกรณีศึกษาการใช้ ARR ของ Microsoft ระบุเหตุผลของการตั้งค่านี้เป็น <code>true</code>
+          ไว้ตรงกันว่า แอปพลิเคชันจำเป็นต้องเห็น host header เดิมบน request ที่ถูก proxy มา
+          ซึ่งจำเป็นเมื่อเซิร์ฟเวอร์ปลายทางสร้าง absolute URL จากค่า Host ที่ได้รับ
+        </p>
+        <p>
+          เอกสารฉบับเดียวกันแสดงให้เห็นว่า<strong>ค่าในกลุ่มนี้อยู่ในองค์ประกอบ
+          <code>&lt;proxy&gt;</code> ของไฟล์ <code>applicationHost.config</code></strong>
+          ซึ่งเป็นระดับเซิร์ฟเวอร์ ไม่ใช่ระดับ site
+        </p>
+        <div class="callout">
+          <span class="ttl">วิธีตั้งค่า</span>
+          <p>
+            ตั้งผ่าน IIS Manager โดยเลือก node ของเซิร์ฟเวอร์ แล้วเปิดรายการ
+            <em>Application Request Routing</em> ซึ่งเป็นหน้าเดียวกับที่ใช้เปิด Enable Proxy
+            ในส่วนที่ 04 ค่าทั้งหมดในหน้านั้นจะถูกบันทึกลงองค์ประกอบ <code>&lt;proxy&gt;</code>
+            ของ <code>applicationHost.config</code> ให้เอง
+          </p>
+        </div>
+
+        <div class="callout stop">
+          <span class="ttl">ข้อกำหนดด้านความปลอดภัย</span>
+          <p>
+            เฮดเดอร์เป็นข้อมูลที่ผู้เรียกสามารถกำหนดค่าเองได้ หากเซิร์ฟเวอร์ปลายทางจะเชื่อถือค่าจาก
+            <code>X-Forwarded-For</code> หรือเฮดเดอร์ที่ระบุตัวตนผู้ใช้ซึ่ง proxy เป็นผู้กำหนด
+            ต้องปฏิบัติตามเงื่อนไขสองข้อพร้อมกัน
+          </p>
+          <ul>
+            <li><strong>proxy ต้องเขียนทับค่าในเฮดเดอร์นั้นเสมอ ไม่ใช่การต่อท้าย</strong>
+              มิฉะนั้นค่าที่ผู้เรียกกำหนดมาเองจะปะปนอยู่ในข้อมูล</li>
+            <li><strong>เซิร์ฟเวอร์ปลายทางต้องเข้าถึงได้จาก proxy เท่านั้น</strong>
+              กล่าวคือต้องผูกไว้ที่ <code>127.0.0.1</code> ตามรูปที่ 3
+              หากผู้ใดสามารถเรียกตรงไปยังพอร์ต 8080 ได้ ผู้นั้นจะกำหนดเฮดเดอร์ใดก็ได้
+              และระบบจะเชื่อถือค่านั้นทันที</li>
+          </ul>
+        </div>
+
+        <h3>การส่งผลการยืนยันตัวตนของ Windows</h3>
+        <p>
+          กรณีที่องค์กรต้องการให้ IIS เป็นผู้ยืนยันตัวตนกับ Active Directory
+          แล้วส่งผลการตรวจสอบต่อไปให้เซิร์ฟเวอร์ปลายทาง จะต้องเปิดใช้งาน Windows Authentication
+          เอกสารของ <code>&lt;windowsAuthentication&gt;</code> ระบุว่า
+          <strong>การติดตั้ง IIS ตามค่าเริ่มต้นไม่มี role service นี้มาด้วย</strong>
+          และกำหนดลำดับการดำเนินการไว้สามขั้นตามนี้
+        </p>
+        <ol>
+          <li>ติดตั้ง role service ชื่อ <strong>Windows Authentication</strong> ผ่าน Server Manager
+            ที่ <em>Web Server (IIS) → Web Server → Security → Windows Authentication</em></li>
+          <li><strong>ปิด</strong> Anonymous authentication ของ site หรือ application นั้น</li>
+          <li><strong>เปิด</strong> Windows authentication ของ site หรือ application นั้น</li>
+        </ol>
+        <p class="note">
+          หลังติดตั้ง role service แล้ว IIS จะเขียนค่า <code>&lt;windowsAuthentication enabled="false" /&gt;</code>
+          ลงใน ApplicationHost.config กล่าวคือ <strong>ค่าเริ่มต้นของแอตทริบิวต์ <code>enabled</code> คือ false</strong>
+          จึงต้องเปิดเองเสมอ
+        </p>
+        <div class="code">
+          <div class="code-head"><span>cmd (Admin)</span><span class="where">ขั้นที่ 2 และ 3</span></div>
+<pre>appcmd.exe set config <span class="s">"corp-web"</span> ^
+  -section:system.webServer/security/authentication/anonymousAuthentication ^
+  /enabled:<span class="s">"False"</span> /commit:apphost
+
+appcmd.exe set config <span class="s">"corp-web"</span> ^
+  -section:system.webServer/security/authentication/windowsAuthentication ^
+  /enabled:<span class="s">"True"</span> /commit:apphost</pre>
+        </div>
+        <div class="callout">
+          <span class="ttl">พารามิเตอร์ที่ห้ามลืม</span>
+          <p>
+            เอกสารกำกับไว้ว่า <strong>ต้องกำหนด <code>/commit:apphost</code> เมื่อใช้ AppCmd.exe
+            กับการตั้งค่าเหล่านี้</strong> เพื่อให้ค่าถูกบันทึกลงใน location section
+            ที่ถูกต้องของ ApplicationHost.config
+          </p>
+        </div>
+        <p class="note">
+          เมื่อเปิดค่านี้แล้ว IIS จะเป็นผู้จัดการการยืนยันตัวตนทั้งหมด และเซิร์ฟเวอร์ปลายทาง
+          จะได้รับเฉพาะ request ที่ผ่านการตรวจสอบแล้ว ส่วนการส่งชื่อผู้ใช้ต่อไปให้เซิร์ฟเวอร์นั้น
+          ต้องกำหนดเป็นเฮดเดอร์เพิ่มเติม ซึ่งอยู่ภายใต้ข้อกำหนดด้านความปลอดภัยข้างต้นทุกประการ
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 9 ============ -->
+    <section class="pg" id="s8" hidden data-title="HTTPS" data-full="การกำหนด HTTPS และ Binding">
+      <div class="col">
+        <div class="sec-head"><span class="sec-no">08</span><h2>การกำหนด HTTPS และ Binding</h2></div>
+        <p class="sec-sub">TLS สิ้นสุดที่ชั้น IIS ส่วนการสื่อสารภายในเป็น HTTP ธรรมดาบน loopback</p>
+        <p>
+          ในสถาปัตยกรรมนี้ IIS เป็นจุดเดียวที่รับ TLS ขณะที่ช่วงระหว่าง IIS กับเซิร์ฟเวอร์ปลายทาง
+          สื่อสารผ่าน <code>127.0.0.1</code> ซึ่งไม่ออกจากเครื่อง จึงไม่จำเป็นต้องทำ TLS ซ้ำอีกชั้น
+        </p>
+        <div class="code">
+          <div class="code-head"><span>PowerShell (Admin)</span><span class="where">ขั้นที่ 1 — สร้าง binding</span></div>
+<pre><span class="c"># แสดงใบรับรองที่ติดตั้งอยู่ในเครื่อง และบันทึก Thumbprint ของใบที่จะใช้งาน</span>
+Get-ChildItem Cert:\LocalMachine\My | Select-Object Subject, Thumbprint, NotAfter
+
+<span class="c"># ผูก binding แบบ https เข้ากับ site</span>
+New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443 `
+  -HostHeader <span class="s">"app.corp.local"</span> -SslFlags 1</pre>
+        </div>
+        <p class="note">
+          ค่า <code>-SslFlags</code> ระบุชนิดของใบรับรองและที่เก็บ เอกสารของ cmdlet กำหนดค่าไว้สี่ค่า คือ
+          <code>0</code> ใบรับรองปกติใน Windows certificate storage ·
+          <code>1</code> ใบรับรองแบบ SNI ·
+          <code>2</code> central certificate store ·
+          <code>3</code> SNI ใน central certificate store
+          ค่า <code>1</code> จึงเป็นการเปิดใช้งาน SNI ซึ่งทำให้ site หลายรายการ
+          ใช้ใบรับรองต่างกันบนพอร์ต 443 เดียวกันได้ ตามหลักการ binding ในส่วนที่ 02
+        </p>
+
+        <div class="callout stop">
+          <span class="ttl">ขั้นตอนที่ขาดไม่ได้</span>
+          <p>
+            คำสั่ง <code>New-WebBinding</code> <strong>สร้างเฉพาะ binding เท่านั้น ยังไม่ได้ผูกใบรับรองเข้าไป</strong>
+            หากหยุดเพียงเท่านี้ site จะยังให้บริการ HTTPS ไม่ได้
+            ต้องนำ Thumbprint ที่ได้จากขั้นที่ 1 มาผูกกับ binding อีกขั้นหนึ่ง
+            ซึ่งเป็นลำดับที่ปรากฏในตัวอย่างของเอกสาร cmdlet โดยตรง
+          </p>
+        </div>
+        <div class="code">
+          <div class="code-head"><span>PowerShell (Admin)</span><span class="where">ขั้นที่ 2 — ผูกใบรับรอง</span></div>
+<pre><span class="c"># "my" คือชื่อ store ซึ่งตรงกับ Cert:\LocalMachine\My</span>
+(Get-WebBinding -Name <span class="s">"corp-web"</span> -Port 443 -Protocol <span class="s">"https"</span>).AddSslCertificate(
+  <span class="s">"a909502dd82ae41433e6f83886b00d4277a32a7b"</span>, <span class="s">"my"</span>)</pre>
+        </div>
+        <p class="note">
+          แทนที่สตริง Thumbprint ด้วยค่าจริงของใบรับรองที่องค์กรใช้
+          ค่าที่แสดงไว้เป็นตัวอย่างจากเอกสารของ Microsoft
+        </p>
+
+        <h3>การบังคับใช้ HTTPS</h3>
+        <p>
+          เพิ่มกฎต่อไปนี้เป็น<strong>กฎลำดับแรกสุด</strong> ภายใน <code>&lt;rules&gt;</code>
+          ของไฟล์ <code>web.config</code> โดยอยู่ก่อนกฎทั้งสองข้อในส่วนที่ 06
+        </p>
+        <div class="code">
+          <div class="code-head"><span>D:\apps\corp-web\web.config</span><span class="where">แทรกเป็นกฎลำดับแรก</span></div>
+<pre><span class="t">&lt;rule</span> name=<span class="s">"force-https"</span> stopProcessing=<span class="s">"true"</span><span class="t">&gt;</span>
+  <span class="t">&lt;match</span> url=<span class="s">"(.*)"</span> <span class="t">/&gt;</span>
+  <span class="t">&lt;conditions&gt;</span>
+    <span class="t">&lt;add</span> input=<span class="s">"{HTTPS}"</span> pattern=<span class="s">"^OFF$"</span> <span class="t">/&gt;</span>
+  <span class="t">&lt;/conditions&gt;</span>
+  <span class="t">&lt;action</span> type=<span class="s">"Redirect"</span> url=<span class="s">"https://{HTTP_HOST}/{R:1}"</span>
+          redirectType=<span class="s">"Permanent"</span> <span class="t">/&gt;</span>
+<span class="t">&lt;/rule&gt;</span></pre>
+        </div>
+        <p class="note">
+          กรณีนี้ใช้ <code>Redirect</code> แทน <code>Rewrite</code> เนื่องจากมีเจตนาให้เบราว์เซอร์
+          เปลี่ยน URL บนแถบที่อยู่จริง ซึ่งตรงข้ามกับกรณีของ <code>/api</code> ในส่วนที่ 06
+          ที่ต้องการปกปิดโครงสร้างภายในจากผู้ใช้
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 10 ============ -->
+    <section class="pg" id="s9" hidden data-title="วิเคราะห์ปัญหา" data-full="การตรวจสอบและวิเคราะห์ปัญหา">
+      <div class="col">
+        <div class="sec-head"><span class="sec-no">09</span><h2>การตรวจสอบและวิเคราะห์ปัญหา</h2></div>
+        <p class="sec-sub">ระบุไฟล์บันทึกที่ถูกต้องก่อน แล้วจึงวิเคราะห์สาเหตุ</p>
+        <p>
+          ตามรูปที่ 1 request เดินทางผ่านหลายชั้น และ <strong>แต่ละชั้นบันทึกข้อมูลลงคนละไฟล์</strong>
+          การเปิดไฟล์บันทึกที่ไม่ตรงกับชั้นที่เกิดปัญหา เป็นสาเหตุที่ทำให้เข้าใจว่าระบบไม่ได้บันทึกข้อมูลใดไว้
+        </p>
+      </div>
+
+      <div class="breakout">
+        <figure>
+          <div class="fig-frame">
+            <svg viewBox="0 0 760 250" role="img" aria-label="แผนภาพแสดงว่า request ที่ถูกปฏิเสธที่ HTTP.sys ไปอยู่ในไฟล์ httperr ส่วน request ที่ถึง worker process อยู่ใน IIS log และ request ที่ส่งต่อออกไปอยู่ในไฟล์บันทึกของเซิร์ฟเวอร์ปลายทาง">
+              <defs>
+                <marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd"/>
+                </marker>
+                <marker id="a4s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-p"/>
+                </marker>
+              </defs>
+
+              <text class="tl" x="30" y="22">ชั้นที่ request เดินทางผ่าน</text>
+              <text class="tl" x="380" y="22">ไฟล์บันทึกที่เกี่ยวข้อง</text>
+
+              <rect class="bx-a" x="30" y="36" width="240" height="52" rx="3"/>
+              <text class="t" x="46" y="60">HTTP.sys</text>
+              <text class="tm" x="46" y="78">ชั้นเคอร์เนล</text>
+
+              <rect class="bx-a" x="30" y="102" width="240" height="52" rx="3"/>
+              <text class="t" x="46" y="126">w3wp.exe</text>
+              <text class="tm" x="46" y="144">โมดูล rewrite และ proxy ทำงานที่นี่</text>
+
+              <rect class="bx-p" x="30" y="168" width="240" height="52" rx="3"/>
+              <text class="t" x="46" y="192">เซิร์ฟเวอร์ปลายทาง</text>
+              <text class="tm" x="46" y="210">อยู่นอกขอบเขตของ IIS</text>
+
+              <line class="ln" x1="150" y1="88" x2="150" y2="98" marker-end="url(#a4)"/>
+              <line class="ln-p" x1="150" y1="154" x2="150" y2="164" marker-end="url(#a4s)"/>
+
+              <rect class="bx" x="380" y="36" width="350" height="52" rx="3"/>
+              <text class="tm" x="396" y="60">%SystemRoot%\System32\LogFiles\HTTPERR</text>
+              <text class="tm" x="396" y="78">ปฏิเสธก่อนถึง IIS · ไม่ปรากฏใน IIS log</text>
+
+              <rect class="bx" x="380" y="102" width="350" height="52" rx="3"/>
+              <text class="tm" x="396" y="126">%SystemDrive%\inetpub\logs\LogFiles</text>
+              <text class="tm" x="396" y="144">แยกโฟลเดอร์ย่อยตามหมายเลข site</text>
+
+              <rect class="bx" x="380" y="168" width="350" height="52" rx="3"/>
+              <text class="tm" x="396" y="192">ไฟล์บันทึกของเซิร์ฟเวอร์นั้นเอง</text>
+              <text class="tm" x="396" y="210">ตำแหน่งขึ้นกับซอฟต์แวร์ที่ใช้</text>
+
+              <line class="ln dash" x1="270" y1="62" x2="374" y2="62" marker-end="url(#a4)"/>
+              <line class="ln dash" x1="270" y1="128" x2="374" y2="128" marker-end="url(#a4)"/>
+              <line class="ln dash" x1="270" y1="194" x2="374" y2="194" marker-end="url(#a4)"/>
+            </svg>
+          </div>
+          <figcaption>
+            <b>รูปที่ 4 — ชั้นที่ request สิ้นสุด และไฟล์บันทึกที่ควรตรวจสอบ</b> ·
+            หากผู้ใช้แจ้งว่าเข้าใช้งานไม่ได้ แต่ไฟล์บันทึกของ IIS ไม่มีข้อมูล
+            แสดงว่า request ไม่เคยเดินทางถึง <code>w3wp.exe</code>
+            ให้ตรวจสอบไฟล์ <code>httperr</code> เป็นลำดับแรก
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="col">
+        <h3>อาการที่พบบ่อยและจุดที่ควรตรวจสอบก่อน</h3>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>อาการ</th><th>จุดที่ควรตรวจสอบก่อน</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>หน้าแรกเปิดได้ แต่การเรียกหน้าย่อยคืนสถานะ <strong>404</strong></td>
+                <td>ยังไม่ได้กำหนดกฎ <code>spa-fallback</code> หรือยังไม่ได้ติดตั้ง URL Rewrite (ส่วนที่ 04)</td>
+              </tr>
+              <tr>
+                <td><code>/api</code> คืนสถานะ <strong>404</strong> ขณะที่เซิร์ฟเวอร์ปลายทางทำงานปกติ</td>
+                <td>ยังไม่ได้เปิดใช้งาน <strong>Enable Proxy</strong> ของ ARR ซึ่งเป็นจุดที่ถูกมองข้ามบ่อยที่สุด (ส่วนที่ 04)</td>
+              </tr>
+              <tr>
+                <td>ไฟล์บางชนิดคืนสถานะ <strong>404.3</strong></td>
+                <td>นามสกุลไฟล์นั้นไม่ปรากฏใน MimeMap ให้ประกาศเพิ่มใน <code>staticContent</code> (ส่วนที่ 06)</td>
+              </tr>
+              <tr>
+                <td>request คืนสถานะ <strong>200</strong> แต่ข้อมูลที่ได้รับเป็น HTML</td>
+                <td>ลำดับของกฎสลับกัน ทำให้ <code>spa-fallback</code> จับคู่กับ <code>/api</code> ก่อน (ส่วนที่ 06)</td>
+              </tr>
+              <tr>
+                <td><code>/api</code> คืนสถานะ <strong>502</strong></td>
+                <td>เซิร์ฟเวอร์ปลายทางไม่ได้ทำงานอยู่ หรือรับฟังคนละพอร์ตกับที่ระบุไว้ในกฎ rewrite</td>
+              </tr>
+              <tr>
+                <td>คืนสถานะ <strong>401</strong> หรือ <strong>403</strong> กับไฟล์ static</td>
+                <td>บัญชี <code>IIS AppPool\CorpWebPool</code> ยังไม่มีสิทธิ์อ่านโฟลเดอร์ (ส่วนที่ 05)</td>
+              </tr>
+              <tr>
+                <td>ผู้ใช้แจ้งว่าเข้าใช้งานไม่ได้ แต่ไฟล์บันทึกของ IIS ไม่มีข้อมูล</td>
+                <td>ไฟล์ <code>httperr</code> ตามรูปที่ 4 เนื่องจาก request ถูกปฏิเสธตั้งแต่ชั้น HTTP.sys</td>
+              </tr>
+              <tr>
+                <td>ไฟล์บันทึกปลายทางแสดง IP เป็น <code>127.0.0.1</code> ทุกรายการ</td>
+                <td>เซิร์ฟเวอร์ปลายทางยังไม่ได้อ่านค่าจากเฮดเดอร์ <code>X-Forwarded-For</code> (ส่วนที่ 07)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout tip">
+          <span class="ttl">วิธีจำแนกว่าปัญหาอยู่ที่ชั้น IIS หรืออยู่นอกขอบเขต</span>
+          <p>
+            เรียกตรงไปยังเซิร์ฟเวอร์ปลายทางจากบนเซิร์ฟเวอร์เดียวกันด้วยคำสั่ง
+            <code>curl http://127.0.0.1:8080/corp-api/...</code>
+            หากได้รับผลลัพธ์ที่ถูกต้อง แสดงว่าปลายทางทำงานปกติ
+            ให้ย้อนกลับไปตรวจสอบกฎ rewrite และการเปิดใช้งาน Enable Proxy
+            แต่หากผลลัพธ์ผิดพลาดตั้งแต่ขั้นนี้ แสดงว่าสาเหตุไม่ได้อยู่ที่ IIS
+          </p>
+        </div>
+
+        <h3>การเปิด Failed Request Tracing</h3>
+        <p>
+          เมื่อไฟล์บันทึกปกติยังไม่เพียงพอ IIS มีเครื่องมือที่บันทึกรายละเอียดของ request
+          ที่ล้มเหลวเป็นรายครั้ง เอกสารของ Microsoft อธิบายหลักการทำงานไว้ว่า
+          <strong>เครื่องมือนี้เก็บ trace event ของ request ไว้ในบัฟเฟอร์
+          และเขียนลงดิสก์เฉพาะเมื่อ request นั้นล้มเหลว</strong>
+          โดยผู้ดูแลเป็นผู้กำหนดเองว่าอะไรนับเป็นความล้มเหลว
+          จึงเป็นวิธีที่ตรงที่สุดในการหาสาเหตุของ <code>404.3</code> และปัญหาที่เกิดจากกฎ rewrite
+        </p>
+        <p>
+          ส่วนประกอบที่ต้องติดตั้งคือ <strong>Tracing</strong> ซึ่งอยู่ใต้
+          <em>World Wide Web Services → Health and Diagnostics → Tracing</em>
+          ตามที่เอกสารระบุ จากนั้นเปิดใช้งานที่ระดับ site ผ่าน IIS Manager
+          โดยเลือก site แล้วเลือก <em>Failed Request Tracing</em> ในบานหน้าต่าง Actions
+          และเพิ่มกฎที่ <em>Failed Request Tracing Rules</em> พร้อมระบุรหัสสถานะที่ต้องการติดตาม
+        </p>
+        <div class="code">
+          <div class="code-head"><span>applicationHost.config</span><span class="where">ผลลัพธ์ที่ IIS Manager เขียนให้</span></div>
+<pre><span class="t">&lt;location</span> path=<span class="s">"corp-web"</span><span class="t">&gt;</span>
+  <span class="t">&lt;system.webServer&gt;</span>
+    <span class="t">&lt;tracing&gt;</span>
+      <span class="t">&lt;traceFailedRequests&gt;</span>
+        <span class="t">&lt;add</span> path=<span class="s">"*"</span><span class="t">&gt;</span>
+          <span class="t">&lt;traceAreas&gt;</span>
+            <span class="t">&lt;add</span> provider=<span class="s">"WWW Server"</span> areas=<span class="s">"Security"</span> verbosity=<span class="s">"Verbose"</span> <span class="t">/&gt;</span>
+          <span class="t">&lt;/traceAreas&gt;</span>
+          <span class="t">&lt;failureDefinitions</span> statusCodes=<span class="s">"404.3"</span> <span class="t">/&gt;</span>
+        <span class="t">&lt;/add&gt;</span>
+      <span class="t">&lt;/traceFailedRequests&gt;</span>
+    <span class="t">&lt;/tracing&gt;</span>
+  <span class="t">&lt;/system.webServer&gt;</span>
+<span class="t">&lt;/location&gt;</span></pre>
+        </div>
+        <p class="note">
+          ไฟล์ผลลัพธ์ถูกเก็บไว้ที่ <code>%SystemDrive%\inetpub\logs\FailedReqLogFiles\W3SVC&lt;หมายเลข site&gt;</code>
+          โดยเขียน <strong>หนึ่งไฟล์ต่อหนึ่ง request ที่ล้มเหลว</strong> เช่น <code>fr000001.xml</code>
+          พร้อมไฟล์ <code>freb.xsl</code> หนึ่งไฟล์ต่อหนึ่งโฟลเดอร์สำหรับใช้เปิดดูผลลัพธ์
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 11 ============ -->
+    <section class="pg" id="ref" hidden data-title="อ้างอิง" data-full="แหล่งอ้างอิง">
+      <div class="col refs">
+        <div class="sec-head"><span class="sec-no">—</span><h2>แหล่งอ้างอิง</h2></div>
+        <p class="sec-sub">เอกสารทุกรายการด้านล่างถูกเปิดอ่านเนื้อหาเต็มเพื่อตรวจสอบ มิใช่อ้างจากผลการค้นหา</p>
+
+        <h3>สถาปัตยกรรมและองค์ประกอบ</h3>
+        <ol>
+          <li>
+            Introduction to IIS Architectures — องค์ประกอบ HTTP.sys, W3SVC และ WAS,
+            คุณประโยชน์สามประการของ HTTP.sys, บทบาทของ application pool
+            และลำดับการประมวลผล request แปดขั้น<span class="doc">MICROSOFT</span><br>
+            <span class="src">learn.microsoft.com/en-us/iis/get-started/introduction-to-iis/introduction-to-iis-architecture</span>
+          </li>
+          <li>
+            Application Pool Identities — บัญชีเสมือนรูปแบบ <code>IIS AppPool\&lt;ชื่อ pool&gt;</code>,
+            ค่าเริ่มต้น ApplicationPoolIdentity และตัวอย่างคำสั่ง <code>ICACLS</code><span class="doc">MICROSOFT</span><br>
+            <span class="src">learn.microsoft.com/en-us/iis/manage/configuring-security/application-pool-identities</span>
+          </li>
+        </ol>
+
+        <h3>Reverse proxy และ URL Rewrite</h3>
+        <ol start="3">
+          <li>
+            Reverse Proxy with URL Rewrite v2 and Application Request Routing —
+            ข้อความว่าความสามารถ reverse proxy ถูกปิดเป็นค่าเริ่มต้น
+            และรูปแบบกฎที่ใช้ในส่วนที่ 06<span class="doc">MICROSOFT</span><br>
+            <span class="src">learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/reverse-proxy-with-url-rewrite-v2-and-application-request-routing</span>
+          </li>
+          <li>
+            URL Rewrite Module Configuration Reference — นิยามของ <code>IsFile</code>,
+            <code>IsDirectory</code>, <code>negate</code>, <code>logicalGrouping</code>,
+            <code>stopProcessing</code>, back-reference <code>{R:N}</code>,
+            ค่า <code>redirectType</code> และตัวแปร <code>HTTPS</code> ที่มีค่า <code>OFF</code><span class="doc">MICROSOFT</span><br>
+            <span class="src">learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/url-rewrite-module-configuration-reference</span>
+          </li>
+          <li>
+            Creating Rewrite Rules for the URL Rewrite Module — ความแตกต่างระหว่าง
+            action แบบ Rewrite และ Redirect และตำแหน่งที่เก็บกฎ<span class="doc">MICROSOFT</span><br>
+            <span class="src">learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/creating-rewrite-rules-for-the-url-rewrite-module</span>
+          </li>
+          <li>
+            ARR as generic proxy in Hotmail and SkyDrive — เหตุผลของการตั้ง
+            <code>preserveHostHeader = true</code> และการบันทึกสถานะ 502 ของ ARR<span class="doc">MICROSOFT</span><br>
+            <span class="src">learn.microsoft.com/en-us/iis/extensions/configuring-application-request-routing-arr/arr-as-generic-proxy-in-hotmail-and-skydrive</span>
+          </li>
+          <li>
+            URL Rewrite — หน้าดาวน์โหลดทางการ ระบุเวอร์ชัน 2.1 รองรับ IIS 7 ถึง IIS 10<span class="doc">MICROSOFT</span><br>
+            <span class="src">iis.net/downloads/microsoft/url-rewrite</span>
+          </li>
+          <li>
+            Application Request Routing — หน้าดาวน์โหลดทางการ ระบุเวอร์ชัน 3.0
+            และข้อกำหนดว่าต้องติดตั้ง URL Rewrite ก่อน<span class="doc">MICROSOFT</span><br>
+            <span class="src">iis.net/downloads/microsoft/application-request-routing</span>
+          </li>
+        </ol>
+
+        <h3>เนื้อหาแบบ static รหัสสถานะ และไฟล์บันทึก</h3>
+        <ol start="9">
+          <li>
+            Adding Static Content MIME Mappings &lt;mimeMap&gt; — ข้อความว่า IIS
+            ไม่ส่งคืนชนิดไฟล์ที่ไม่ได้เพิ่มไว้ใน <code>&lt;staticContent&gt;</code>
+            และรูปแบบการประกาศ<span class="doc">MICROSOFT</span><br>
+            <span class="src">learn.microsoft.com/en-us/iis/configuration/system.webserver/staticcontent/mimemap</span>
+          </li>
+          <li>
+            HTTP Status Code Overview (IIS) — นิยามของ <code>404.3</code> MIME type restriction,
+            <code>400.10</code> Invalid X-Forwarded-For header, <code>502</code> และรหัสย่อยของ ARR<span class="doc">MICROSOFT</span><br>
+            <span class="src">learn.microsoft.com/en-us/troubleshoot/developer/webapps/iis/health-diagnostic-performance/http-status-code</span>
+          </li>
+          <li>
+            Configure Logging in IIS — ตำแหน่งเริ่มต้นของไฟล์บันทึก IIS
+            คือ <code>%SystemDrive%\inetpub\logs\LogFiles</code><span class="doc">MICROSOFT</span><br>
+            <span class="src">learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis</span>
+          </li>
+          <li>
+            Configuring HTTP Server API Error Logging — โฟลเดอร์เริ่มต้น
+            <code>%SystemRoot%\System32\LogFiles</code> พร้อมโฟลเดอร์ย่อย <code>HTTPERR</code>
+            และ registry ที่ควบคุมการบันทึก<span class="doc">MICROSOFT</span><br>
+            <span class="src">learn.microsoft.com/en-us/windows/win32/http/configuring-http-server-api-error-logging</span>
+          </li>
+          <li>
+            Troubleshoot failed requests using tracing in IIS — หลักการเก็บ trace ไว้ในบัฟเฟอร์
+            ตำแหน่ง <code>FailedReqLogFiles\W3SVC&lt;id&gt;</code> และโครงสร้าง configuration<span class="doc">MICROSOFT</span><br>
+            <span class="src">learn.microsoft.com/en-us/previous-versions/troubleshoot/iis/troubleshoot-failed-requests-using-tracing-in-iis-7</span>
+          </li>
+        </ol>
+
+        <h3>การยืนยันตัวตนและ cmdlet</h3>
+        <ol start="14">
+          <li>
+            Windows Authentication &lt;windowsAuthentication&gt; — ลำดับสามขั้นของการเปิดใช้งาน
+            ค่าเริ่มต้น <code>enabled="false"</code> คำสั่ง appcmd
+            และข้อกำหนดเรื่อง <code>/commit:apphost</code><span class="doc">MICROSOFT</span><br>
+            <span class="src">learn.microsoft.com/en-us/iis/configuration/system.webserver/security/authentication/windowsauthentication/</span>
+          </li>
+          <li>
+            Install-WindowsFeature (ServerManager) — ข้อกำหนดด้านสิทธิ์ระดับยกระดับ
+            และพารามิเตอร์ <code>-IncludeManagementTools</code><span class="doc">MICROSOFT</span><br>
+            <span class="src">learn.microsoft.com/en-us/powershell/module/servermanager/install-windowsfeature</span>
+          </li>
+          <li>
+            New-WebAppPool, New-Website, New-WebBinding (WebAdministration) — syntax ของ cmdlet,
+            ค่า <code>-SslFlags</code> ทั้งสี่ค่า และตัวอย่างการผูกใบรับรองด้วย
+            <code>AddSslCertificate</code><span class="doc">MICROSOFT</span><br>
+            <span class="src">learn.microsoft.com/en-us/powershell/module/webadministration/</span>
+          </li>
+        </ol>
+
+        <div class="closing">
+          <p>
+            ชื่อ site พาธของไฟล์ หมายเลขพอร์ต และพาธปลายทางทั้งหมดในเอกสารนี้
+            เป็นค่าตัวอย่างที่กำหนดขึ้น มิใช่ค่าที่ตรวจวัดหรือดึงมาจากระบบจริง
+            ส่วน Thumbprint ของใบรับรองในส่วนที่ 08 เป็นค่าตัวอย่างที่ปรากฏในเอกสารของ Microsoft
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="pager">
+    <button type="button" id="prevBtn">
+      <span class="dir">ส่วนก่อนหน้า</span>
+      <span class="ttl2" id="prevTitle">—</span>
+    </button>
+    <button type="button" class="next" id="nextBtn">
+      <span class="dir">ส่วนถัดไป</span>
+      <span class="ttl2" id="nextTitle">—</span>
+    </button>
+  </div>
+  <p class="hint">ใช้ปุ่มลูกศรซ้าย–ขวาเพื่อเปลี่ยนส่วนได้</p>
+</div>
+
+<script>
+(function () {
+  var pages = Array.prototype.slice.call(document.querySelectorAll('.pg'));
+  var nav = document.getElementById('pagenav');
+  var counter = document.getElementById('counter');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var prevTitle = document.getElementById('prevTitle');
+  var nextTitle = document.getElementById('nextTitle');
+  var current = 0;
+
+  pages.forEach(function (pg, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.innerHTML = '<span class="num">' + String(i + 1).padStart(2, '0') + '</span>' + pg.dataset.title;
+    b.addEventListener('click', function () { show(i, true); });
+    nav.appendChild(b);
+  });
+  var navBtns = Array.prototype.slice.call(nav.children);
+
+  function show(i, scroll) {
+    if (i < 0 || i >= pages.length) return;
+    current = i;
+    pages.forEach(function (pg, j) { pg.hidden = j !== i; });
+    navBtns.forEach(function (b, j) {
+      if (j === i) { b.setAttribute('aria-current', 'true'); } else { b.removeAttribute('aria-current'); }
+    });
+    counter.textContent = 'หน้า ' + (i + 1) + ' จาก ' + pages.length;
+
+    prevBtn.disabled = i === 0;
+    nextBtn.disabled = i === pages.length - 1;
+    prevTitle.textContent = i === 0 ? '—' : pages[i - 1].dataset.full;
+    nextTitle.textContent = i === pages.length - 1 ? '—' : pages[i + 1].dataset.full;
+
+    if (history.replaceState) {
+      history.replaceState(null, '', '#' + pages[i].id);
+    }
+    if (scroll) {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      navBtns[i].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+  }
+
+  prevBtn.addEventListener('click', function () { show(current - 1, true); });
+  nextBtn.addEventListener('click', function () { show(current + 1, true); });
+
+  document.addEventListener('keydown', function (e) {
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'ArrowRight') { show(current + 1, true); }
+    if (e.key === 'ArrowLeft') { show(current - 1, true); }
+  });
+
+  var start = 0;
+  if (location.hash) {
+    var idx = pages.findIndex(function (p) { return '#' + p.id === location.hash; });
+    if (idx > -1) start = idx;
+  }
+  show(start, false);
+})();
+</script>
+</body>
+</html>
