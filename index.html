@@ -18,42 +18,44 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600&family=Kanit:wght@500;600&family=Source+Code+Pro:wght@400;500&display=swap">
 <style>
   :root {
-    /* โทนขาวสะอาดกับเขียวใบไม้ — พื้นขาวอมเขียวจาง ไม่มีดำสนิท */
-    --paper:#F5F9F6; --surface:#FFFFFF; --surface-2:#EAF2EC;
-    --ink:#1F2D25; --ink-soft:#55635A; --ink-faint:#8B978F;
-    --line:#DCE7E0; --line-soft:#E9F0EB;
-    --accent:#3F8F63; --accent-soft:#E4F1E9; --on-accent:#FFFFFF;
-    --client:#41889F; --client-soft:#E3EFF3;
-    --app:#6B8E4E; --app-soft:#EDF3E3;
-    --warn:#9A7529; --warn-bg:#F7F1DE;
-    --stop:#A6584F; --stop-bg:#F8E9E6;
-    --code-bg:#EEF4F0; --code-com:#8B978F; --code-key:#3F8F63; --code-str:#41889F;
+    /* Earth tone · Adventure — เขียวป่า ขาวนวล เทาอมเขียว
+       สีหลักหกค่าจากชุด: 394831 · 5B7856 · 9FB49B · ECE8E5 · CFC9BE · 607D7E
+       ค่าที่เหลือเป็นเฉดเสริมที่ไล่จากหกค่านี้เพื่อให้ครบทุกบทบาท */
+    --paper:#ECE8E5; --surface:#FBFAF9; --surface-2:#DFDBD5;
+    --ink:#394831; --ink-soft:#5B6B57; --ink-faint:#8A9287;
+    --line:#CFC9BE; --line-soft:#E0DCD5;
+    --accent:#5B7856; --accent-soft:#E1E8DE; --on-accent:#FBFAF9;
+    --client:#607D7E; --client-soft:#DFE6E6;
+    --app:#7A8F76; --app-soft:#E4E9E3;
+    --warn:#8A6A3A; --warn-bg:#EFE8DC;
+    --stop:#9A5A4A; --stop-bg:#EEE1DC;
+    --code-bg:#E4E0DA; --code-com:#8A9287; --code-key:#5B7856; --code-str:#607D7E;
     --radius:7px;
     --text:760px; --wide:1000px; --side:264px;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --paper:#121A15; --surface:#18221C; --surface-2:#1F2B23;
-      --ink:#E3EBE5; --ink-soft:#A5B3A9; --ink-faint:#7C8A81;
-      --line:#2B3830; --line-soft:#232E27;
-      --accent:#6FC494; --accent-soft:#14261B; --on-accent:#121A15;
-      --client:#77B9CE; --client-soft:#15242A;
-      --app:#A8C47E; --app-soft:#1D2618;
-      --warn:#D4B472; --warn-bg:#2A2418;
-      --stop:#D89A90; --stop-bg:#2B1E1B;
-      --code-bg:#141C17; --code-com:#7C8A81; --code-key:#6FC494; --code-str:#77B9CE;
+      --paper:#1A201B; --surface:#222A23; --surface-2:#2A332B;
+      --ink:#E4E8E2; --ink-soft:#A9B4A6; --ink-faint:#7F8C7D;
+      --line:#333D34; --line-soft:#293129;
+      --accent:#8FB388; --accent-soft:#1D2A1D; --on-accent:#1A201B;
+      --client:#8FB0B1; --client-soft:#1B2626;
+      --app:#A8BCA4; --app-soft:#212A20;
+      --warn:#C9A574; --warn-bg:#2A2318;
+      --stop:#C99184; --stop-bg:#2A1E1A;
+      --code-bg:#1C231D; --code-com:#7F8C7D; --code-key:#8FB388; --code-str:#8FB0B1;
     }
   }
   :root[data-theme="dark"] {
-    --paper:#121A15; --surface:#18221C; --surface-2:#1F2B23;
-    --ink:#E3EBE5; --ink-soft:#A5B3A9; --ink-faint:#7C8A81;
-    --line:#2B3830; --line-soft:#232E27;
-    --accent:#6FC494; --accent-soft:#14261B; --on-accent:#121A15;
-    --client:#77B9CE; --client-soft:#15242A;
-    --app:#A8C47E; --app-soft:#1D2618;
-    --warn:#D4B472; --warn-bg:#2A2418;
-    --stop:#D89A90; --stop-bg:#2B1E1B;
-    --code-bg:#141C17; --code-com:#7C8A81; --code-key:#6FC494; --code-str:#77B9CE;
+    --paper:#1A201B; --surface:#222A23; --surface-2:#2A332B;
+    --ink:#E4E8E2; --ink-soft:#A9B4A6; --ink-faint:#7F8C7D;
+    --line:#333D34; --line-soft:#293129;
+    --accent:#8FB388; --accent-soft:#1D2A1D; --on-accent:#1A201B;
+    --client:#8FB0B1; --client-soft:#1B2626;
+    --app:#A8BCA4; --app-soft:#212A20;
+    --warn:#C9A574; --warn-bg:#2A2318;
+    --stop:#C99184; --stop-bg:#2A1E1A;
+    --code-bg:#1C231D; --code-com:#7F8C7D; --code-key:#8FB388; --code-str:#8FB0B1;
   }
 
   * { box-sizing: border-box; }
@@ -505,7 +507,7 @@
               <text class="tl" x="44" y="271">USER MODE</text>
 
               <rect class="bx" x="60" y="280" width="256" height="74" rx="7"/>
-              <text class="tm" x="72" y="298">svchost.exe</text>
+              <text class="tm" x="214" y="298">svchost.exe</text>
               <rect class="bx" x="74" y="306" width="112" height="36" rx="7"/>
               <text class="t" x="130" y="329" text-anchor="middle">W3SVC</text>
               <rect class="bx" x="196" y="306" width="106" height="36" rx="7"/>
@@ -527,7 +529,7 @@
               <text class="ta" x="322" y="322">สร้าง / รีไซเคิล</text>
 
               <path class="ln flow-rel" d="M130 306 L 130 242" marker-end="url(#a1)"/>
-              <text class="tm" x="40" y="262">ตั้งค่า HTTP.sys</text>
+              <text class="tm" x="142" y="258">ตั้งค่า HTTP.sys</text>
 
               <path class="ln flow" d="M382 202 L 382 256 L 430 256 L 430 288 L 464 288" marker-end="url(#a1a)"/>
               <text class="tm" x="392" y="232">ส่ง request</text>
@@ -1405,7 +1407,7 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
               <rect class="bx" x="295" y="222" width="441" height="52" rx="7"/>
               <text class="tm" x="311" y="243">X-Forwarded-For: 10.20.30.40</text>
               <text class="tm" x="311" y="262">IP เดิมเดินทางต่อได้ในรูปเฮดเดอร์เท่านั้น</text>
-              <path class="ln-a flow-rel" d="M380 128 L 380 160 L 260 160 L 260 248 L 289 248" marker-end="url(#h2)"/>
+              <path class="ln-a flow-rel" d="M380 128 L 380 145 L 240 145 L 240 248 L 289 248" marker-end="url(#h2)"/>
               <text class="ta" x="24" y="252">IIS เป็นผู้ใส่ให้</text>
             </svg>
           </div>
@@ -2256,7 +2258,8 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
               <text class="tm" x="520" y="231">ของ IIS ตามส่วนที่ 06</text>
 
               <line class="ln dash" x1="24" y1="256" x2="736" y2="256"/>
-              <text class="tm" x="24" y="278">CATALINA_BASE ใช้เมื่อต้องการหลาย instance บนเครื่องเดียว โดย CATALINA_HOME เก็บไฟล์ที่ใช้ร่วมกัน ส่วน BASE เก็บค่าตั้งของแต่ละ instance</text>
+              <text class="tm" x="24" y="274">CATALINA_BASE ใช้เมื่อต้องการหลาย instance บนเครื่องเดียว</text>
+              <text class="tm" x="24" y="292">CATALINA_HOME เก็บไฟล์ที่ใช้ร่วมกัน ส่วน BASE เก็บค่าตั้งของแต่ละ instance</text>
             </svg>
           </div>
           <figcaption>
