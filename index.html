@@ -319,9 +319,19 @@
   /* ---------- อ้างอิง ---------- */
   .refs { font-size: 14px; }
   .refs h3 { font-size: 14px; color: var(--ink-soft); margin-top: 26px; margin-bottom: 8px; }
-  .refs ol { padding-left: 22px; }
-  .refs li { margin-bottom: 9px; line-height: 1.65; }
-  .refs .src { color: var(--ink-faint); font-family: "Source Code Pro", monospace; font-size: 10.5px; word-break: break-all; }
+  .reftbl { min-width: 480px; }
+  .reftbl td { vertical-align: top; padding-top: 11px; padding-bottom: 11px; }
+  .reftbl td.k { white-space: nowrap; font-variant-numeric: tabular-nums; width: 1%; }
+  .ref-t { font-weight: 600; color: var(--ink); }
+  .ref-p { color: var(--ink-faint); margin-left: 6px; }
+  .ref-p::before { content: "· "; }
+  .ref-d { display: block; margin-top: 4px; color: var(--ink-soft); line-height: 1.6; }
+  .ref-l {
+    display: block; margin-top: 7px; color: var(--accent); text-decoration: none;
+    font-family: "Source Code Pro", monospace; font-size: 10.5px; word-break: break-all;
+    border-bottom: 1px solid var(--line-soft); padding-bottom: 1px;
+  }
+  .ref-l:hover { border-bottom-color: var(--accent); }
   .doc {
     display: inline-block; font-family: "Source Code Pro", monospace; font-size: 9.5px;
     letter-spacing: .06em; padding: 0 5px; border: 1px solid var(--accent); color: var(--accent);
@@ -354,6 +364,66 @@
     font-family: "Source Code Pro", monospace; font-size: 10.5px; color: var(--ink-faint);
   }
 
+
+  /* ---------- Knowledge Graph ---------- */
+  svg .kg-n { stroke-width: 1.2; }
+  svg .kg-iis   { fill: var(--accent-soft); stroke: var(--accent); }
+  svg .kg-java  { fill: var(--app-soft);    stroke: var(--app); }
+  svg .kg-react { fill: var(--client-soft); stroke: var(--client); }
+  svg .kg-arch  { fill: var(--warn-bg);     stroke: var(--warn); }
+  svg .kg-t { fill: var(--ink); font-family: "Source Code Pro", monospace; font-size: 13px; }
+  svg .kg-e { stroke: var(--ink-faint); stroke-width: 1.2; fill: none; pointer-events: none; }
+  svg .kg-hit { stroke: transparent; stroke-width: 14; fill: none; pointer-events: stroke; cursor: help; }
+  svg .kg-node { cursor: pointer; }
+  svg .kg-node:focus { outline: none; }
+  svg .kg-node:hover rect, svg .kg-node:focus-visible rect { stroke-width: 2.6; }
+  #kgNodes.dim .kg-node { opacity: .15; }
+  #kgNodes.dim .kg-node.on { opacity: 1; }
+  #kgEdges.dim .kg-e { opacity: .09; animation: none; }
+  #kgEdges.dim .kg-e.on { opacity: 1; stroke: var(--accent); stroke-width: 1.9; animation: flowDash 2.8s linear infinite; }
+  svg .kg-lab-bg { fill: var(--surface); stroke: var(--accent); stroke-width: 1; }
+  svg .kg-lab { fill: var(--accent); font-family: "Source Code Pro", monospace; font-size: 10px; letter-spacing: .06em; }
+
+  .kg-ctl { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .kg-chip {
+    font: inherit; font-size: 12.5px; cursor: pointer; background: var(--surface); color: var(--ink-soft);
+    border: 1px solid var(--line); border-radius: 999px; padding: 5px 13px;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .kg-chip span { font-family: "Source Code Pro", monospace; font-size: 10.5px; color: var(--ink-faint); }
+  .kg-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .kg-chip[aria-pressed="true"] span { color: var(--on-accent); }
+  .kg-c-java[aria-pressed="true"]  { background: var(--app);    border-color: var(--app); }
+  .kg-c-react[aria-pressed="true"] { background: var(--client); border-color: var(--client); }
+  .kg-c-arch[aria-pressed="true"]  { background: var(--warn);   border-color: var(--warn); }
+  .kg-frame { padding: 12px 10px; }
+  .kg-panel { margin-top: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+  .kg-p-head {
+    display: flex; flex-wrap: wrap; gap: 3px 14px; align-items: baseline;
+    padding: 11px 15px; border-bottom: 1px solid var(--line-soft); background: var(--surface-2);
+  }
+  .kg-p-title { font-weight: 600; font-family: "Source Code Pro", monospace; font-size: 13px; color: var(--ink); }
+  .kg-p-meta { font-size: 11.5px; color: var(--ink-faint); font-family: "Source Code Pro", monospace; }
+  .kg-p-body { padding: 13px 15px; }
+  .kg-hint { margin: 0; font-size: 13px; color: var(--ink-soft); line-height: 1.7; }
+  .kg-rel { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+  .kg-rel li { display: grid; grid-template-columns: 16px minmax(0,auto) 1fr; gap: 10px; align-items: baseline; font-size: 12.5px; }
+  .kg-dir { font-family: "Source Code Pro", monospace; color: var(--ink-faint); }
+  .kg-pred { font-family: "Source Code Pro", monospace; color: var(--accent); word-break: break-all; }
+  .kg-other { color: var(--ink); }
+  .kg-sub { margin: 11px 0 0; font-size: 12px; color: var(--ink-faint); }
+
+  .side-foot { margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--line); display: grid; gap: 7px; }
+  .side-btn {
+    font: inherit; text-align: left; cursor: pointer; text-decoration: none;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    color: var(--ink); padding: 9px 11px; display: grid; grid-template-columns: 18px 1fr; gap: 9px; align-items: start;
+  }
+  .side-btn:hover { border-color: var(--accent); }
+  .side-btn .side-ic { color: var(--accent); font-size: 13px; line-height: 1.5; }
+  .side-btn b { display: block; font-size: 12.5px; font-weight: 600; }
+  .side-btn i { display: block; font-style: normal; font-size: 11px; color: var(--ink-faint); margin-top: 2px; }
+
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -364,8 +434,18 @@
 <div class="shell">
   <aside class="sidebar" id="sidebar">
     <span class="mark">เจาะโครงสร้าง <span>IIS</span></span>
-    <span class="side-sub">13 ส่วน · 15 แผนภาพ</span>
+    <span class="side-sub">13 ส่วน · 16 แผนภาพ</span>
     <nav class="pagenav" id="pagenav" aria-label="สารบัญ"></nav>
+    <div class="side-foot">
+      <a class="side-btn" id="mdBtn" href="iis-knowladge.md" download="iis-knowladge.md">
+        <span class="side-ic" aria-hidden="true">↓</span>
+        <span><b>ดาวน์โหลดเป็น .md</b><i>เอกสารทั้งฉบับ ไฟล์เดียว เอาไปต่อยอดได้</i></span>
+      </a>
+      <button type="button" class="side-btn" id="kgBtn">
+        <span class="side-ic" aria-hidden="true">◆</span>
+        <span><b>Knowledge Graph</b><i>54 node · 65 relationship</i></span>
+      </button>
+    </div>
   </aside>
 
   <div>
@@ -392,8 +472,8 @@
         </p>
         <div class="cover-meta">
           <div><b>ขอบเขต</b> ชั้น IIS เป็นหลัก</div>
-          <div><b>เนื้อหา</b> 13 ส่วน · แผนภาพ 15 รูป</div>
-          <div><b>อ้างอิง</b> 32 รายการ · เปิดอ่านเต็มทุกหน้า</div>
+          <div><b>เนื้อหา</b> 13 ส่วน · แผนภาพ 16 รูป</div>
+          <div><b>อ้างอิง</b> 36 รายการ · เปิดอ่านเต็มทุกหน้า</div>
         </div>
       </div>
 
@@ -3199,214 +3279,901 @@ service.bat install MyService</pre>
         <p class="sec-sub">เอกสารทุกรายการด้านล่างถูกเปิดอ่านเนื้อหาเต็มเพื่อตรวจสอบ มิใช่อ้างจากผลการค้นหา</p>
 
         <h3>สถาปัตยกรรมและองค์ประกอบ</h3>
-        <ol>
-          <li>
-            Introduction to IIS Architectures — องค์ประกอบ HTTP.sys, W3SVC และ WAS,
-            คุณประโยชน์สามประการของ HTTP.sys, บทบาทของ application pool
-            และลำดับการประมวลผล request แปดขั้น<span class="doc">MICROSOFT</span><br>
-            <span class="src">learn.microsoft.com/en-us/iis/get-started/introduction-to-iis/introduction-to-iis-architecture</span>
-          </li>
-          <li>
-            Application Pool Identities — บัญชีเสมือนรูปแบบ <code>IIS AppPool\&lt;ชื่อ pool&gt;</code>,
-            ค่าเริ่มต้น ApplicationPoolIdentity และตัวอย่างคำสั่ง <code>ICACLS</code><span class="doc">MICROSOFT</span><br>
-            <span class="src">learn.microsoft.com/en-us/iis/manage/configuring-security/application-pool-identities</span>
-          </li>
-        </ol>
+        <div class="tbl">
+          <table class="reftbl">
+            <thead><tr><th>#</th><th>เรื่อง / แหล่ง</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="k">01</td>
+                <td>
+                  <span class="ref-t">Introduction to IIS Architectures</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">องค์ประกอบ HTTP.sys, W3SVC และ WAS, คุณประโยชน์สามประการของ HTTP.sys, บทบาทของ application pool และลำดับการประมวลผล request แปดขั้น</span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/iis/get-started/introduction-to-iis/introduction-to-iis-architecture" target="_blank" rel="noopener">learn.microsoft.com/en-us/iis/get-started/introduction-to-iis/introduction-to-iis-architecture</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">02</td>
+                <td>
+                  <span class="ref-t">Application Pool Identities</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">บัญชีเสมือนรูปแบบ <code>IIS AppPool\&lt;ชื่อ pool&gt;</code>, ค่าเริ่มต้น ApplicationPoolIdentity และตัวอย่างคำสั่ง <code>ICACLS</code></span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/iis/manage/configuring-security/application-pool-identities" target="_blank" rel="noopener">learn.microsoft.com/en-us/iis/manage/configuring-security/application-pool-identities</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <h3>Reverse proxy และ URL Rewrite</h3>
-        <ol start="3">
-          <li>
-            Reverse Proxy with URL Rewrite v2 and Application Request Routing —
-            ข้อความว่าความสามารถ reverse proxy ถูกปิดเป็นค่าเริ่มต้น
-            และรูปแบบกฎที่ใช้ในส่วนที่ 06<span class="doc">MICROSOFT</span><br>
-            <span class="src">learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/reverse-proxy-with-url-rewrite-v2-and-application-request-routing</span>
-          </li>
-          <li>
-            URL Rewrite Module Configuration Reference — นิยามของ <code>IsFile</code>,
-            <code>IsDirectory</code>, <code>negate</code>, <code>logicalGrouping</code>,
-            <code>stopProcessing</code>, back-reference <code>{R:N}</code>,
-            ค่า <code>redirectType</code> และตัวแปร <code>HTTPS</code> ที่มีค่า <code>OFF</code><span class="doc">MICROSOFT</span><br>
-            <span class="src">learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/url-rewrite-module-configuration-reference</span>
-          </li>
-          <li>
-            Creating Rewrite Rules for the URL Rewrite Module — ความแตกต่างระหว่าง
-            action แบบ Rewrite และ Redirect และตำแหน่งที่เก็บกฎ<span class="doc">MICROSOFT</span><br>
-            <span class="src">learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/creating-rewrite-rules-for-the-url-rewrite-module</span>
-          </li>
-          <li>
-            ARR as generic proxy in Hotmail and SkyDrive — เหตุผลของการตั้ง
-            <code>preserveHostHeader = true</code> และการบันทึกสถานะ 502 ของ ARR<span class="doc">MICROSOFT</span><br>
-            <span class="src">learn.microsoft.com/en-us/iis/extensions/configuring-application-request-routing-arr/arr-as-generic-proxy-in-hotmail-and-skydrive</span>
-          </li>
-          <li>
-            URL Rewrite — หน้าดาวน์โหลดทางการ ระบุเวอร์ชัน 2.1 รองรับ IIS 7 ถึง IIS 10<span class="doc">MICROSOFT</span><br>
-            <span class="src">iis.net/downloads/microsoft/url-rewrite</span>
-          </li>
-          <li>
-            Application Request Routing — หน้าดาวน์โหลดทางการ ระบุเวอร์ชัน 3.0
-            และข้อกำหนดว่าต้องติดตั้ง URL Rewrite ก่อน<span class="doc">MICROSOFT</span><br>
-            <span class="src">iis.net/downloads/microsoft/application-request-routing</span>
-          </li>
-        </ol>
+        <div class="tbl">
+          <table class="reftbl">
+            <thead><tr><th>#</th><th>เรื่อง / แหล่ง</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="k">03</td>
+                <td>
+                  <span class="ref-t">Reverse Proxy with URL Rewrite v2 and Application Request Routing</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">ข้อความว่าความสามารถ reverse proxy ถูกปิดเป็นค่าเริ่มต้น และรูปแบบกฎที่ใช้ในส่วนที่ 06</span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/reverse-proxy-with-url-rewrite-v2-and-application-request-routing" target="_blank" rel="noopener">learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/reverse-proxy-with-url-rewrite-v2-and-application-request-routing</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">04</td>
+                <td>
+                  <span class="ref-t">URL Rewrite Module Configuration Reference</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">นิยามของ <code>IsFile</code>, <code>IsDirectory</code>, <code>negate</code>, <code>logicalGrouping</code>, <code>stopProcessing</code>, back-reference <code>{R:N}</code>, ค่า <code>redirectType</code> และตัวแปร <code>HTTPS</code> ที่มีค่า <code>OFF</code></span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/url-rewrite-module-configuration-reference" target="_blank" rel="noopener">learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/url-rewrite-module-configuration-reference</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">05</td>
+                <td>
+                  <span class="ref-t">Creating Rewrite Rules for the URL Rewrite Module</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">ความแตกต่างระหว่าง action แบบ Rewrite และ Redirect และตำแหน่งที่เก็บกฎ</span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/creating-rewrite-rules-for-the-url-rewrite-module" target="_blank" rel="noopener">learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/creating-rewrite-rules-for-the-url-rewrite-module</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">06</td>
+                <td>
+                  <span class="ref-t">ARR as generic proxy in Hotmail and SkyDrive</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">เหตุผลของการตั้ง <code>preserveHostHeader = true</code> และการบันทึกสถานะ 502 ของ ARR</span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/iis/extensions/configuring-application-request-routing-arr/arr-as-generic-proxy-in-hotmail-and-skydrive" target="_blank" rel="noopener">learn.microsoft.com/en-us/iis/extensions/configuring-application-request-routing-arr/arr-as-generic-proxy-in-hotmail-and-skydrive</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">07</td>
+                <td>
+                  <span class="ref-t">URL Rewrite</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">หน้าดาวน์โหลดทางการ ระบุเวอร์ชัน 2.1 รองรับ IIS 7 ถึง IIS 10</span>
+                  <a class="ref-l" href="https://iis.net/downloads/microsoft/url-rewrite" target="_blank" rel="noopener">iis.net/downloads/microsoft/url-rewrite</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">08</td>
+                <td>
+                  <span class="ref-t">Application Request Routing</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">หน้าดาวน์โหลดทางการ ระบุเวอร์ชัน 3.0 และข้อกำหนดว่าต้องติดตั้ง URL Rewrite ก่อน</span>
+                  <a class="ref-l" href="https://iis.net/downloads/microsoft/application-request-routing" target="_blank" rel="noopener">iis.net/downloads/microsoft/application-request-routing</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <h3>เนื้อหาแบบ static status code และ log</h3>
-        <ol start="9">
-          <li>
-            Adding Static Content MIME Mappings &lt;mimeMap&gt; — ข้อความว่า IIS
-            ไม่ส่งคืนชนิดไฟล์ที่ไม่ได้เพิ่มไว้ใน <code>&lt;staticContent&gt;</code>
-            และรูปแบบการประกาศ<span class="doc">MICROSOFT</span><br>
-            <span class="src">learn.microsoft.com/en-us/iis/configuration/system.webserver/staticcontent/mimemap</span>
-          </li>
-          <li>
-            HTTP Status Code Overview (IIS) — นิยามของ <code>404.3</code> MIME type restriction,
-            <code>400.10</code> Invalid X-Forwarded-For header, <code>502</code> และรหัสย่อยของ ARR<span class="doc">MICROSOFT</span><br>
-            <span class="src">learn.microsoft.com/en-us/troubleshoot/developer/webapps/iis/health-diagnostic-performance/http-status-code</span>
-          </li>
-          <li>
-            Configure Logging in IIS — ตำแหน่งเริ่มต้นของ log IIS
-            คือ <code>%SystemDrive%\inetpub\logs\LogFiles</code><span class="doc">MICROSOFT</span><br>
-            <span class="src">learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis</span>
-          </li>
-          <li>
-            Configuring HTTP Server API Error Logging — โฟลเดอร์เริ่มต้น
-            <code>%SystemRoot%\System32\LogFiles</code> พร้อมโฟลเดอร์ย่อย <code>HTTPERR</code>
-            และ registry ที่ควบคุมการบันทึก<span class="doc">MICROSOFT</span><br>
-            <span class="src">learn.microsoft.com/en-us/windows/win32/http/configuring-http-server-api-error-logging</span>
-          </li>
-          <li>
-            Troubleshoot failed requests using tracing in IIS — หลักการเก็บ trace ไว้ในบัฟเฟอร์
-            ตำแหน่ง <code>FailedReqLogFiles\W3SVC&lt;id&gt;</code> และโครงสร้าง configuration<span class="doc">MICROSOFT</span><br>
-            <span class="src">learn.microsoft.com/en-us/previous-versions/troubleshoot/iis/troubleshoot-failed-requests-using-tracing-in-iis-7</span>
-          </li>
-        </ol>
+        <div class="tbl">
+          <table class="reftbl">
+            <thead><tr><th>#</th><th>เรื่อง / แหล่ง</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="k">09</td>
+                <td>
+                  <span class="ref-t">Adding Static Content MIME Mappings &lt;mimeMap&gt;</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">ข้อความว่า IIS ไม่ส่งคืนชนิดไฟล์ที่ไม่ได้เพิ่มไว้ใน <code>&lt;staticContent&gt;</code> และรูปแบบการประกาศ</span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/iis/configuration/system.webserver/staticcontent/mimemap" target="_blank" rel="noopener">learn.microsoft.com/en-us/iis/configuration/system.webserver/staticcontent/mimemap</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">10</td>
+                <td>
+                  <span class="ref-t">HTTP Status Code Overview (IIS)</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">นิยามของ <code>404.3</code> MIME type restriction, <code>400.10</code> Invalid X-Forwarded-For header, <code>502</code> และรหัสย่อยของ ARR</span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/troubleshoot/developer/webapps/iis/health-diagnostic-performance/http-status-code" target="_blank" rel="noopener">learn.microsoft.com/en-us/troubleshoot/developer/webapps/iis/health-diagnostic-performance/http-status-code</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">11</td>
+                <td>
+                  <span class="ref-t">Configure Logging in IIS</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">ตำแหน่งเริ่มต้นของ log IIS คือ <code>%SystemDrive%\inetpub\logs\LogFiles</code></span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis" target="_blank" rel="noopener">learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">12</td>
+                <td>
+                  <span class="ref-t">Configuring HTTP Server API Error Logging</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">โฟลเดอร์เริ่มต้น <code>%SystemRoot%\System32\LogFiles</code> พร้อมโฟลเดอร์ย่อย <code>HTTPERR</code> และ registry ที่ควบคุมการบันทึก</span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/windows/win32/http/configuring-http-server-api-error-logging" target="_blank" rel="noopener">learn.microsoft.com/en-us/windows/win32/http/configuring-http-server-api-error-logging</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">13</td>
+                <td>
+                  <span class="ref-t">Troubleshoot failed requests using tracing in IIS</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">หลักการเก็บ trace ไว้ในบัฟเฟอร์ ตำแหน่ง <code>FailedReqLogFiles\W3SVC&lt;id&gt;</code> และโครงสร้าง configuration</span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/previous-versions/troubleshoot/iis/troubleshoot-failed-requests-using-tracing-in-iis-7" target="_blank" rel="noopener">learn.microsoft.com/en-us/previous-versions/troubleshoot/iis/troubleshoot-failed-requests-using-tracing-in-iis-7</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <h3>การยืนยันตัวตนและ cmdlet</h3>
-        <ol start="14">
-          <li>
-            Windows Authentication &lt;windowsAuthentication&gt; — ลำดับสามขั้นของการเปิดใช้งาน
-            ค่าเริ่มต้น <code>enabled="false"</code> คำสั่ง appcmd
-            และข้อกำหนดเรื่อง <code>/commit:apphost</code><span class="doc">MICROSOFT</span><br>
-            <span class="src">learn.microsoft.com/en-us/iis/configuration/system.webserver/security/authentication/windowsauthentication/</span>
-          </li>
-          <li>
-            Install-WindowsFeature (ServerManager) — ข้อกำหนดด้านสิทธิ์ระดับยกระดับ
-            และพารามิเตอร์ <code>-IncludeManagementTools</code><span class="doc">MICROSOFT</span><br>
-            <span class="src">learn.microsoft.com/en-us/powershell/module/servermanager/install-windowsfeature</span>
-          </li>
-          <li>
-            New-WebAppPool, New-Website, New-WebBinding (WebAdministration) — syntax ของ cmdlet,
-            ค่า <code>-SslFlags</code> ทั้งสี่ค่า และตัวอย่างการผูกใบรับรองด้วย
-            <code>AddSslCertificate</code><span class="doc">MICROSOFT</span><br>
-            <span class="src">learn.microsoft.com/en-us/powershell/module/webadministration/</span>
-          </li>
-        </ol>
+        <div class="tbl">
+          <table class="reftbl">
+            <thead><tr><th>#</th><th>เรื่อง / แหล่ง</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="k">14</td>
+                <td>
+                  <span class="ref-t">Windows Authentication &lt;windowsAuthentication&gt;</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">ลำดับสามขั้นของการเปิดใช้งาน ค่าเริ่มต้น <code>enabled="false"</code> คำสั่ง appcmd และข้อกำหนดเรื่อง <code>/commit:apphost</code></span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/iis/configuration/system.webserver/security/authentication/windowsauthentication/" target="_blank" rel="noopener">learn.microsoft.com/en-us/iis/configuration/system.webserver/security/authentication/windowsauthentication/</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">15</td>
+                <td>
+                  <span class="ref-t">Install-WindowsFeature (ServerManager)</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">ข้อกำหนดด้านสิทธิ์ระดับยกระดับ และพารามิเตอร์ <code>-IncludeManagementTools</code></span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/powershell/module/servermanager/install-windowsfeature" target="_blank" rel="noopener">learn.microsoft.com/en-us/powershell/module/servermanager/install-windowsfeature</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">16</td>
+                <td>
+                  <span class="ref-t">New-WebAppPool, New-Website, New-WebBinding (WebAdministration)</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">syntax ของ cmdlet, ค่า <code>-SslFlags</code> ทั้งสี่ค่า และตัวอย่างการผูกใบรับรองด้วย <code>AddSslCertificate</code></span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/powershell/module/webadministration/" target="_blank" rel="noopener">learn.microsoft.com/en-us/powershell/module/webadministration/</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <h3>Spring Boot และ Apache Tomcat · ส่วนที่ 10</h3>
-        <ol start="17">
-          <li>
-            Spring Boot — Traditional Deployment — ขั้นตอนสร้างไฟล์ WAR ที่ deploy ได้
-            ทั้งการสืบทอด <code>SpringBootServletInitializer</code>, การเปลี่ยน packaging
-            การประกาศ <code>spring-boot-starter-tomcat</code> เป็น <code>provided</code>
-            และข้อจำกัดของ Spring WebFlux<span class="doc">SPRING</span><br>
-            <span class="src">docs.spring.io/spring-boot/how-to/deployment/traditional-deployment.html</span>
-          </li>
-          <li>
-            Spring Boot — Embedded Web Servers — property
-            <code>server.forward-headers-strategy</code> ค่า NATIVE, FRAMEWORK, NONE
-            และคำเตือนเรื่องการเชื่อถือ proxy ทุกตัว<span class="doc">SPRING</span><br>
-            <span class="src">docs.spring.io/spring-boot/how-to/webserver.html</span>
-          </li>
-          <li>
-            Apache Tomcat 11 — The Context Container — กฎการอนุมาน context path
-            จากชื่อไฟล์ WAR, กรณีพิเศษ <code>ROOT</code>, การใช้ <code>#</code>
-            และข้อไม่แนะนำให้กำหนด Context ใน <code>server.xml</code><span class="doc">APACHE</span><br>
-            <span class="src">tomcat.apache.org/tomcat-11.0-doc/config/context.html</span>
-          </li>
-          <li>
-            Apache Tomcat 11 — The HTTP Connector — แอตทริบิวต์ <code>address</code>
-            และข้อความว่าโดยค่าเริ่มต้น connector รับฟังทุกที่อยู่ในเครื่อง<span class="doc">APACHE</span><br>
-            <span class="src">tomcat.apache.org/tomcat-11.0-doc/config/http.html</span>
-          </li>
-        </ol>
+        <div class="tbl">
+          <table class="reftbl">
+            <thead><tr><th>#</th><th>เรื่อง / แหล่ง</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="k">17</td>
+                <td>
+                  <span class="ref-t">Traditional Deployment</span><span class="ref-p">Spring Boot</span><span class="doc">SPRING</span>
+                  <span class="ref-d">ขั้นตอนสร้างไฟล์ WAR ที่ deploy ได้ ทั้งการสืบทอด <code>SpringBootServletInitializer</code>, การเปลี่ยน packaging การประกาศ <code>spring-boot-starter-tomcat</code> เป็น <code>provided</code> และข้อจำกัดของ Spring WebFlux</span>
+                  <a class="ref-l" href="https://docs.spring.io/spring-boot/how-to/deployment/traditional-deployment.html" target="_blank" rel="noopener">docs.spring.io/spring-boot/how-to/deployment/traditional-deployment.html</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">18</td>
+                <td>
+                  <span class="ref-t">Embedded Web Servers</span><span class="ref-p">Spring Boot</span><span class="doc">SPRING</span>
+                  <span class="ref-d">property <code>server.forward-headers-strategy</code> ค่า NATIVE, FRAMEWORK, NONE และคำเตือนเรื่องการเชื่อถือ proxy ทุกตัว</span>
+                  <a class="ref-l" href="https://docs.spring.io/spring-boot/how-to/webserver.html" target="_blank" rel="noopener">docs.spring.io/spring-boot/how-to/webserver.html</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">19</td>
+                <td>
+                  <span class="ref-t">The Context Container</span><span class="ref-p">Apache Tomcat 11</span><span class="doc">APACHE</span>
+                  <span class="ref-d">กฎการอนุมาน context path จากชื่อไฟล์ WAR, กรณีพิเศษ <code>ROOT</code>, การใช้ <code>#</code> และข้อไม่แนะนำให้กำหนด Context ใน <code>server.xml</code></span>
+                  <a class="ref-l" href="https://tomcat.apache.org/tomcat-11.0-doc/config/context.html" target="_blank" rel="noopener">tomcat.apache.org/tomcat-11.0-doc/config/context.html</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">20</td>
+                <td>
+                  <span class="ref-t">The HTTP Connector</span><span class="ref-p">Apache Tomcat 11</span><span class="doc">APACHE</span>
+                  <span class="ref-d">แอตทริบิวต์ <code>address</code> และข้อความว่าโดยค่าเริ่มต้น connector รับฟังทุกที่อยู่ในเครื่อง</span>
+                  <a class="ref-l" href="https://tomcat.apache.org/tomcat-11.0-doc/config/http.html" target="_blank" rel="noopener">tomcat.apache.org/tomcat-11.0-doc/config/http.html</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <h3>React และ Vite · ส่วนที่ 12</h3>
-        <ol start="21">
-          <li>
-            Vite — Building for Production — หัวข้อ Public Base Path
-            การเขียน path ของ asset ใหม่ตามค่า <code>base</code> และการเรียกไฟล์ผลลัพธ์ว่า
-            hashed assets<span class="doc">VITE</span><br>
-            <span class="src">vite.dev/guide/build</span>
-          </li>
-          <li>
-            Vite — Deploying a Static Site — ข้อความว่าผลลัพธ์ของการ build
-            ถูกวางที่ <code>dist</code> โดยค่าเริ่มต้น และคำสั่ง
-            <code>npm run preview</code> สำหรับทดสอบในเครื่อง<span class="doc">VITE</span><br>
-            <span class="src">vite.dev/guide/static-deploy</span>
-          </li>
-          <li>
-            Vite — Shared Options — นิยามของค่า <code>base</code>
-            และรูปแบบค่าที่รับได้<span class="doc">VITE</span><br>
-            <span class="src">vite.dev/config/shared-options</span>
-          </li>
-          <li>
-            Vite — Server Options — ค่า <code>server.proxy</code>
-            ซึ่งเอกสารระบุว่าใช้กำหนดกฎ proxy สำหรับ dev server<span class="doc">VITE</span><br>
-            <span class="src">vite.dev/config/server-options</span>
-          </li>
-          <li>
-            React Router — Single Page App (SPA) — หัวข้อ Direct all URLs to index.html
-            ข้อกำหนดให้โฮสต์ส่งทุก URL ไปยัง <code>index.html</code>
-            และข้อความเรื่องอาการ 404 ที่เส้นทางซึ่งถูกต้อง<span class="doc">REACT ROUTER</span><br>
-            <span class="src">reactrouter.com/how-to/spa</span>
-          </li>
-        </ol>
+        <div class="tbl">
+          <table class="reftbl">
+            <thead><tr><th>#</th><th>เรื่อง / แหล่ง</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="k">21</td>
+                <td>
+                  <span class="ref-t">Building for Production</span><span class="ref-p">Vite</span><span class="doc">VITE</span>
+                  <span class="ref-d">หัวข้อ Public Base Path การเขียน path ของ asset ใหม่ตามค่า <code>base</code> และการเรียกไฟล์ผลลัพธ์ว่า hashed assets</span>
+                  <a class="ref-l" href="https://vite.dev/guide/build" target="_blank" rel="noopener">vite.dev/guide/build</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">22</td>
+                <td>
+                  <span class="ref-t">Deploying a Static Site</span><span class="ref-p">Vite</span><span class="doc">VITE</span>
+                  <span class="ref-d">ข้อความว่าผลลัพธ์ของการ build ถูกวางที่ <code>dist</code> โดยค่าเริ่มต้น และคำสั่ง <code>npm run preview</code> สำหรับทดสอบในเครื่อง</span>
+                  <a class="ref-l" href="https://vite.dev/guide/static-deploy" target="_blank" rel="noopener">vite.dev/guide/static-deploy</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">23</td>
+                <td>
+                  <span class="ref-t">Shared Options</span><span class="ref-p">Vite</span><span class="doc">VITE</span>
+                  <span class="ref-d">นิยามของค่า <code>base</code> และรูปแบบค่าที่รับได้</span>
+                  <a class="ref-l" href="https://vite.dev/config/shared-options" target="_blank" rel="noopener">vite.dev/config/shared-options</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">24</td>
+                <td>
+                  <span class="ref-t">Server Options</span><span class="ref-p">Vite</span><span class="doc">VITE</span>
+                  <span class="ref-d">ค่า <code>server.proxy</code> ซึ่งเอกสารระบุว่าใช้กำหนดกฎ proxy สำหรับ dev server</span>
+                  <a class="ref-l" href="https://vite.dev/config/server-options" target="_blank" rel="noopener">vite.dev/config/server-options</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">25</td>
+                <td>
+                  <span class="ref-t">Single Page App (SPA)</span><span class="ref-p">React Router</span><span class="doc">REACT ROUTER</span>
+                  <span class="ref-d">หัวข้อ Direct all URLs to index.html ข้อกำหนดให้โฮสต์ส่งทุก URL ไปยัง <code>index.html</code> และข้อความเรื่องอาการ 404 ที่เส้นทางซึ่งถูกต้อง</span>
+                  <a class="ref-l" href="https://reactrouter.com/how-to/spa" target="_blank" rel="noopener">reactrouter.com/how-to/spa</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <h3>Tomcat และการพัฒนา · ส่วนที่ 11</h3>
-        <ol start="26">
-          <li>
-            Apache Tomcat — Which Version Do I Want? — ตารางเวอร์ชัน Tomcat
-            กับสเปกและเวอร์ชัน Java ที่รองรับ และข้อความว่า Tomcat 11.0.x
-            implement Servlet 6.1 ตามที่ Jakarta EE 11 กำหนด<span class="doc">APACHE</span><br>
-            <span class="src">tomcat.apache.org/whichversion.html</span>
-          </li>
-          <li>
-            Apache Tomcat 11 — Introduction — นิยามของ Tomcat โครงสร้างไดเรกทอรี
-            <code>/bin</code> <code>/conf</code> <code>/logs</code> <code>/webapps</code>
-            และความต่างของ <code>CATALINA_HOME</code> กับ <code>CATALINA_BASE</code><span class="doc">APACHE</span><br>
-            <span class="src">tomcat.apache.org/tomcat-11.0-doc/introduction.html</span>
-          </li>
-          <li>
-            Apache Tomcat 11 — Deployer How To — พฤติกรรมของ <code>autoDeploy</code>
-            เมื่อมีไฟล์ .WAR ถูกวางลงใน appBase<span class="doc">APACHE</span><br>
-            <span class="src">tomcat.apache.org/tomcat-11.0-doc/deployer-howto.html</span>
-          </li>
-          <li>
-            Apache Tomcat 11 — Windows Service How To — สคริปต์ <code>service.bat</code>
-            ข้อกำหนดเรื่องสิทธิ์ Administrator และโปรแกรม <code>Tomcat11w</code><span class="doc">APACHE</span><br>
-            <span class="src">tomcat.apache.org/tomcat-11.0-doc/windows-service-howto.html</span>
-          </li>
-          <li>
-            Apache Tomcat 11 — Logging — บทบาทของไฟล์ <code>catalina.out</code>
-            ที่รับทุกอย่างซึ่งเขียนลง <code>System.out</code> และ <code>System.err</code><span class="doc">APACHE</span><br>
-            <span class="src">tomcat.apache.org/tomcat-11.0-doc/logging.html</span>
-          </li>
-          <li>
-            Spring Boot — System Requirements — เวอร์ชัน Java ที่ต้องใช้
-            และรายการ servlet container ที่รองรับพร้อมเลขเวอร์ชัน Servlet<span class="doc">SPRING</span><br>
-            <span class="src">docs.spring.io/spring-boot/system-requirements.html</span>
-          </li>
-          <li>
-            Spring Boot — Developer Tools — การรีสตาร์ทอัตโนมัติเมื่อไฟล์บน classpath
-            เปลี่ยนแปลง<span class="doc">SPRING</span><br>
-            <span class="src">docs.spring.io/spring-boot/reference/using/devtools.html</span>
-          </li>
-        </ol>
+        <div class="tbl">
+          <table class="reftbl">
+            <thead><tr><th>#</th><th>เรื่อง / แหล่ง</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="k">26</td>
+                <td>
+                  <span class="ref-t">Which Version Do I Want?</span><span class="ref-p">Apache Tomcat</span><span class="doc">APACHE</span>
+                  <span class="ref-d">ตารางเวอร์ชัน Tomcat กับสเปกและเวอร์ชัน Java ที่รองรับ และข้อความว่า Tomcat 11.0.x implement Servlet 6.1 ตามที่ Jakarta EE 11 กำหนด</span>
+                  <a class="ref-l" href="https://tomcat.apache.org/whichversion.html" target="_blank" rel="noopener">tomcat.apache.org/whichversion.html</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">27</td>
+                <td>
+                  <span class="ref-t">Introduction</span><span class="ref-p">Apache Tomcat 11</span><span class="doc">APACHE</span>
+                  <span class="ref-d">นิยามของ Tomcat โครงสร้างไดเรกทอรี <code>/bin</code> <code>/conf</code> <code>/logs</code> <code>/webapps</code> และความต่างของ <code>CATALINA_HOME</code> กับ <code>CATALINA_BASE</code></span>
+                  <a class="ref-l" href="https://tomcat.apache.org/tomcat-11.0-doc/introduction.html" target="_blank" rel="noopener">tomcat.apache.org/tomcat-11.0-doc/introduction.html</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">28</td>
+                <td>
+                  <span class="ref-t">Deployer How To</span><span class="ref-p">Apache Tomcat 11</span><span class="doc">APACHE</span>
+                  <span class="ref-d">พฤติกรรมของ <code>autoDeploy</code> เมื่อมีไฟล์ .WAR ถูกวางลงใน appBase</span>
+                  <a class="ref-l" href="https://tomcat.apache.org/tomcat-11.0-doc/deployer-howto.html" target="_blank" rel="noopener">tomcat.apache.org/tomcat-11.0-doc/deployer-howto.html</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">29</td>
+                <td>
+                  <span class="ref-t">Windows Service How To</span><span class="ref-p">Apache Tomcat 11</span><span class="doc">APACHE</span>
+                  <span class="ref-d">สคริปต์ <code>service.bat</code> ข้อกำหนดเรื่องสิทธิ์ Administrator และโปรแกรม <code>Tomcat11w</code></span>
+                  <a class="ref-l" href="https://tomcat.apache.org/tomcat-11.0-doc/windows-service-howto.html" target="_blank" rel="noopener">tomcat.apache.org/tomcat-11.0-doc/windows-service-howto.html</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">30</td>
+                <td>
+                  <span class="ref-t">Logging</span><span class="ref-p">Apache Tomcat 11</span><span class="doc">APACHE</span>
+                  <span class="ref-d">บทบาทของไฟล์ <code>catalina.out</code> ที่รับทุกอย่างซึ่งเขียนลง <code>System.out</code> และ <code>System.err</code></span>
+                  <a class="ref-l" href="https://tomcat.apache.org/tomcat-11.0-doc/logging.html" target="_blank" rel="noopener">tomcat.apache.org/tomcat-11.0-doc/logging.html</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">31</td>
+                <td>
+                  <span class="ref-t">System Requirements</span><span class="ref-p">Spring Boot</span><span class="doc">SPRING</span>
+                  <span class="ref-d">เวอร์ชัน Java ที่ต้องใช้ และรายการ servlet container ที่รองรับพร้อมเลขเวอร์ชัน Servlet</span>
+                  <a class="ref-l" href="https://docs.spring.io/spring-boot/system-requirements.html" target="_blank" rel="noopener">docs.spring.io/spring-boot/system-requirements.html</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">32</td>
+                <td>
+                  <span class="ref-t">Developer Tools</span><span class="ref-p">Spring Boot</span><span class="doc">SPRING</span>
+                  <span class="ref-d">การรีสตาร์ทอัตโนมัติเมื่อไฟล์บน classpath เปลี่ยนแปลง</span>
+                  <a class="ref-l" href="https://docs.spring.io/spring-boot/reference/using/devtools.html" target="_blank" rel="noopener">docs.spring.io/spring-boot/reference/using/devtools.html</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Knowledge Graph · หน้า ◆</h3>
+        <div class="tbl">
+          <table class="reftbl">
+            <thead><tr><th>#</th><th>เรื่อง / แหล่ง</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="k">33</td>
+                <td>
+                  <span class="ref-t">Linked Data</span><span class="ref-p">Design Issues</span><span class="doc">W3C</span>
+                  <span class="ref-d">กฎสี่ข้อของ Linked Data ตั้งแต่ <em>“Use URIs as names for things”</em> ถึง <em>“Include links to other URIs. so that they can discover more things.”</em> และ 5-star deployment scheme</span>
+                  <a class="ref-l" href="https://www.w3.org/DesignIssues/LinkedData.html" target="_blank" rel="noopener">www.w3.org/DesignIssues/LinkedData.html</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">34</td>
+                <td>
+                  <span class="ref-t">RDF 1.1 Primer</span><span class="ref-p">W3C</span><span class="doc">W3C</span>
+                  <span class="ref-d">นิยามของ triple ว่า subject กับ object คือ resource สองตัวที่ถูกเชื่อม ส่วน predicate คือลักษณะของความสัมพันธ์ · ข้อความว่า IRI เป็น global identifier · และกลไกที่ resource เดียวกันไปอยู่ทั้งฝั่ง subject และ object ทำให้พบความเชื่อมโยงระหว่าง triple ได้</span>
+                  <a class="ref-l" href="https://www.w3.org/TR/rdf11-primer/" target="_blank" rel="noopener">www.w3.org/TR/rdf11-primer/</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">35</td>
+                <td>
+                  <span class="ref-t">Graph database concepts</span><span class="ref-p">Neo4j</span><span class="doc">NEO4J</span>
+                  <span class="ref-d">นิยามของ node, label, relationship, relationship type, property, traversal และ path ที่ใช้ในหน้า Knowledge Graph</span>
+                  <a class="ref-l" href="https://neo4j.com/docs/getting-started/appendix/graphdb-concepts/" target="_blank" rel="noopener">neo4j.com/docs/getting-started/appendix/graphdb-concepts/</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">36</td>
+                <td>
+                  <span class="ref-t">Weakly Connected Components</span><span class="ref-p">Neo4j Graph Data Science</span><span class="doc">NEO4J</span>
+                  <span class="ref-d">อัลกอริทึมหาชุดของ node ที่เดินถึงกันได้ และข้อความว่าใช้ตัดสินได้ว่าเครือข่ายเชื่อมถึงกันทั้งหมดหรือไม่</span>
+                  <a class="ref-l" href="https://neo4j.com/docs/graph-data-science/current/algorithms/wcc/" target="_blank" rel="noopener">neo4j.com/docs/graph-data-science/current/algorithms/wcc/</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <div class="closing">
           <p>
             ชื่อ site path ของไฟล์ หมายเลข port และ path ปลายทางทั้งหมดในเอกสารนี้
             เป็นค่าตัวอย่างที่กำหนดขึ้น มิใช่ค่าที่ตรวจวัดหรือดึงมาจากระบบจริง
             ส่วน Thumbprint ของใบรับรองในส่วนที่ 08 เป็นค่าตัวอย่างที่ปรากฏในเอกสารของ Microsoft
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 17 ============ -->
+    <section class="pg" id="kg" hidden data-num="◆" data-group="Knowledge Graph" data-title="Knowledge Graph" data-full="Knowledge Graph ของเอกสารทั้งฉบับ" data-nav="skip">
+      <div class="col">
+        <div class="sec-head"><span class="sec-no">◆</span><h2>Knowledge Graph</h2></div>
+        <p class="sec-sub">ทุกสิ่งที่เอกสารนี้พูดถึง วางเป็น node เดียวกันทั้งฉบับ แล้วโยงด้วยความสัมพันธ์ที่มีชื่อ</p>
+
+        <p>
+          เอกสารแบ่งเป็น 13 ส่วน แต่ละส่วนอธิบายคนละเรื่อง ผลข้างเคียงคือผู้อ่านเห็นทีละส่วน
+          แล้วไม่เห็นว่า <code>context path</code> ในส่วนที่ 11 เป็นค่าเดียวกับที่กฎ rewrite
+          ในส่วนที่ 06 ต้องชี้ไปหา หน้านี้จึงถอดเนื้อหาทั้งฉบับออกมาเป็นกราฟ
+          <strong>node คือสิ่งที่เอกสารพูดถึง เส้นคือความสัมพันธ์ที่มีชื่อกำกับ</strong>
+        </p>
+
+        <h3>วิธีที่ทำให้ข้อมูลถึงกันหมด</h3>
+        <p>
+          คำถามว่า “ทำอย่างไรให้ข้อมูลถึงกันหมด” มีคำตอบเป็นกฎที่เขียนไว้ในมาตรฐานจริง
+          ไม่ใช่การลากเส้นให้มากที่สุด ห้าข้อด้านล่างคือกฎที่กราฟนี้ยึดและตรวจตามได้
+        </p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>#</th><th>หลักการ</th><th>ข้อความจากเอกสารต้นทาง</th><th>ผลกับกราฟนี้</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="n">1</td>
+                <td>หนึ่งสิ่ง ต้องมี identifier เดียว</td>
+                <td><em>“Use URIs as names for things”</em><span class="doc">W3C</span></td>
+                <td><code>Tomcat 11</code> ที่พูดถึงในส่วนที่ 11 กับในส่วนที่ 13 เป็น node ตัวเดียวกัน ไม่แตกเป็นสองก้อน</td>
+              </tr>
+              <tr>
+                <td class="n">2</td>
+                <td>identifier นั้นต้องเปิดตามไปดูได้</td>
+                <td><em>“Use HTTP URIs so that people can look up those names.”</em><span class="doc">W3C</span></td>
+                <td>ทุก node ผูกกับหมายเลขส่วนของเอกสาร กดแล้วรู้ว่าอ่านต่อได้ที่ไหน</td>
+              </tr>
+              <tr>
+                <td class="n">3</td>
+                <td>เก็บทุกข้อเท็จจริงเป็น triple</td>
+                <td><em>“The subject and the object represent the two resources being related; the predicate represents the nature of their relationship.”</em><span class="doc">W3C</span></td>
+                <td>ความสัมพันธ์ทั้ง 65 เส้นเขียนเป็น <code>subject · predicate · object</code> ได้ทั้งหมด</td>
+              </tr>
+              <tr>
+                <td class="n">4</td>
+                <td>ทุกจุดต้องมีทางเดินออกไปหาจุดอื่น</td>
+                <td><em>“Include links to other URIs. so that they can discover more things.”</em><span class="doc">W3C</span></td>
+                <td>ไม่มี node ใดในกราฟนี้ที่ไม่มีเส้นเลย จำนวนเส้นน้อยสุดต่อ node คือ 1</td>
+              </tr>
+              <tr>
+                <td class="n">5</td>
+                <td>ตรวจว่าเชื่อมถึงกันจริง ด้วย WCC</td>
+                <td>Weakly Connected Components <em>“can be used to determine whether your network is fully connected or not”</em><span class="doc">NEO4J</span></td>
+                <td>รันแล้วได้ <strong>1 component ขนาด 54 node</strong> แปลว่าเดินจาก node ใดก็ถึงทุก node ที่เหลือ</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout tip">
+          <span class="ttl">กลไกที่ทำให้กราฟต่อกันจริง ๆ</span>
+          <p>
+            ไม่ใช่การลากเส้นตรงระหว่างสองสิ่ง แต่คือการที่ <strong>สิ่งเดียวกันไปปรากฏทั้งฝั่ง subject
+            ของ triple หนึ่ง และฝั่ง object ของอีก triple หนึ่ง</strong> เอกสารของ W3C เขียนไว้ว่า
+            <em>“this ability to have the same resource be in the subject position of one triple
+            and the object position of another makes it possible to find connections between triples”</em>
+          </p>
+        </div>
+
+        <div class="code">
+          <div class="code-head"><span>WAR กับ Tomcat ไม่มีเส้นตรงถึงกัน แต่ถึงกันผ่าน webapps</span><span class="where">triple</span></div>
+<pre><span class="c">subject        predicate      object</span>
+<span class="t">WAR            DEPLOYED_TO    webapps</span>
+<span class="t">Tomcat 11      SCANS          webapps</span>
+<span class="c">                              ^^^^^^^ resource เดียวกัน</span>
+
+<span class="c">เดินกราฟ : WAR → webapps → Tomcat 11    path length = 2</span></pre>
+        </div>
+
+        <h3>node กับ relationship ต่างกันอย่างไร</h3>
+        <p>
+          นิยามที่ใช้ในหน้านี้มาจากเอกสาร property graph ของ Neo4j ซึ่งเป็นรูปแบบเดียวกับที่
+          graph database ใช้จริง
+        </p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>คำ</th><th>นิยามตามเอกสาร</th><th>ในกราฟนี้คือ</th></tr></thead>
+            <tbody>
+              <tr><td class="kw">node</td><td><em>“Nodes are used to represent entities (discrete objects) of a domain.”</em></td><td>54 กล่องในภาพ</td></tr>
+              <tr><td class="kw">label</td><td><em>“Nodes can have zero or more labels to define (classify) what kind of nodes they are.”</em></td><td>หมวดสี่สี IIS · Java · React · สถาปัตยกรรม</td></tr>
+              <tr><td class="kw">relationship</td><td><em>“A relationship describes how a connection between a source node and a target node are related.”</em> และ <em>“A relationship must have exactly one relationship type”</em></td><td>65 เส้น แต่ละเส้นมีชื่อเดียว เช่น <code>PROXIES_TO</code></td></tr>
+              <tr><td class="kw">traversal</td><td><em>“Traversing a graph means visiting nodes by following relationships according to some rules.”</em></td><td>การไล่จาก <code>browser</code> ไปจนถึง <code>catalina.out</code></td></tr>
+              <tr><td class="kw">path</td><td>ผลของการ traverse <em>“A path containing one relationship has the length of 1”</em></td><td><code>WAR → webapps → Tomcat 11</code> คือ path ยาว 2</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="breakout">
+        <figure>
+          <div class="kg-ctl" role="group" aria-label="กรองตามหมวด">
+            <button type="button" class="kg-chip" data-f="all" aria-pressed="true">ทั้งหมด <span>54</span></button>
+            <button type="button" class="kg-chip kg-c-iis" data-f="iis" aria-pressed="false">IIS <span>24</span></button>
+            <button type="button" class="kg-chip kg-c-java" data-f="java" aria-pressed="false">Java <span>13</span></button>
+            <button type="button" class="kg-chip kg-c-react" data-f="react" aria-pressed="false">React <span>9</span></button>
+            <button type="button" class="kg-chip kg-c-arch" data-f="arch" aria-pressed="false">สถาปัตยกรรม <span>8</span></button>
+          </div>
+          <div class="fig-frame kg-frame" id="kgFrame">
+            <svg viewBox="0 0 1040 980" role="img" aria-label="Knowledge Graph ของเอกสาร ประกอบด้วย 54 node และ 65 เส้นความสัมพันธ์ แบ่งเป็นสี่หมวดคือ IIS, Java, React และสถาปัตยกรรม ตรวจแล้วเชื่อมถึงกันทั้งหมดเป็น component เดียว">
+              <defs>
+                <marker id="kgh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd"/>
+                </marker>
+                <marker id="kgha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
+                </marker>
+              </defs>
+              <g id="kgEdges">
+                <line class="kg-e flow-rel" data-s="winserver" data-o="iis" data-p="SHIPS_WITH" data-lx="876" data-ly="64" x1="901" y1="41" x2="913" y2="43" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="iis" data-o="site" data-p="HOSTS" data-lx="766" data-ly="62" x1="915" y1="51" x2="619" y2="74" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="iis" data-o="revproxy" data-p="ACTS_AS" data-lx="927" data-ly="163" x1="947" y1="69" x2="905" y2="264" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="iis" data-o="sameorigin" data-p="PROVIDES" data-lx="889" data-ly="117" x1="933" y1="69" x2="846" y2="163" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="browser" data-o="httpsys" data-p="REQUESTS" data-lx="426" data-ly="372" x1="485" y1="410" x2="370" y2="336" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="browser" data-o="dist" data-p="LOADS" data-lx="421" data-ly="541" x1="499" y1="452" x2="345" y2="628" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="httpsys" data-o="w3wp" data-p="QUEUES_TO" data-lx="282" data-ly="384" x1="319" y1="334" x2="248" y2="432" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="httpsys" data-o="httperr" data-p="LOGS_TO" data-lx="195" data-ly="426" x1="308" y1="334" x2="85" y2="517" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="w3svc" data-o="apphost" data-p="READS" data-lx="171" data-ly="314" x1="172" y1="508" x2="170" y2="123" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="w3svc" data-o="was" data-p="NOTIFIES" data-lx="297" data-ly="564" x1="210" y1="539" x2="382" y2="589" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="was" data-o="w3wp" data-p="SPAWNS" data-lx="326" data-ly="528" x1="393" y1="579" x2="261" y2="478" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="w3wp" data-o="apppool" data-p="BELONGS_TO" data-lx="161" data-ly="326" x1="219" y1="434" x2="104" y2="220" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="w3wp" data-o="urlrewrite" data-p="LOADS" data-lx="369" data-ly="370" x1="265" y1="434" x2="470" y2="309" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="w3wp" data-o="staticfile" data-p="LOADS" data-lx="161" data-ly="411" x1="197" y1="434" x2="128" y2="391" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="w3wp" data-o="iislog" data-p="WRITES" data-lx="233" data-ly="323" x1="231" y1="434" x2="236" y2="214" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="apppool" data-o="poolid" data-p="RUNS_AS" data-lx="205" data-ly="228" x1="172" y1="209" x2="232" y2="218" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="apphost" data-o="site" data-p="DEFINES" data-lx="375" data-ly="88" x1="274" y1="94" x2="541" y2="79" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="site" data-o="binding" data-p="HAS" data-lx="457" data-ly="64" x1="543" y1="73" x2="382" y2="56" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="site" data-o="application" data-p="CONTAINS" data-lx="469" data-ly="98" x1="543" y1="84" x2="421" y2="107" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="application" data-o="vdir" data-p="CONTAINS" data-lx="256" data-ly="62" x1="320" y1="98" x2="244" y2="55" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="application" data-o="apppool" data-p="ASSIGNED_TO" data-lx="225" data-ly="158" x1="297" y1="137" x2="170" y2="174" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="webconfig" data-o="site" data-p="CONFIGURES" data-lx="505" data-ly="67" x1="536" y1="54" x2="541" y2="56" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="webconfig" data-o="rule" data-p="CONTAINS" data-lx="459" data-ly="205" x1="491" y1="54" x2="410" y2="426" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="urlrewrite" data-o="rule" data-p="EVALUATES" data-lx="456" data-ly="367" x1="494" y1="307" x2="419" y2="426" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="arr" data-o="urlrewrite" data-p="REQUIRES" data-lx="559" data-ly="404" x1="602" y1="501" x2="517" y2="309" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="arr" data-o="tomcat" data-p="PROXIES_TO" data-lx="715" data-ly="584" x1="646" y1="543" x2="780" y2="623" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="spafallback" data-o="rule" data-p="IS_A" data-lx="241" data-ly="538" x1="116" y1="605" x2="362" y2="472" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="staticfile" data-o="dist" data-p="SERVES" data-lx="200" data-ly="499" x1="109" y1="389" x2="306" y2="628" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="staticfile" data-o="mimemap" data-p="CHECKS" data-lx="126" data-ly="412" x1="77" y1="389" x2="73" y2="394" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="binding" data-o="tls" data-p="TERMINATES" data-lx="458" data-ly="111" x1="377" y1="72" x2="513" y2="138" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="tls" data-o="sni" data-p="SELECTED_BY" data-lx="611" data-ly="105" x1="576" y1="136" x2="668" y2="55" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="revproxy" data-o="xff" data-p="ADDS" data-lx="805" data-ly="261" x1="832" y1="268" x2="788" y2="257" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="revproxy" data-o="loopback" data-p="TARGETS" data-lx="938" data-ly="239" x1="917" y1="266" x2="958" y2="214" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="xff" data-o="fwdheaders" data-p="READ_BY" data-lx="788" data-ly="334" x1="726" y1="256" x2="848" y2="409" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="frt" data-o="w3wp" data-p="TRACES" data-lx="206" data-ly="563" x1="187" y1="650" x2="226" y2="478" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="springboot" data-o="war" data-p="PACKAGED_AS" data-lx="716" data-ly="744" x1="706" y1="688" x2="725" y2="797" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="springboot" data-o="initializer" data-p="EXTENDS" data-lx="795" data-ly="847" x1="713" y1="688" x2="836" y2="925" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="fwdheaders" data-o="springboot" data-p="CONFIGURES" data-lx="784" data-ly="550" x1="852" y1="453" x2="718" y2="644" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="devtools" data-o="springboot" data-p="RESTARTS" data-lx="688" data-ly="793" x1="672" y1="927" x2="699" y2="690" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="war" data-o="webapps" data-p="DEPLOYED_TO" data-lx="844" data-ly="697" x1="749" y1="799" x2="938" y2="596" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="war" data-o="ctxpath" data-p="DERIVES" data-lx="637" data-ly="732" x1="707" y1="799" x2="570" y2="667" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="tomcat" data-o="webapps" data-p="SCANS" data-lx="889" data-ly="610" x1="859" y1="625" x2="915" y2="596" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="tomcat" data-o="autodeploy" data-p="ENABLES" data-lx="826" data-ly="718" x1="820" y1="667" x2="831" y2="766" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="tomcat" data-o="connector" data-p="LISTENS_ON" data-lx="911" data-ly="546" x1="838" y1="625" x2="955" y2="499" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="tomcat" data-o="jvm" data-p="RUNS_ON" data-lx="918" data-ly="807" x1="831" y1="667" x2="965" y2="881" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="tomcat" data-o="servlet" data-p="IMPLEMENTS" data-lx="911" data-ly="722" x1="844" y1="667" x2="939" y2="745" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="tomcat" data-o="catalina" data-p="WRITES" data-lx="874" data-ly="679" x1="871" y1="663" x2="897" y2="672" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="autodeploy" data-o="webapps" data-p="WATCHES" data-lx="905" data-ly="666" x1="845" y1="768" x2="946" y2="596" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="connector" data-o="loopback" data-p="BINDS" data-lx="976" data-ly="334" x1="976" y1="455" x2="976" y2="214" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="ctxpath" data-o="rule" data-p="MATCHED_BY" data-lx="475" data-ly="547" x1="530" y1="623" x2="422" y2="472" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="react" data-o="vite" data-p="BUILT_BY" data-lx="441" data-ly="867" x1="378" y1="808" x2="503" y2="923" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="react" data-o="router" data-p="ROUTED_BY" data-lx="216" data-ly="868" x1="319" y1="808" x2="116" y2="925" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="react" data-o="csr" data-p="RENDERS_VIA" data-lx="270" data-ly="868" x1="333" y1="808" x2="209" y2="925" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="vite" data-o="dist" data-p="OUTPUTS" data-lx="426" data-ly="798" x1="513" y1="925" x2="341" y2="674" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="vite" data-o="basepath" data-p="APPLIES" data-lx="468" data-ly="907" x1="491" y1="947" x2="465" y2="947" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="vite" data-o="devserver" data-p="SERVES_DEV" data-lx="529" data-ly="867" x1="528" y1="925" x2="530" y2="812" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="dist" data-o="hashed" data-p="CONTAINS" data-lx="235" data-ly="741" x1="304" y1="672" x2="168" y2="809" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="serverproxy" data-o="devserver" data-p="CONFIGURES" data-lx="410" data-ly="868" x1="322" y1="927" x2="496" y2="812" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="devserver" data-o="springboot" data-p="FORWARDS_TO" data-lx="616" data-ly="728" x1="560" y1="768" x2="669" y2="690" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="router" data-o="spafallback" data-p="NEEDS" data-lx="76" data-ly="787" x1="76" y1="927" x2="77" y2="649" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="decoupled" data-o="react" data-p="COMBINES" data-lx="508" data-ly="578" x1="645" y1="389" x2="372" y2="764" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="decoupled" data-o="springboot" data-p="COMBINES" data-lx="681" data-ly="517" x1="663" y1="389" x2="699" y2="644" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="decoupled" data-o="revproxy" data-p="REQUIRES" data-lx="780" data-ly="327" x1="722" y1="347" x2="832" y2="310" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="sameorigin" data-o="cors" data-p="ELIMINATES" data-lx="779" data-ly="334" x1="819" y1="207" x2="739" y2="459" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="devserver" data-o="cors" data-p="WOULD_HIT" data-lx="646" data-ly="614" x1="545" y1="768" x2="717" y2="505" marker-end="url(#kgh)"/>
+              </g>
+              <g id="kgNodes">
+                <g class="kg-node" data-id="httpsys" data-g="iis" data-label="HTTP.sys" data-secs="01" tabindex="0" role="button" aria-label="HTTP.sys · ส่วนที่ 01">
+                  <rect class="kg-n kg-iis" x="290" y="297" width="88" height="32" rx="7"/>
+                  <text class="kg-t" x="334" y="318" text-anchor="middle">HTTP.sys</text>
+                </g>
+                <g class="kg-node" data-id="w3svc" data-g="iis" data-label="W3SVC" data-secs="01" tabindex="0" role="button" aria-label="W3SVC · ส่วนที่ 01">
+                  <rect class="kg-n kg-iis" x="140" y="513" width="65" height="32" rx="7"/>
+                  <text class="kg-t" x="172" y="533" text-anchor="middle">W3SVC</text>
+                </g>
+                <g class="kg-node" data-id="was" data-g="iis" data-label="WAS" data-secs="01" tabindex="0" role="button" aria-label="WAS · ส่วนที่ 01">
+                  <rect class="kg-n kg-iis" x="389" y="584" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="421" y="605" text-anchor="middle">WAS</text>
+                </g>
+                <g class="kg-node" data-id="w3wp" data-g="iis" data-label="w3wp.exe" data-secs="01 · 02" tabindex="0" role="button" aria-label="w3wp.exe · ส่วนที่ 01 · 02">
+                  <rect class="kg-n kg-iis" x="187" y="439" width="88" height="32" rx="7"/>
+                  <text class="kg-t" x="231" y="459" text-anchor="middle">w3wp.exe</text>
+                </g>
+                <g class="kg-node" data-id="apppool" data-g="iis" data-label="Application Pool" data-secs="02 · 05" tabindex="0" role="button" aria-label="Application Pool · ส่วนที่ 02 · 05">
+                  <rect class="kg-n kg-iis" x="16" y="181" width="151" height="32" rx="7"/>
+                  <text class="kg-t" x="92" y="201" text-anchor="middle">Application Pool</text>
+                </g>
+                <g class="kg-node" data-id="site" data-g="iis" data-label="Site" data-secs="02 · 05" tabindex="0" role="button" aria-label="Site · ส่วนที่ 02 · 05">
+                  <rect class="kg-n kg-iis" x="548" y="61" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="580" y="81" text-anchor="middle">Site</text>
+                </g>
+                <g class="kg-node" data-id="application" data-g="iis" data-label="Application" data-secs="02" tabindex="0" role="button" aria-label="Application · ส่วนที่ 02">
+                  <rect class="kg-n kg-iis" x="302" y="103" width="112" height="32" rx="7"/>
+                  <text class="kg-t" x="358" y="123" text-anchor="middle">Application</text>
+                </g>
+                <g class="kg-node" data-id="vdir" data-g="iis" data-label="Virtual Directory" data-secs="02" tabindex="0" role="button" aria-label="Virtual Directory · ส่วนที่ 02">
+                  <rect class="kg-n kg-iis" x="123" y="16" width="159" height="32" rx="7"/>
+                  <text class="kg-t" x="202" y="37" text-anchor="middle">Virtual Directory</text>
+                </g>
+                <g class="kg-node" data-id="binding" data-g="iis" data-label="Binding" data-secs="02 · 08" tabindex="0" role="button" aria-label="Binding · ส่วนที่ 02 · 08">
+                  <rect class="kg-n kg-iis" x="294" y="35" width="81" height="32" rx="7"/>
+                  <text class="kg-t" x="334" y="55" text-anchor="middle">Binding</text>
+                </g>
+                <g class="kg-node" data-id="apphost" data-g="iis" data-label="applicationHost.config" data-secs="02" tabindex="0" role="button" aria-label="applicationHost.config · ส่วนที่ 02">
+                  <rect class="kg-n kg-iis" x="71" y="84" width="198" height="32" rx="7"/>
+                  <text class="kg-t" x="170" y="104" text-anchor="middle">applicationHost.config</text>
+                </g>
+                <g class="kg-node" data-id="webconfig" data-g="iis" data-label="web.config" data-secs="02 · 06" tabindex="0" role="button" aria-label="web.config · ส่วนที่ 02 · 06">
+                  <rect class="kg-n kg-iis" x="444" y="17" width="104" height="32" rx="7"/>
+                  <text class="kg-t" x="496" y="37" text-anchor="middle">web.config</text>
+                </g>
+                <g class="kg-node" data-id="urlrewrite" data-g="iis" data-label="URL Rewrite" data-secs="04 · 06" tabindex="0" role="button" aria-label="URL Rewrite · ส่วนที่ 04 · 06">
+                  <rect class="kg-n kg-iis" x="451" y="270" width="112" height="32" rx="7"/>
+                  <text class="kg-t" x="507" y="290" text-anchor="middle">URL Rewrite</text>
+                </g>
+                <g class="kg-node" data-id="arr" data-g="iis" data-label="ARR" data-secs="04" tabindex="0" role="button" aria-label="ARR · ส่วนที่ 04">
+                  <rect class="kg-n kg-iis" x="579" y="506" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="611" y="526" text-anchor="middle">ARR</text>
+                </g>
+                <g class="kg-node" data-id="rule" data-g="iis" data-label="rewrite rule" data-secs="06" tabindex="0" role="button" aria-label="rewrite rule · ส่วนที่ 06">
+                  <rect class="kg-n kg-iis" x="345" y="433" width="120" height="32" rx="7"/>
+                  <text class="kg-t" x="405" y="454" text-anchor="middle">rewrite rule</text>
+                </g>
+                <g class="kg-node" data-id="spafallback" data-g="iis" data-label="SPA fallback" data-secs="03 · 06" tabindex="0" role="button" aria-label="SPA fallback · ส่วนที่ 03 · 06">
+                  <rect class="kg-n kg-iis" x="17" y="610" width="120" height="32" rx="7"/>
+                  <text class="kg-t" x="77" y="631" text-anchor="middle">SPA fallback</text>
+                </g>
+                <g class="kg-node" data-id="staticfile" data-g="iis" data-label="StaticFileModule" data-secs="03" tabindex="0" role="button" aria-label="StaticFileModule · ส่วนที่ 03">
+                  <rect class="kg-n kg-iis" x="16" y="352" width="151" height="32" rx="7"/>
+                  <text class="kg-t" x="92" y="372" text-anchor="middle">StaticFileModule</text>
+                </g>
+                <g class="kg-node" data-id="mimemap" data-g="iis" data-label="mimeMap" data-secs="03" tabindex="0" role="button" aria-label="mimeMap · ส่วนที่ 03">
+                  <rect class="kg-n kg-iis" x="16" y="401" width="81" height="32" rx="7"/>
+                  <text class="kg-t" x="57" y="421" text-anchor="middle">mimeMap</text>
+                </g>
+                <g class="kg-node" data-id="xff" data-g="iis" data-label="X-Forwarded-For" data-secs="07" tabindex="0" role="button" aria-label="X-Forwarded-For · ส่วนที่ 07">
+                  <rect class="kg-n kg-iis" x="638" y="219" width="143" height="32" rx="7"/>
+                  <text class="kg-t" x="710" y="240" text-anchor="middle">X-Forwarded-For</text>
+                </g>
+                <g class="kg-node" data-id="tls" data-g="iis" data-label="TLS" data-secs="08" tabindex="0" role="button" aria-label="TLS · ส่วนที่ 08">
+                  <rect class="kg-n kg-iis" x="520" y="141" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="552" y="162" text-anchor="middle">TLS</text>
+                </g>
+                <g class="kg-node" data-id="sni" data-g="iis" data-label="SNI" data-secs="08" tabindex="0" role="button" aria-label="SNI · ส่วนที่ 08">
+                  <rect class="kg-n kg-iis" x="663" y="16" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="695" y="37" text-anchor="middle">SNI</text>
+                </g>
+                <g class="kg-node" data-id="iislog" data-g="iis" data-label="IIS log" data-secs="09" tabindex="0" role="button" aria-label="IIS log · ส่วนที่ 09">
+                  <rect class="kg-n kg-iis" x="196" y="175" width="81" height="32" rx="7"/>
+                  <text class="kg-t" x="236" y="196" text-anchor="middle">IIS log</text>
+                </g>
+                <g class="kg-node" data-id="httperr" data-g="iis" data-label="httperr" data-secs="09" tabindex="0" role="button" aria-label="httperr · ส่วนที่ 09">
+                  <rect class="kg-n kg-iis" x="16" y="524" width="81" height="32" rx="7"/>
+                  <text class="kg-t" x="57" y="544" text-anchor="middle">httperr</text>
+                </g>
+                <g class="kg-node" data-id="frt" data-g="iis" data-label="Failed Request Tracing" data-secs="09" tabindex="0" role="button" aria-label="Failed Request Tracing · ส่วนที่ 09">
+                  <rect class="kg-n kg-iis" x="83" y="655" width="198" height="32" rx="7"/>
+                  <text class="kg-t" x="182" y="675" text-anchor="middle">Failed Request Tracing</text>
+                </g>
+                <g class="kg-node" data-id="poolid" data-g="iis" data-label="ApplicationPoolIdentity" data-secs="05" tabindex="0" role="button" aria-label="ApplicationPoolIdentity · ส่วนที่ 05">
+                  <rect class="kg-n kg-iis" x="239" y="219" width="205" height="32" rx="7"/>
+                  <text class="kg-t" x="341" y="240" text-anchor="middle">ApplicationPoolIdentity</text>
+                </g>
+                <g class="kg-node" data-id="springboot" data-g="java" data-label="Spring Boot" data-secs="10" tabindex="0" role="button" aria-label="Spring Boot · ส่วนที่ 10">
+                  <rect class="kg-n kg-java" x="646" y="651" width="112" height="32" rx="7"/>
+                  <text class="kg-t" x="702" y="672" text-anchor="middle">Spring Boot</text>
+                </g>
+                <g class="kg-node" data-id="initializer" data-g="java" data-label="SpringBootServletInitializer" data-secs="10" tabindex="0" role="button" aria-label="SpringBootServletInitializer · ส่วนที่ 10">
+                  <rect class="kg-n kg-java" x="726" y="932" width="244" height="32" rx="7"/>
+                  <text class="kg-t" x="848" y="953" text-anchor="middle">SpringBootServletInitializer</text>
+                </g>
+                <g class="kg-node" data-id="war" data-g="java" data-label="WAR" data-secs="10 · 11" tabindex="0" role="button" aria-label="WAR · ส่วนที่ 10 · 11">
+                  <rect class="kg-n kg-java" x="697" y="804" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="729" y="824" text-anchor="middle">WAR</text>
+                </g>
+                <g class="kg-node" data-id="fwdheaders" data-g="java" data-label="forward-headers-strategy" data-secs="10" tabindex="0" role="button" aria-label="forward-headers-strategy · ส่วนที่ 10">
+                  <rect class="kg-n kg-java" x="760" y="416" width="213" height="32" rx="7"/>
+                  <text class="kg-t" x="866" y="436" text-anchor="middle">forward-headers-strategy</text>
+                </g>
+                <g class="kg-node" data-id="tomcat" data-g="java" data-label="Tomcat 11" data-secs="11" tabindex="0" role="button" aria-label="Tomcat 11 · ส่วนที่ 11">
+                  <rect class="kg-n kg-java" x="770" y="630" width="96" height="32" rx="7"/>
+                  <text class="kg-t" x="818" y="650" text-anchor="middle">Tomcat 11</text>
+                </g>
+                <g class="kg-node" data-id="connector" data-g="java" data-label="Connector" data-secs="11" tabindex="0" role="button" aria-label="Connector · ส่วนที่ 11">
+                  <rect class="kg-n kg-java" x="928" y="460" width="96" height="32" rx="7"/>
+                  <text class="kg-t" x="976" y="480" text-anchor="middle">Connector</text>
+                </g>
+                <g class="kg-node" data-id="webapps" data-g="java" data-label="webapps" data-secs="11" tabindex="0" role="button" aria-label="webapps · ส่วนที่ 11">
+                  <rect class="kg-n kg-java" x="919" y="557" width="81" height="32" rx="7"/>
+                  <text class="kg-t" x="959" y="578" text-anchor="middle">webapps</text>
+                </g>
+                <g class="kg-node" data-id="autodeploy" data-g="java" data-label="autoDeploy" data-secs="11" tabindex="0" role="button" aria-label="autoDeploy · ส่วนที่ 11">
+                  <rect class="kg-n kg-java" x="781" y="773" width="104" height="32" rx="7"/>
+                  <text class="kg-t" x="833" y="794" text-anchor="middle">autoDeploy</text>
+                </g>
+                <g class="kg-node" data-id="ctxpath" data-g="java" data-label="context path" data-secs="11" tabindex="0" role="button" aria-label="context path · ส่วนที่ 11">
+                  <rect class="kg-n kg-java" x="486" y="628" width="120" height="32" rx="7"/>
+                  <text class="kg-t" x="546" y="649" text-anchor="middle">context path</text>
+                </g>
+                <g class="kg-node" data-id="catalina" data-g="java" data-label="catalina.out" data-secs="11" tabindex="0" role="button" aria-label="catalina.out · ส่วนที่ 11">
+                  <rect class="kg-n kg-java" x="904" y="678" width="120" height="32" rx="7"/>
+                  <text class="kg-t" x="964" y="699" text-anchor="middle">catalina.out</text>
+                </g>
+                <g class="kg-node" data-id="jvm" data-g="java" data-label="JVM" data-secs="11" tabindex="0" role="button" aria-label="JVM · ส่วนที่ 11">
+                  <rect class="kg-n kg-java" x="947" y="888" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="979" y="909" text-anchor="middle">JVM</text>
+                </g>
+                <g class="kg-node" data-id="servlet" data-g="java" data-label="Servlet 6.1" data-secs="11" tabindex="0" role="button" aria-label="Servlet 6.1 · ส่วนที่ 11">
+                  <rect class="kg-n kg-java" x="911" y="752" width="112" height="32" rx="7"/>
+                  <text class="kg-t" x="967" y="773" text-anchor="middle">Servlet 6.1</text>
+                </g>
+                <g class="kg-node" data-id="devtools" data-g="java" data-label="DevTools" data-secs="11" tabindex="0" role="button" aria-label="DevTools · ส่วนที่ 11">
+                  <rect class="kg-n kg-java" x="626" y="932" width="88" height="32" rx="7"/>
+                  <text class="kg-t" x="670" y="952" text-anchor="middle">DevTools</text>
+                </g>
+                <g class="kg-node" data-id="react" data-g="react" data-label="React" data-secs="12" tabindex="0" role="button" aria-label="React · ส่วนที่ 12">
+                  <rect class="kg-n kg-react" x="323" y="771" width="65" height="32" rx="7"/>
+                  <text class="kg-t" x="355" y="792" text-anchor="middle">React</text>
+                </g>
+                <g class="kg-node" data-id="vite" data-g="react" data-label="Vite" data-secs="12" tabindex="0" role="button" aria-label="Vite · ส่วนที่ 12">
+                  <rect class="kg-n kg-react" x="496" y="930" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="528" y="951" text-anchor="middle">Vite</text>
+                </g>
+                <g class="kg-node" data-id="dist" data-g="react" data-label="dist" data-secs="12" tabindex="0" role="button" aria-label="dist · ส่วนที่ 12">
+                  <rect class="kg-n kg-react" x="293" y="635" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="325" y="655" text-anchor="middle">dist</text>
+                </g>
+                <g class="kg-node" data-id="basepath" data-g="react" data-label="base path" data-secs="12" tabindex="0" role="button" aria-label="base path · ส่วนที่ 12">
+                  <rect class="kg-n kg-react" x="362" y="932" width="96" height="32" rx="7"/>
+                  <text class="kg-t" x="410" y="953" text-anchor="middle">base path</text>
+                </g>
+                <g class="kg-node" data-id="hashed" data-g="react" data-label="hashed assets" data-secs="12" tabindex="0" role="button" aria-label="hashed assets · ส่วนที่ 12">
+                  <rect class="kg-n kg-react" x="81" y="816" width="127" height="32" rx="7"/>
+                  <text class="kg-t" x="145" y="837" text-anchor="middle">hashed assets</text>
+                </g>
+                <g class="kg-node" data-id="devserver" data-g="react" data-label="Vite dev server" data-secs="12" tabindex="0" role="button" aria-label="Vite dev server · ส่วนที่ 12">
+                  <rect class="kg-n kg-react" x="459" y="773" width="143" height="32" rx="7"/>
+                  <text class="kg-t" x="531" y="793" text-anchor="middle">Vite dev server</text>
+                </g>
+                <g class="kg-node" data-id="serverproxy" data-g="react" data-label="server.proxy" data-secs="12" tabindex="0" role="button" aria-label="server.proxy · ส่วนที่ 12">
+                  <rect class="kg-n kg-react" x="230" y="932" width="120" height="32" rx="7"/>
+                  <text class="kg-t" x="290" y="953" text-anchor="middle">server.proxy</text>
+                </g>
+                <g class="kg-node" data-id="router" data-g="react" data-label="React Router" data-secs="12" tabindex="0" role="button" aria-label="React Router · ส่วนที่ 12">
+                  <rect class="kg-n kg-react" x="16" y="932" width="120" height="32" rx="7"/>
+                  <text class="kg-t" x="76" y="953" text-anchor="middle">React Router</text>
+                </g>
+                <g class="kg-node" data-id="csr" data-g="react" data-label="CSR" data-secs="12" tabindex="0" role="button" aria-label="CSR · ส่วนที่ 12">
+                  <rect class="kg-n kg-react" x="153" y="932" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="185" y="953" text-anchor="middle">CSR</text>
+                </g>
+                <g class="kg-node" data-id="winserver" data-g="arch" data-label="Windows Server" data-secs="13" tabindex="0" role="button" aria-label="Windows Server · ส่วนที่ 13">
+                  <rect class="kg-n kg-arch" x="761" y="16" width="135" height="32" rx="7"/>
+                  <text class="kg-t" x="829" y="37" text-anchor="middle">Windows Server</text>
+                </g>
+                <g class="kg-node" data-id="iis" data-g="arch" data-label="IIS" data-secs="01 · 13" tabindex="0" role="button" aria-label="IIS · ส่วนที่ 01 · 13">
+                  <rect class="kg-n kg-arch" x="920" y="32" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="952" y="52" text-anchor="middle">IIS</text>
+                </g>
+                <g class="kg-node" data-id="revproxy" data-g="arch" data-label="Reverse proxy" data-secs="03 · 13" tabindex="0" role="button" aria-label="Reverse proxy · ส่วนที่ 03 · 13">
+                  <rect class="kg-n kg-arch" x="837" y="271" width="127" height="32" rx="7"/>
+                  <text class="kg-t" x="900" y="291" text-anchor="middle">Reverse proxy</text>
+                </g>
+                <g class="kg-node" data-id="decoupled" data-g="arch" data-label="Decoupled architecture" data-secs="13" tabindex="0" role="button" aria-label="Decoupled architecture · ส่วนที่ 13">
+                  <rect class="kg-n kg-arch" x="561" y="352" width="198" height="32" rx="7"/>
+                  <text class="kg-t" x="660" y="372" text-anchor="middle">Decoupled architecture</text>
+                </g>
+                <g class="kg-node" data-id="sameorigin" data-g="arch" data-label="Same-origin" data-secs="13" tabindex="0" role="button" aria-label="Same-origin · ส่วนที่ 13">
+                  <rect class="kg-n kg-arch" x="769" y="170" width="112" height="32" rx="7"/>
+                  <text class="kg-t" x="825" y="191" text-anchor="middle">Same-origin</text>
+                </g>
+                <g class="kg-node" data-id="cors" data-g="arch" data-label="CORS" data-secs="12 · 13" tabindex="0" role="button" aria-label="CORS · ส่วนที่ 12 · 13">
+                  <rect class="kg-n kg-arch" x="700" y="466" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="732" y="487" text-anchor="middle">CORS</text>
+                </g>
+                <g class="kg-node" data-id="browser" data-g="arch" data-label="browser" data-secs="03 · 13" tabindex="0" role="button" aria-label="browser · ส่วนที่ 03 · 13">
+                  <rect class="kg-n kg-arch" x="477" y="415" width="81" height="32" rx="7"/>
+                  <text class="kg-t" x="518" y="436" text-anchor="middle">browser</text>
+                </g>
+                <g class="kg-node" data-id="loopback" data-g="arch" data-label="127.0.0.1" data-secs="03 · 07" tabindex="0" role="button" aria-label="127.0.0.1 · ส่วนที่ 03 · 07">
+                  <rect class="kg-n kg-arch" x="928" y="175" width="96" height="32" rx="7"/>
+                  <text class="kg-t" x="976" y="196" text-anchor="middle">127.0.0.1</text>
+                </g>
+              </g>
+              <g id="kgLab" aria-hidden="true"></g>
+            </svg>
+          </div>
+          <div class="kg-panel">
+            <div class="kg-p-head">
+              <span class="kg-p-title" id="kgTitle">ยังไม่ได้เลือก node</span>
+              <span class="kg-p-meta" id="kgMeta">ทั้งกราฟ · 54 node · 65 relationship · WCC = 1 component</span>
+            </div>
+            <div class="kg-p-body" id="kgBody">
+              <p class="kg-hint">
+                คลิกที่กล่องใดก็ได้ในภาพ เพื่อดูว่าสิ่งนั้นต่อกับอะไรบ้าง ด้วย relationship ชื่ออะไร
+                และอยู่ในส่วนที่เท่าไรของเอกสาร · ชี้ที่เส้นเพื่ออ่านชื่อ relationship บนภาพ
+              </p>
+            </div>
+          </div>
+          <figcaption>
+            <b>รูปที่ 16 — Knowledge Graph ของเอกสารทั้งฉบับ</b> ·
+            54 node และ 65 relationship แบ่งด้วยสีตามหมวด
+            ตำแหน่งของกล่องคำนวณด้วย force layout แบบ deterministic นอกเบราว์เซอร์
+            แล้วตรึงพิกัดไว้ จึงตรวจได้ว่าไม่มีกล่องทับกันและไม่มีเส้นพาดผ่านกล่องใด
+            ชื่อ relationship ไม่ถูกวาดค้างไว้บนภาพด้วยเหตุผลเดียวกัน ให้ชี้ที่เส้นเพื่ออ่านทีละเส้น
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="col">
+        <h3>รายการ relationship ทั้งหมด</h3>
+        <p>
+          ตารางนี้คือกราฟเดียวกับภาพด้านบน เขียนในรูป triple ทุกแถวคือหนึ่งเส้น
+          ค้นคำใน predicate เพื่อหาความสัมพันธ์ชนิดเดียวกันได้ทั้งหมด
+        </p>
+        <div class="tbl">
+          <table class="tripletbl">
+            <thead><tr><th>subject</th><th>predicate</th><th>object</th><th>หมวด</th></tr></thead>
+            <tbody>
+              <tr><td class="kw">Windows Server</td><td class="k">SHIPS_WITH</td><td class="kw">IIS</td><td>สถาปัตยกรรม</td></tr>
+              <tr><td class="kw">IIS</td><td class="k">HOSTS</td><td class="kw">Site</td><td>สถาปัตยกรรม</td></tr>
+              <tr><td class="kw">IIS</td><td class="k">ACTS_AS</td><td class="kw">Reverse proxy</td><td>สถาปัตยกรรม</td></tr>
+              <tr><td class="kw">IIS</td><td class="k">PROVIDES</td><td class="kw">Same-origin</td><td>สถาปัตยกรรม</td></tr>
+              <tr><td class="kw">browser</td><td class="k">REQUESTS</td><td class="kw">HTTP.sys</td><td>สถาปัตยกรรม</td></tr>
+              <tr><td class="kw">browser</td><td class="k">LOADS</td><td class="kw">dist</td><td>สถาปัตยกรรม</td></tr>
+              <tr><td class="kw">HTTP.sys</td><td class="k">QUEUES_TO</td><td class="kw">w3wp.exe</td><td>IIS</td></tr>
+              <tr><td class="kw">HTTP.sys</td><td class="k">LOGS_TO</td><td class="kw">httperr</td><td>IIS</td></tr>
+              <tr><td class="kw">W3SVC</td><td class="k">READS</td><td class="kw">applicationHost.config</td><td>IIS</td></tr>
+              <tr><td class="kw">W3SVC</td><td class="k">NOTIFIES</td><td class="kw">WAS</td><td>IIS</td></tr>
+              <tr><td class="kw">WAS</td><td class="k">SPAWNS</td><td class="kw">w3wp.exe</td><td>IIS</td></tr>
+              <tr><td class="kw">w3wp.exe</td><td class="k">BELONGS_TO</td><td class="kw">Application Pool</td><td>IIS</td></tr>
+              <tr><td class="kw">w3wp.exe</td><td class="k">LOADS</td><td class="kw">URL Rewrite</td><td>IIS</td></tr>
+              <tr><td class="kw">w3wp.exe</td><td class="k">LOADS</td><td class="kw">StaticFileModule</td><td>IIS</td></tr>
+              <tr><td class="kw">w3wp.exe</td><td class="k">WRITES</td><td class="kw">IIS log</td><td>IIS</td></tr>
+              <tr><td class="kw">Application Pool</td><td class="k">RUNS_AS</td><td class="kw">ApplicationPoolIdentity</td><td>IIS</td></tr>
+              <tr><td class="kw">applicationHost.config</td><td class="k">DEFINES</td><td class="kw">Site</td><td>IIS</td></tr>
+              <tr><td class="kw">Site</td><td class="k">HAS</td><td class="kw">Binding</td><td>IIS</td></tr>
+              <tr><td class="kw">Site</td><td class="k">CONTAINS</td><td class="kw">Application</td><td>IIS</td></tr>
+              <tr><td class="kw">Application</td><td class="k">CONTAINS</td><td class="kw">Virtual Directory</td><td>IIS</td></tr>
+              <tr><td class="kw">Application</td><td class="k">ASSIGNED_TO</td><td class="kw">Application Pool</td><td>IIS</td></tr>
+              <tr><td class="kw">web.config</td><td class="k">CONFIGURES</td><td class="kw">Site</td><td>IIS</td></tr>
+              <tr><td class="kw">web.config</td><td class="k">CONTAINS</td><td class="kw">rewrite rule</td><td>IIS</td></tr>
+              <tr><td class="kw">URL Rewrite</td><td class="k">EVALUATES</td><td class="kw">rewrite rule</td><td>IIS</td></tr>
+              <tr><td class="kw">ARR</td><td class="k">REQUIRES</td><td class="kw">URL Rewrite</td><td>IIS</td></tr>
+              <tr><td class="kw">ARR</td><td class="k">PROXIES_TO</td><td class="kw">Tomcat 11</td><td>IIS</td></tr>
+              <tr><td class="kw">SPA fallback</td><td class="k">IS_A</td><td class="kw">rewrite rule</td><td>IIS</td></tr>
+              <tr><td class="kw">StaticFileModule</td><td class="k">SERVES</td><td class="kw">dist</td><td>IIS</td></tr>
+              <tr><td class="kw">StaticFileModule</td><td class="k">CHECKS</td><td class="kw">mimeMap</td><td>IIS</td></tr>
+              <tr><td class="kw">Binding</td><td class="k">TERMINATES</td><td class="kw">TLS</td><td>IIS</td></tr>
+              <tr><td class="kw">TLS</td><td class="k">SELECTED_BY</td><td class="kw">SNI</td><td>IIS</td></tr>
+              <tr><td class="kw">Reverse proxy</td><td class="k">ADDS</td><td class="kw">X-Forwarded-For</td><td>สถาปัตยกรรม</td></tr>
+              <tr><td class="kw">Reverse proxy</td><td class="k">TARGETS</td><td class="kw">127.0.0.1</td><td>สถาปัตยกรรม</td></tr>
+              <tr><td class="kw">X-Forwarded-For</td><td class="k">READ_BY</td><td class="kw">forward-headers-strategy</td><td>IIS</td></tr>
+              <tr><td class="kw">Failed Request Tracing</td><td class="k">TRACES</td><td class="kw">w3wp.exe</td><td>IIS</td></tr>
+              <tr><td class="kw">Spring Boot</td><td class="k">PACKAGED_AS</td><td class="kw">WAR</td><td>Java</td></tr>
+              <tr><td class="kw">Spring Boot</td><td class="k">EXTENDS</td><td class="kw">SpringBootServletInitializer</td><td>Java</td></tr>
+              <tr><td class="kw">forward-headers-strategy</td><td class="k">CONFIGURES</td><td class="kw">Spring Boot</td><td>Java</td></tr>
+              <tr><td class="kw">DevTools</td><td class="k">RESTARTS</td><td class="kw">Spring Boot</td><td>Java</td></tr>
+              <tr><td class="kw">WAR</td><td class="k">DEPLOYED_TO</td><td class="kw">webapps</td><td>Java</td></tr>
+              <tr><td class="kw">WAR</td><td class="k">DERIVES</td><td class="kw">context path</td><td>Java</td></tr>
+              <tr><td class="kw">Tomcat 11</td><td class="k">SCANS</td><td class="kw">webapps</td><td>Java</td></tr>
+              <tr><td class="kw">Tomcat 11</td><td class="k">ENABLES</td><td class="kw">autoDeploy</td><td>Java</td></tr>
+              <tr><td class="kw">Tomcat 11</td><td class="k">LISTENS_ON</td><td class="kw">Connector</td><td>Java</td></tr>
+              <tr><td class="kw">Tomcat 11</td><td class="k">RUNS_ON</td><td class="kw">JVM</td><td>Java</td></tr>
+              <tr><td class="kw">Tomcat 11</td><td class="k">IMPLEMENTS</td><td class="kw">Servlet 6.1</td><td>Java</td></tr>
+              <tr><td class="kw">Tomcat 11</td><td class="k">WRITES</td><td class="kw">catalina.out</td><td>Java</td></tr>
+              <tr><td class="kw">autoDeploy</td><td class="k">WATCHES</td><td class="kw">webapps</td><td>Java</td></tr>
+              <tr><td class="kw">Connector</td><td class="k">BINDS</td><td class="kw">127.0.0.1</td><td>Java</td></tr>
+              <tr><td class="kw">context path</td><td class="k">MATCHED_BY</td><td class="kw">rewrite rule</td><td>Java</td></tr>
+              <tr><td class="kw">React</td><td class="k">BUILT_BY</td><td class="kw">Vite</td><td>React</td></tr>
+              <tr><td class="kw">React</td><td class="k">ROUTED_BY</td><td class="kw">React Router</td><td>React</td></tr>
+              <tr><td class="kw">React</td><td class="k">RENDERS_VIA</td><td class="kw">CSR</td><td>React</td></tr>
+              <tr><td class="kw">Vite</td><td class="k">OUTPUTS</td><td class="kw">dist</td><td>React</td></tr>
+              <tr><td class="kw">Vite</td><td class="k">APPLIES</td><td class="kw">base path</td><td>React</td></tr>
+              <tr><td class="kw">Vite</td><td class="k">SERVES_DEV</td><td class="kw">Vite dev server</td><td>React</td></tr>
+              <tr><td class="kw">dist</td><td class="k">CONTAINS</td><td class="kw">hashed assets</td><td>React</td></tr>
+              <tr><td class="kw">server.proxy</td><td class="k">CONFIGURES</td><td class="kw">Vite dev server</td><td>React</td></tr>
+              <tr><td class="kw">Vite dev server</td><td class="k">FORWARDS_TO</td><td class="kw">Spring Boot</td><td>React</td></tr>
+              <tr><td class="kw">React Router</td><td class="k">NEEDS</td><td class="kw">SPA fallback</td><td>React</td></tr>
+              <tr><td class="kw">Decoupled architecture</td><td class="k">COMBINES</td><td class="kw">React</td><td>สถาปัตยกรรม</td></tr>
+              <tr><td class="kw">Decoupled architecture</td><td class="k">COMBINES</td><td class="kw">Spring Boot</td><td>สถาปัตยกรรม</td></tr>
+              <tr><td class="kw">Decoupled architecture</td><td class="k">REQUIRES</td><td class="kw">Reverse proxy</td><td>สถาปัตยกรรม</td></tr>
+              <tr><td class="kw">Same-origin</td><td class="k">ELIMINATES</td><td class="kw">CORS</td><td>สถาปัตยกรรม</td></tr>
+              <tr><td class="kw">Vite dev server</td><td class="k">WOULD_HIT</td><td class="kw">CORS</td><td>React</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>การตรวจสอบกราฟนี้</h3>
+        <p>
+          ทุกบรรทัดในตารางนี้ได้จากการรันสคริปต์กับข้อมูลกราฟจริง มิใช่การประเมินด้วยสายตา
+        </p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>เกณฑ์</th><th>เหตุผลที่ต้องตรวจ</th><th>ผล</th></tr></thead>
+            <tbody>
+              <tr><td>id ของ node ไม่ซ้ำ</td><td>ถ้าซ้ำ สิ่งเดียวกันจะกลายเป็นสอง node แล้วกราฟขาดตรงนั้น</td><td class="k">54 / 54 ไม่ซ้ำ</td></tr>
+              <tr><td>ปลายเส้นทุกเส้นชี้ไป id ที่มีอยู่จริง</td><td>เส้นที่ชี้ไป id ผิดจะกลายเป็นเส้นลอย</td><td class="k">65 / 65 ถูกต้อง</td></tr>
+              <tr><td>ไม่มี node ที่ไม่มีเส้นเลย</td><td>กฎข้อ 4 ของ Linked Data</td><td class="k">degree ต่ำสุด = 1</td></tr>
+              <tr><td>Weakly Connected Components</td><td>เกณฑ์ชี้ขาดว่าข้อมูลถึงกันหมดหรือไม่</td><td class="k">1 component · ขนาด 54</td></tr>
+              <tr><td>กล่องทับกัน</td><td>ข้อกำหนดการแสดงผลของเอกสารนี้</td><td class="k">0 คู่</td></tr>
+              <tr><td>เส้นพาดผ่านกล่องที่ไม่ใช่ปลายทางตัวเอง</td><td>ทำให้อ่านผิดว่าเส้นนั้นเชื่อมกับกล่องที่มันพาดผ่าน</td><td class="k">0 จุด</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout">
+          <span class="ttl">ทำไมไม่เขียนชื่อ relationship ค้างไว้บนภาพ</span>
+          <p>
+            ลองวางป้ายชื่อทั้ง 65 เส้นแล้วตรวจดู พบว่า <strong>30 จาก 54 กรณีมีป้ายทับกันหรือทับกล่อง</strong>
+            ซึ่งขัดกับข้อกำหนดของเอกสารนี้ จึงเปลี่ยนเป็นคำนวณตำแหน่งที่ว่างของแต่ละเส้นไว้ล่วงหน้า
+            แล้วแสดงทีละเส้นตอนชี้ ส่วนภาพรวมของความสัมพันธ์ทั้งหมดอ่านได้จากตาราง triple ด้านบน
           </p>
         </div>
       </div>
@@ -3447,6 +4214,7 @@ service.bat install MyService</pre>
   var lastGroup = null;
 
   pages.forEach(function (pg, i) {
+    if (pg.dataset.nav === 'skip') { navBtns.push(null); return; }
     var g = pg.dataset.group || '';
     if (g !== lastGroup) {
       var h = document.createElement('div');
@@ -3487,6 +4255,7 @@ service.bat install MyService</pre>
     current = i;
     pages.forEach(function (pg, j) { pg.hidden = j !== i; });
     navBtns.forEach(function (b, j) {
+      if (!b) { return; }
       if (j === i) { b.setAttribute('aria-current', 'true'); } else { b.removeAttribute('aria-current'); }
     });
     counter.textContent = 'หน้า ' + (i + 1) + ' จาก ' + pages.length;
@@ -3501,7 +4270,7 @@ service.bat install MyService</pre>
     }
     if (scroll) {
       window.scrollTo({ top: 0, behavior: 'auto' });
-      navBtns[i].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      if (navBtns[i]) { navBtns[i].scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
     }
   }
 
@@ -3516,12 +4285,179 @@ service.bat install MyService</pre>
     if (e.key === 'ArrowLeft') { show(current - 1, true); }
   });
 
+  var kgBtn = document.getElementById('kgBtn');
+  if (kgBtn) {
+    kgBtn.addEventListener('click', function () {
+      var i = pages.findIndex(function (p) { return p.id === 'kg'; });
+      if (i > -1) { show(i, true); closeMenu(); }
+    });
+  }
+
   var start = 0;
   if (location.hash) {
     var idx = pages.findIndex(function (p) { return '#' + p.id === location.hash; });
     if (idx > -1) start = idx;
   }
   show(start, false);
+})();
+
+/* ---------- Knowledge Graph : เลือก node · กรองหมวด · อ่านชื่อ relationship ---------- */
+(function () {
+  var gNodes = document.getElementById('kgNodes');
+  var gEdges = document.getElementById('kgEdges');
+  var gLab = document.getElementById('kgLab');
+  if (!gNodes || !gEdges) { return; }
+
+  var svgNS = 'http://www.w3.org/2000/svg';
+  var nodes = Array.prototype.slice.call(gNodes.querySelectorAll('.kg-node'));
+  var edges = Array.prototype.slice.call(gEdges.querySelectorAll('.kg-e'));
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.kg-chip'));
+  var elTitle = document.getElementById('kgTitle');
+  var elMeta = document.getElementById('kgMeta');
+  var elBody = document.getElementById('kgBody');
+
+  var byId = {};
+  nodes.forEach(function (n) { byId[n.dataset.id] = n; });
+
+  var GROUP = { iis: 'IIS', java: 'Java', react: 'React', arch: 'สถาปัตยกรรม' };
+  var HINT = elBody.innerHTML;
+
+  var sel = null;
+  var filter = 'all';
+
+  function label(id) { return byId[id] ? byId[id].dataset.label : id; }
+
+  function relsOf(id) {
+    var out = [];
+    edges.forEach(function (e) {
+      if (e.dataset.s === id) { out.push({ dir: 'out', p: e.dataset.p, other: e.dataset.o, el: e }); }
+      else if (e.dataset.o === id) { out.push({ dir: 'in', p: e.dataset.p, other: e.dataset.s, el: e }); }
+    });
+    return out;
+  }
+
+  function render() {
+    var onNodes = null, onEdges = null;
+
+    if (sel) {
+      onNodes = {}; onNodes[sel] = 1;
+      onEdges = [];
+      relsOf(sel).forEach(function (r) { onNodes[r.other] = 1; onEdges.push(r.el); });
+    } else if (filter !== 'all') {
+      onNodes = {};
+      nodes.forEach(function (n) { if (n.dataset.g === filter) { onNodes[n.dataset.id] = 1; } });
+      onEdges = edges.filter(function (e) { return onNodes[e.dataset.s] && onNodes[e.dataset.o]; });
+    }
+
+    var dim = onNodes !== null;
+    gNodes.classList.toggle('dim', dim);
+    gEdges.classList.toggle('dim', dim);
+    nodes.forEach(function (n) { n.classList.toggle('on', dim && !!onNodes[n.dataset.id]); });
+    edges.forEach(function (e) {
+      var on = dim && onEdges.indexOf(e) > -1;
+      e.classList.toggle('on', on);
+      e.setAttribute('marker-end', on ? 'url(#kgha)' : 'url(#kgh)');
+    });
+
+    chips.forEach(function (c) { c.setAttribute('aria-pressed', String(c.dataset.f === filter)); });
+    panel();
+  }
+
+  function panel() {
+    if (sel) {
+      var n = byId[sel];
+      var rs = relsOf(sel);
+      var out = rs.filter(function (r) { return r.dir === 'out'; }).length;
+      elTitle.textContent = n.dataset.label;
+      elMeta.textContent = 'degree ' + rs.length + ' · ออก ' + out + ' · เข้า ' + (rs.length - out)
+        + ' · หมวด ' + GROUP[n.dataset.g] + ' · ส่วนที่ ' + n.dataset.secs;
+      var html = '<ul class="kg-rel">';
+      rs.forEach(function (r) {
+        html += '<li><span class="kg-dir">' + (r.dir === 'out' ? '→' : '←') + '</span>'
+             + '<span class="kg-pred">' + r.p + '</span>'
+             + '<span class="kg-other">' + label(r.other) + '</span></li>';
+      });
+      html += '</ul><p class="kg-sub">อ่านว่า ' + n.dataset.label
+           + ' · predicate · ปลายทาง — กด Esc หรือคลิกพื้นที่ว่างเพื่อกลับไปดูทั้งกราฟ</p>';
+      elBody.innerHTML = html;
+      return;
+    }
+    if (filter !== 'all') {
+      var cnt = nodes.filter(function (x) { return x.dataset.g === filter; }).length;
+      var ecnt = edges.filter(function (e) {
+        return byId[e.dataset.s].dataset.g === filter && byId[e.dataset.o].dataset.g === filter;
+      }).length;
+      elTitle.textContent = 'หมวด ' + GROUP[filter];
+      elMeta.textContent = cnt + ' node · ' + ecnt + ' relationship ภายในหมวดเดียวกัน';
+      elBody.innerHTML = HINT;
+      return;
+    }
+    elTitle.textContent = 'ยังไม่ได้เลือก node';
+    elMeta.textContent = 'ทั้งกราฟ · 54 node · 65 relationship · WCC = 1 component';
+    elBody.innerHTML = HINT;
+  }
+
+  function pick(id) { sel = (sel === id) ? null : id; render(); }
+
+  nodes.forEach(function (n) {
+    n.addEventListener('click', function (e) { e.stopPropagation(); pick(n.dataset.id); });
+    n.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(n.dataset.id); }
+    });
+  });
+
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      filter = (filter === c.dataset.f) ? 'all' : c.dataset.f;
+      sel = null;
+      render();
+    });
+  });
+
+  /* ป้ายชื่อ relationship — แสดงทีละเส้นตอนชี้ ตำแหน่งคำนวณไว้แล้วว่าไม่ทับกล่องใด */
+  function clearLab() { while (gLab.firstChild) { gLab.removeChild(gLab.firstChild); } }
+
+  function showLab(e) {
+    clearLab();
+    var x = +e.dataset.lx, y = +e.dataset.ly, t = e.dataset.p;
+    if (!isFinite(x) || !isFinite(y)) { return; }
+    var w = t.length * 6.6 + 14;
+    var bg = document.createElementNS(svgNS, 'rect');
+    bg.setAttribute('class', 'kg-lab-bg');
+    bg.setAttribute('x', x - w / 2); bg.setAttribute('y', y - 9);
+    bg.setAttribute('width', w); bg.setAttribute('height', 18);
+    bg.setAttribute('rx', 4);
+    var tx = document.createElementNS(svgNS, 'text');
+    tx.setAttribute('class', 'kg-lab');
+    tx.setAttribute('x', x); tx.setAttribute('y', y + 3.5);
+    tx.setAttribute('text-anchor', 'middle');
+    tx.textContent = t;
+    gLab.appendChild(bg); gLab.appendChild(tx);
+  }
+
+  /* เส้นจริงบางเกินกว่าจะชี้โดน จึงวางเส้นใสทับไว้เป็นพื้นที่รับการชี้ */
+  var gHit = document.createElementNS(svgNS, 'g');
+  gHit.setAttribute('id', 'kgHit');
+  gHit.setAttribute('aria-hidden', 'true');
+  gNodes.parentNode.insertBefore(gHit, gNodes);
+  edges.forEach(function (e) {
+    var h = document.createElementNS(svgNS, 'line');
+    h.setAttribute('class', 'kg-hit');
+    ['x1', 'y1', 'x2', 'y2'].forEach(function (a) { h.setAttribute(a, e.getAttribute(a)); });
+    h.addEventListener('mouseenter', function () { showLab(e); });
+    h.addEventListener('mouseleave', clearLab);
+    gHit.appendChild(h);
+  });
+
+  var frame = document.getElementById('kgFrame');
+  if (frame) {
+    frame.addEventListener('click', function () { if (sel) { sel = null; render(); } });
+  }
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && sel) { sel = null; render(); }
+  });
+
+  render();
 })();
 </script>
 </body>
