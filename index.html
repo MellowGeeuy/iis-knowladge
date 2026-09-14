@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="กลไกการทำงานภายในของ IIS หน่วยการจัดการ การติดตั้งโมดูล การกำหนดกฎการเขียน URL แนวทางวิเคราะห์ปัญหา และการเตรียม Spring Boot บน Tomcat ให้ทำงานกับ IIS">
+<meta name="description" content="กลไกการทำงานภายในของ IIS การติดตั้งโมดูล การกำหนดกฎการเขียน URL แนวทางวิเคราะห์ปัญหา และการเตรียม Spring Boot บน Tomcat กับ React ให้ทำงานกับ IIS">
 <meta name="color-scheme" content="light dark">
 <style>
   /* reset พื้นฐาน — เดิมมาจาก runtime ของ Artifact จึงต้องประกาศเองเมื่อโฮสต์บน GitHub Pages */
@@ -307,8 +307,8 @@
         </p>
         <div class="cover-meta">
           <div><b>ขอบเขต</b> ชั้น IIS เป็นหลัก</div>
-          <div><b>เนื้อหา</b> 10 ส่วน · แผนภาพ 4 รูป</div>
-          <div><b>อ้างอิง</b> Microsoft Learn · Spring Boot · Tomcat</div>
+          <div><b>เนื้อหา</b> 11 ส่วน · แผนภาพ 4 รูป</div>
+          <div><b>อ้างอิง</b> Microsoft · Spring · Tomcat · Vite</div>
         </div>
       </div>
 
@@ -321,8 +321,8 @@
         <p>
           ส่วนที่ 01 ถึง 09 เรียกปลายทางว่า <em>เซิร์ฟเวอร์ปลายทาง</em> แบบกลาง ๆ
           จึงใช้ได้โดยไม่ขึ้นกับว่าแอปพลิเคชันเบื้องหลังพัฒนาด้วยเทคโนโลยีใด
-          ส่วนที่ 10 จึงค่อยลงรายละเอียดเฉพาะกรณีที่ปลายทางคือ
-          <strong>Spring Boot บน Apache Tomcat</strong>
+          ส่วนที่ 10 และ 11 จึงค่อยลงรายละเอียดเฉพาะกรณีที่ปลายทางคือ
+          <strong>Spring Boot บน Apache Tomcat</strong> และหน้าบ้านเป็น <strong>React</strong>
           โดยจำกัดเฉพาะค่าที่ต้องตั้งให้สอดคล้องกับ IIS
         </p>
         <p>
@@ -358,7 +358,7 @@
               <tr><td class="n">01–03</td><td>พื้นฐานและสถาปัตยกรรม</td><td>องค์ประกอบภายในของ IIS หน่วยการจัดการ และหน้าที่สองประการที่ IIS รับผิดชอบ</td></tr>
               <tr><td class="n">04–06</td><td>การติดตั้งและกำหนดค่า</td><td>ติดตั้งโมดูล สร้าง Application Pool และ Site และกำหนดกฎใน web.config</td></tr>
               <tr><td class="n">07–09</td><td>การใช้งานจริง</td><td>การส่งต่อข้อมูลผู้เรียก การกำหนด HTTPS และแนวทางวิเคราะห์ปัญหา</td></tr>
-              <tr><td class="n">10</td><td>ฝั่งแอปพลิเคชัน</td><td>การเตรียม Spring Boot บน Tomcat ให้ค่าตรงกับที่ IIS ตั้งไว้</td></tr>
+              <tr><td class="n">10–11</td><td>ฝั่งแอปพลิเคชัน</td><td>การเตรียม Spring Boot บน Tomcat และ React ให้ค่าตรงกับที่ IIS ตั้งไว้</td></tr>
             </tbody>
           </table>
         </div>
@@ -1689,6 +1689,191 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
     </section>
 
     <!-- ============ หน้า 12 ============ -->
+    <section class="pg" id="s11" hidden data-title="React" data-full="การเตรียม React ให้ทำงานกับ IIS">
+      <div class="col">
+        <div class="sec-head"><span class="sec-no">11</span><h2>การเตรียม React ให้ทำงานกับ IIS</h2></div>
+        <p class="sec-sub">ผลลัพธ์ของการ build และค่าที่ต้องตรงกับการตั้งค่า IIS</p>
+        <p>
+          ส่วนนี้จำกัดเฉพาะจุดที่หน้าบ้านมาบรรจบกับ IIS คือ
+          <strong>ไฟล์ที่ได้จากการ build วางอย่างไร</strong> และ
+          <strong>ค่าใดต้องตรงกับกฎที่ตั้งไว้ในส่วนที่ 06</strong>
+          มิได้ครอบคลุมการเขียนคอมโพเนนต์หรือการออกแบบหน้าจอ
+        </p>
+
+        <h3>ผลลัพธ์ของการ build คือไฟล์ static ล้วน</h3>
+        <p>
+          เอกสารของ Vite ระบุว่าเมื่อสั่ง <code>npm run build</code>
+          <strong>ผลลัพธ์จะถูกวางไว้ที่โฟลเดอร์ <code>dist</code> โดยค่าเริ่มต้น
+          และสามารถนำโฟลเดอร์นี้ไป deploy บนแพลตฟอร์มใดก็ได้</strong>
+          เนื้อหาภายในประกอบด้วยไฟล์ HTML หนึ่งไฟล์ กับไฟล์ JavaScript และ CSS
+          ที่เอกสารเรียกว่า <em>hashed assets</em>
+        </p>
+        <div class="callout tip">
+          <span class="ttl">เหตุผลที่ IIS ส่งไฟล์เหล่านี้ได้เอง</span>
+          <p>
+            เพราะไม่มีไฟล์ใดต้องผ่านตัวแปลภาษาฝั่งเซิร์ฟเวอร์เลย
+            งานของ IIS จึงเป็นเพียงการอ่านไฟล์จากดิสก์แล้วส่งออกไปตามชนิดที่ประกาศไว้
+            ซึ่งตรงกับหน้าที่ประการแรกในส่วนที่ 03
+            และเป็นเหตุผลที่ Application Pool ตั้งเป็น No Managed Code ได้ตามส่วนที่ 05
+          </p>
+        </div>
+        <p class="note">
+          ก่อนนำขึ้นเซิร์ฟเวอร์ สามารถทดสอบผลลัพธ์ในเครื่องได้ด้วย <code>npm run preview</code>
+          ซึ่งเอกสารระบุว่าจะเปิดเว็บเซิร์ฟเวอร์แบบ static ในเครื่องเพื่อเสิร์ฟไฟล์จาก <code>dist</code>
+          ขั้นนี้ช่วยแยกได้ว่าปัญหาเกิดจากตัวไฟล์เองหรือเกิดจากการตั้งค่า IIS
+        </p>
+
+        <h3>เหตุผลที่ต้องมีกฎ fallback ใน web.config</h3>
+        <p>
+          กฎ <code>spa-fallback</code> ในส่วนที่ 06 ไม่ใช่เทคนิคเฉพาะของ IIS
+          แต่เป็นข้อกำหนดของแอปพลิเคชันแบบหน้าเดียวทุกตัว เอกสารของ React Router ระบุไว้ว่า
+          <strong>เป็นเรื่องปกติของการ deploy SPA ทุกแบบที่ต้องกำหนดค่าให้โฮสต์
+          ส่งทุก URL ไปยัง <code>index.html</code> ของผลลัพธ์ฝั่งไคลเอนต์</strong>
+          พร้อมระบุว่าโฮสต์บางรายทำให้โดยค่าเริ่มต้น แต่บางรายไม่ทำ
+        </p>
+        <div class="callout stop">
+          <span class="ttl">อาการที่เอกสารระบุไว้ตรงกัน</span>
+          <p>
+            เอกสารของ React Router เขียนไว้ว่า
+            <strong>หากได้รับสถานะ 404 ที่เส้นทางซึ่งถูกต้องของแอปพลิเคชัน
+            มีความเป็นไปได้สูงว่าต้องไปกำหนดค่าที่โฮสต์</strong>
+            ซึ่งตรงกับแถวแรกของตารางวิเคราะห์ปัญหาในส่วนที่ 09 ของเอกสารฉบับนี้
+            และ IIS คือโฮสต์ที่ต้องกำหนดค่านั้น
+          </p>
+        </div>
+        <p class="note">
+          หากใช้ React Router ในโหมด framework ที่เปิด SPA Mode
+          เอกสารระบุว่าให้ deploy โฟลเดอร์ <code>build/client</code> แทน
+          ชื่อโฟลเดอร์จึงขึ้นกับเครื่องมือที่ใช้ ให้ตรวจจากผลลัพธ์จริงก่อนคัดลอกขึ้นเซิร์ฟเวอร์
+        </p>
+
+        <h3>base path ต้องตรงกับตำแหน่งที่วาง</h3>
+        <p>
+          ลิงก์ของไฟล์ JavaScript และ CSS ที่ปรากฏใน <code>index.html</code>
+          ถูกกำหนดตั้งแต่ขั้นตอน build ไม่ใช่ตอนเรียกใช้งาน
+          เอกสารของ Vite อธิบายค่า <code>base</code> ไว้ว่าเป็น
+          <strong>public base path ที่ใช้ทั้งตอนพัฒนาและตอน production</strong>
+          โดยรับค่าเป็น absolute URL pathname เช่น <code>/foo/</code> · URL เต็ม ·
+          หรือสตริงว่างกับ <code>./</code> สำหรับการฝังไว้ในระบบอื่น
+        </p>
+        <p>
+          เอกสารระบุเพิ่มว่า หากนำโปรเจกต์ไป deploy ใต้พาธย่อย
+          <strong>เพียงกำหนดค่า <code>base</code> แล้วพาธของ asset ทั้งหมดจะถูกเขียนใหม่ให้เอง</strong>
+          ครอบคลุมทั้ง URL ของ asset ที่ import ผ่าน JavaScript, การอ้างอิงด้วย
+          <code>url()</code> ใน CSS และการอ้างอิง asset ในไฟล์ HTML
+        </p>
+        <div class="code">
+          <div class="code-head"><span>สั่งตอน build</span><span class="where">รูปแบบจากเอกสาร Vite</span></div>
+<pre>vite build --base=/my/public/path/</pre>
+        </div>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>ตำแหน่งที่วางบน IIS</th><th>ค่า base ตอน build</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>รากของ site ตามเอกสารฉบับนี้<br><span class="mono" style="font-size:12px;color:var(--ink-faint)">https://app.corp.local/</span></td>
+                <td class="k">/ (ค่าเริ่มต้น)</td>
+              </tr>
+              <tr>
+                <td>ใต้ Application ย่อยตามส่วนที่ 02<br><span class="mono" style="font-size:12px;color:var(--ink-faint)">https://app.corp.local/corp/</span></td>
+                <td class="k">/corp/</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout">
+          <span class="ttl">อาการเมื่อค่าไม่ตรง</span>
+          <p>
+            หากวางไว้ใต้พาธย่อยแต่ build ด้วยค่าเริ่มต้น เบราว์เซอร์จะร้องขอไฟล์จากรากของโดเมน
+            ซึ่งไม่ตรงกับตำแหน่งจริง ผลคือหน้าเว็บโหลดขึ้นแต่ไม่มีสไตล์และไม่ทำงาน
+            โดยไฟล์ JavaScript และ CSS ได้รับสถานะ 404 ทั้งหมด
+            อาการนี้ต่างจากกรณี <code>404.3</code> ในส่วนที่ 06 ตรงที่พาธผิด ไม่ใช่ชนิดไฟล์ไม่รู้จัก
+          </p>
+        </div>
+
+        <h3>วิธีนำไฟล์ขึ้นเซิร์ฟเวอร์</h3>
+        <p>
+          เอกสารของ Vite เรียกไฟล์ผลลัพธ์ว่า <em>hashed assets</em>
+          กล่าวคือชื่อไฟล์ผูกกับเนื้อหา จึงเปลี่ยนไปทุกครั้งที่ build ใหม่
+          คุณสมบัตินี้มีผลโดยตรงต่อวิธีคัดลอกไฟล์ขึ้นเซิร์ฟเวอร์
+        </p>
+        <div class="steps">
+          <div class="st">
+            <h4>ลบเนื้อหาเดิมในโฟลเดอร์ปลายทางก่อน</h4>
+            <p>
+              เนื่องจากชื่อไฟล์เปลี่ยนทุกครั้ง การคัดลอกทับจึงไม่ได้ลบไฟล์รุ่นเก่าออก
+              และจะสะสมค้างอยู่เรื่อย ๆ จนแยกไม่ออกว่าไฟล์ใดยังถูกใช้งาน
+            </p>
+          </div>
+          <div class="st">
+            <h4>คัดลอกเนื้อหาของโฟลเดอร์ผลลัพธ์ทั้งชุด</h4>
+            <p>
+              วางลงที่ <code>D:\apps\corp-web</code> โดยให้ <code>index.html</code>
+              อยู่ที่รากของโฟลเดอร์ ตรงกับ physical path ของ site ตามส่วนที่ 05
+            </p>
+          </div>
+          <div class="st">
+            <h4>คง web.config ไว้</h4>
+            <p>
+              ไฟล์ <code>web.config</code> ไม่ได้มาจากการ build จึงต้องไม่ถูกลบไปพร้อมไฟล์เดิม
+              หากลบไป กฎ rewrite ทั้งหมดในส่วนที่ 06 จะหายไปด้วย
+              และระบบจะกลับไปมีอาการ 404 ที่หน้าย่อยทันที
+            </p>
+          </div>
+        </div>
+
+        <h3>proxy ตอนพัฒนา ไม่ใช่ตัวเดียวกับ IIS</h3>
+        <p>
+          บนเครื่องของผู้พัฒนาไม่มี IIS คอยส่งต่อ <code>/api</code> ให้
+          เครื่องมือพัฒนาจึงมีกลไกของตัวเองมาแทน เอกสารของ Vite ระบุว่าค่า
+          <code>server.proxy</code> ใช้ <strong>กำหนดกฎ proxy สำหรับ dev server</strong>
+          โดยคำขอที่พาธขึ้นต้นด้วยคีย์ที่ระบุจะถูกส่งต่อไปยังปลายทางที่กำหนด
+        </p>
+        <div class="callout stop">
+          <span class="ttl">จุดที่ต้องไม่สับสน</span>
+          <p>
+            ค่านี้มีผล <strong>เฉพาะกับ dev server เท่านั้น</strong> ตามที่เอกสารระบุ
+            เมื่อ build เป็นไฟล์ static แล้วจะไม่มีผลใด ๆ อีก
+            <strong>ตัวส่งต่อใน production คือ IIS เสมอ</strong> ตามกฎในส่วนที่ 06
+          </p>
+          <p>
+            ข้อดีของการตั้งคีย์ให้ตรงกันทั้งสองฝั่ง คือโค้ดหน้าบ้านเรียก <code>/api/...</code>
+            ได้เหมือนกันทั้งตอนพัฒนาและตอนใช้งานจริง โดยไม่ต้องมีเงื่อนไขแยกตามสภาพแวดล้อม
+          </p>
+        </div>
+
+        <h3>สรุปค่าที่ต้องตรงกันทั้งสองฝั่ง</h3>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>รายการ</th><th>ฝั่ง IIS</th><th>ฝั่ง React</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>ตำแหน่งไฟล์</td>
+                <td class="kw">physical path ของ site (ส่วน 05)</td>
+                <td class="kw">เนื้อหาของโฟลเดอร์ผลลัพธ์</td>
+              </tr>
+              <tr>
+                <td>พาธที่ให้บริการ</td>
+                <td class="kw">Site หรือ Application (ส่วน 02)</td>
+                <td class="kw">ค่า base ตอน build</td>
+              </tr>
+              <tr>
+                <td>เส้นทางฝั่งไคลเอนต์</td>
+                <td class="kw">กฎ spa-fallback (ส่วน 06)</td>
+                <td class="kw">เส้นทางที่ router กำหนด</td>
+              </tr>
+              <tr>
+                <td>คำนำหน้าของ API</td>
+                <td class="kw">รูปแบบในกฎ rewrite (ส่วน 06)</td>
+                <td class="kw">คีย์ของ proxy ตอนพัฒนา</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 13 ============ -->
     <section class="pg" id="ref" hidden data-title="อ้างอิง" data-full="แหล่งอ้างอิง">
       <div class="col refs">
         <div class="sec-head"><span class="sec-no">—</span><h2>แหล่งอ้างอิง</h2></div>
@@ -1822,6 +2007,38 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
             Apache Tomcat 11 — The HTTP Connector — แอตทริบิวต์ <code>address</code>
             และข้อความว่าโดยค่าเริ่มต้น connector รับฟังทุกที่อยู่ในเครื่อง<span class="doc">APACHE</span><br>
             <span class="src">tomcat.apache.org/tomcat-11.0-doc/config/http.html</span>
+          </li>
+        </ol>
+
+        <h3>React และ Vite · ส่วนที่ 11</h3>
+        <ol start="21">
+          <li>
+            Vite — Building for Production — หัวข้อ Public Base Path
+            การเขียนพาธของ asset ใหม่ตามค่า <code>base</code> และการเรียกไฟล์ผลลัพธ์ว่า
+            hashed assets<span class="doc">VITE</span><br>
+            <span class="src">vite.dev/guide/build</span>
+          </li>
+          <li>
+            Vite — Deploying a Static Site — ข้อความว่าผลลัพธ์ของการ build
+            ถูกวางที่ <code>dist</code> โดยค่าเริ่มต้น และคำสั่ง
+            <code>npm run preview</code> สำหรับทดสอบในเครื่อง<span class="doc">VITE</span><br>
+            <span class="src">vite.dev/guide/static-deploy</span>
+          </li>
+          <li>
+            Vite — Shared Options — นิยามของค่า <code>base</code>
+            และรูปแบบค่าที่รับได้<span class="doc">VITE</span><br>
+            <span class="src">vite.dev/config/shared-options</span>
+          </li>
+          <li>
+            Vite — Server Options — ค่า <code>server.proxy</code>
+            ซึ่งเอกสารระบุว่าใช้กำหนดกฎ proxy สำหรับ dev server<span class="doc">VITE</span><br>
+            <span class="src">vite.dev/config/server-options</span>
+          </li>
+          <li>
+            React Router — Single Page App (SPA) — หัวข้อ Direct all URLs to index.html
+            ข้อกำหนดให้โฮสต์ส่งทุก URL ไปยัง <code>index.html</code>
+            และข้อความเรื่องอาการ 404 ที่เส้นทางซึ่งถูกต้อง<span class="doc">REACT ROUTER</span><br>
+            <span class="src">reactrouter.com/how-to/spa</span>
           </li>
         </ol>
 
