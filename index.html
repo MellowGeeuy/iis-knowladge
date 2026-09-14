@@ -4285,6 +4285,22 @@ service.bat install MyService</pre>
     if (e.key === 'ArrowLeft') { show(current - 1, true); }
   });
 
+  /* ปุ่มดาวน์โหลด .md — ลิงก์ตรงใช้ได้บน GitHub Pages ส่วนในตัวอ่าน artifact
+     ต้องส่งไฟล์ผ่าน downloads capability จึงจะบันทึกได้ */
+  var mdBtn = document.getElementById('mdBtn');
+  if (mdBtn && window.claude && typeof window.claude.use === 'function') {
+    window.claude.use('downloads').then(function (dl) {
+      if (!dl) { return; }
+      mdBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        fetch(mdBtn.getAttribute('href'))
+          .then(function (r) { return r.text(); })
+          .then(function (t) { return dl.save({ filename: 'iis-knowladge.md', data: t }); })
+          .catch(function () { /* ผู้อ่านปฏิเสธ หรือบันทึกไม่ได้ */ });
+      });
+    }).catch(function () {});
+  }
+
   var kgBtn = document.getElementById('kgBtn');
   if (kgBtn) {
     kgBtn.addEventListener('click', function () {
