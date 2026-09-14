@@ -28,7 +28,7 @@
     --stop:#8C3A2E; --stop-bg:#F4E5E1;
     --code-bg:#EDE9DE; --code-com:#968F80; --code-key:#7A2E2E; --code-str:#5A6B3A;
     --radius:3px;
-    --text:760px; --wide:1080px;
+    --text:760px; --wide:1000px; --side:264px;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -75,30 +75,90 @@
   }
   code, pre, .mono { font-family: "Source Code Pro", ui-monospace, "Cascadia Mono", monospace; font-variant-numeric: tabular-nums; }
 
-  /* ---------- แถบบน ---------- */
-  .topbar { position: sticky; top: 0; z-index: 20; background: var(--paper); border-bottom: 1px solid var(--line); }
-  .topbar-in { max-width: var(--wide); margin: 0 auto; padding-inline: 20px; padding-block: 10px 0; }
-  .topbar-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; }
-  .mark { font-family: Kanit, Anuphan, sans-serif; font-weight: 600; font-size: 14.5px; white-space: nowrap; }
-  .mark span { color: var(--accent); }
-  .counter { font-family: "Source Code Pro", monospace; font-size: 11.5px; color: var(--ink-faint); white-space: nowrap; }
+  /* ---------- โครงร่างสองคอลัมน์ ---------- */
+  .shell { display: grid; grid-template-columns: var(--side) minmax(0, 1fr); align-items: start; }
 
-  .pagenav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: thin; margin-top: 8px; padding-bottom: 2px; }
-  .pagenav button {
-    font-family: "Source Code Pro", monospace; font-size: 11.5px;
-    color: var(--ink-soft); background: transparent; border: 0;
-    border-bottom: 2px solid transparent;
-    padding: 5px 10px 6px; white-space: nowrap; cursor: pointer;
-    display: flex; align-items: baseline; gap: 6px;
+  /* ---------- แถบซ้าย ---------- */
+  .sidebar {
+    position: sticky; top: 0; height: 100vh; overflow-y: auto; overscroll-behavior: contain;
+    background: var(--surface-2); border-right: 1px solid var(--line);
+    padding: 22px 0 32px; scrollbar-width: thin;
   }
-  .pagenav button .num { color: var(--ink-faint); font-size: 10px; }
-  .pagenav button:hover { color: var(--accent); }
+  .mark { font-family: Kanit, Anuphan, sans-serif; font-weight: 600; font-size: 15px; padding-inline: 20px; display: block; }
+  .mark span { color: var(--accent); }
+  .side-sub {
+    font-family: "Source Code Pro", monospace; font-size: 10.5px; color: var(--ink-faint);
+    padding-inline: 20px; margin-top: 3px; display: block;
+  }
+
+  .pagenav { display: flex; flex-direction: column; margin-top: 22px; }
+  .nav-group {
+    font-family: "Source Code Pro", monospace; font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-faint);
+    padding: 0 20px; margin: 18px 0 6px;
+  }
+  .nav-group:first-child { margin-top: 0; }
+  .pagenav button {
+    font-family: Anuphan, sans-serif; font-size: 13.5px;
+    color: var(--ink-soft); background: transparent; border: 0;
+    border-left: 2px solid transparent;
+    padding: 7px 18px 7px 20px; text-align: left; cursor: pointer;
+    display: flex; align-items: baseline; gap: 9px; width: 100%;
+  }
+  .pagenav button .num { font-family: "Source Code Pro", monospace; color: var(--ink-faint); font-size: 10.5px; flex-shrink: 0; }
+  .pagenav button:hover { color: var(--accent); background: var(--accent-soft); }
   .pagenav button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-  .pagenav button[aria-current="true"] { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+  .pagenav button[aria-current="true"] {
+    color: var(--accent); background: var(--accent-soft);
+    border-left-color: var(--accent); font-weight: 600;
+  }
   .pagenav button[aria-current="true"] .num { color: var(--accent); }
 
+  /* ---------- แถบบนสำหรับจอแคบ ---------- */
+  .topbar { display: none; }
+  .menu-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: Anuphan, sans-serif; font-size: 13.5px; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 7px 13px; cursor: pointer;
+  }
+  .menu-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .menu-btn .bars { display: inline-block; width: 13px; height: 9px; position: relative; }
+  .menu-btn .bars::before, .menu-btn .bars::after, .menu-btn .bars i {
+    content: ""; position: absolute; left: 0; right: 0; height: 1.5px; background: var(--ink);
+  }
+  .menu-btn .bars::before { top: 0; }
+  .menu-btn .bars i { top: 3.75px; }
+  .menu-btn .bars::after { bottom: 0; }
+  .counter { font-family: "Source Code Pro", monospace; font-size: 11.5px; color: var(--ink-faint); white-space: nowrap; }
+  .scrim { display: none; }
+
+  @media (max-width: 900px) {
+    .shell { grid-template-columns: minmax(0, 1fr); }
+    .sidebar {
+      position: fixed; top: 0; bottom: 0; left: 0; width: 272px; height: 100dvh;
+      z-index: 40; transform: translateX(-100%); transition: transform .22s ease;
+      box-shadow: 0 0 0 100vmax transparent;
+    }
+    .sidebar.open { transform: translateX(0); }
+    .scrim {
+      display: block; position: fixed; inset: 0; z-index: 30;
+      background: rgba(0,0,0,.4); opacity: 0; pointer-events: none; transition: opacity .22s ease;
+    }
+    .scrim.show { opacity: 1; pointer-events: auto; }
+    .topbar {
+      display: block; position: sticky; top: 0; z-index: 20;
+      background: var(--paper); border-bottom: 1px solid var(--line);
+    }
+    .topbar-in {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 10px 20px;
+    }
+  }
+
   /* ---------- โครงหน้า ---------- */
-  .page { max-width: var(--wide); margin: 0 auto; padding-inline: 20px; padding-block: 0 64px; }
+  .page { max-width: var(--wide); margin: 0 auto; padding-inline: 28px; padding-block: 0 64px; }
+  @media (max-width: 900px) { .page { padding-inline: 20px; } }
   .col { max-width: var(--text); margin-inline: auto; }
   .breakout { max-width: var(--wide); margin-inline: auto; }
 
@@ -294,21 +354,30 @@
 </head>
 <body>
 
-<div class="topbar">
-  <div class="topbar-in">
-    <div class="topbar-row">
-      <div class="mark">เจาะโครงสร้าง <span>IIS</span></div>
-      <div class="counter" id="counter">หน้า 1 จาก 11</div>
-    </div>
+<div class="scrim" id="scrim"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <span class="mark">เจาะโครงสร้าง <span>IIS</span></span>
+    <span class="side-sub">11 ส่วน · 11 แผนภาพ</span>
     <nav class="pagenav" id="pagenav" aria-label="สารบัญ"></nav>
-  </div>
-</div>
+  </aside>
+
+  <div>
+    <div class="topbar">
+      <div class="topbar-in">
+        <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="sidebar">
+          <span class="bars" aria-hidden="true"><i></i></span> สารบัญ
+        </button>
+        <span class="counter" id="counter">หน้า 1 จาก 13</span>
+      </div>
+    </div>
 
 <div class="page">
   <main id="book">
 
     <!-- ============ หน้า 1 ============ -->
-    <section class="pg cover" id="s0" data-title="ภาพรวม" data-full="ภาพรวมและขอบเขต">
+    <section class="pg cover" id="s0" data-num="—" data-group="เริ่มต้น" data-title="ภาพรวม" data-full="ภาพรวมและขอบเขต">
       <div class="col">
         <div class="kicker">Internet Information Services</div>
         <h1>เจาะโครงสร้าง IIS</h1>
@@ -377,7 +446,7 @@
     </section>
 
     <!-- ============ หน้า 2 ============ -->
-    <section class="pg" id="s1" hidden data-title="องค์ประกอบ" data-full="องค์ประกอบภายในของ IIS">
+    <section class="pg" id="s1" hidden data-num="01" data-group="IIS · พื้นฐาน" data-title="องค์ประกอบ" data-full="องค์ประกอบภายในของ IIS">
       <div class="col">
         <div class="sec-head"><span class="sec-no">01</span><h2>องค์ประกอบภายในของ IIS</h2></div>
         <p class="sec-sub">ความเข้าใจในส่วนนี้เป็นพื้นฐานของการวิเคราะห์ปัญหาในส่วนที่ 09</p>
@@ -541,7 +610,7 @@
     </section>
 
     <!-- ============ หน้า 3 ============ -->
-    <section class="pg" id="s2" hidden data-title="หน่วยจัดการ" data-full="หน่วยการจัดการทั้งสี่">
+    <section class="pg" id="s2" hidden data-num="02" data-group="IIS · พื้นฐาน" data-title="หน่วยจัดการ" data-full="หน่วยการจัดการทั้งสี่">
       <div class="col">
         <div class="sec-head"><span class="sec-no">02</span><h2>หน่วยการจัดการทั้งสี่</h2></div>
         <p class="sec-sub">Site, Application และ Virtual Directory เป็นแกนของ URL ส่วน Application Pool เป็นแกนของโปรเซส ทั้งสองแกนเป็นอิสระต่อกัน</p>
@@ -668,7 +737,7 @@
     </section>
 
     <!-- ============ หน้า 4 ============ -->
-    <section class="pg" id="s3" hidden data-title="หน้าที่ของ IIS" data-full="หน้าที่สองประการของ IIS">
+    <section class="pg" id="s3" hidden data-num="03" data-group="IIS · พื้นฐาน" data-title="หน้าที่ของ IIS" data-full="หน้าที่สองประการของ IIS">
       <div class="col">
         <div class="sec-head"><span class="sec-no">03</span><h2>หน้าที่สองประการของ IIS</h2></div>
         <p class="sec-sub">ส่งไฟล์จากดิสก์ และส่งต่อ request ไปยังเซิร์ฟเวอร์ปลายทาง</p>
@@ -772,7 +841,7 @@
     </section>
 
     <!-- ============ หน้า 5 ============ -->
-    <section class="pg" id="s4" hidden data-title="ติดตั้ง" data-full="การติดตั้งองค์ประกอบที่จำเป็น">
+    <section class="pg" id="s4" hidden data-num="04" data-group="IIS · ติดตั้งและกำหนดค่า" data-title="ติดตั้ง" data-full="การติดตั้งองค์ประกอบที่จำเป็น">
       <div class="col">
         <div class="sec-head"><span class="sec-no">04</span><h2>การติดตั้งองค์ประกอบที่จำเป็น</h2></div>
         <p class="sec-sub">IIS มาตรฐานไม่รองรับการทำ reverse proxy ต้องติดตั้งโมดูลเพิ่มสองรายการ และลำดับการติดตั้งมีผลต่อการทำงาน</p>
@@ -948,7 +1017,7 @@ Invoke-WebRequest http://localhost -UseBasicParsing | Select-Object StatusCode</
     </section>
 
     <!-- ============ หน้า 6 ============ -->
-    <section class="pg" id="s5" hidden data-title="Pool &amp; Site" data-full="การสร้าง Application Pool และ Site">
+    <section class="pg" id="s5" hidden data-num="05" data-group="IIS · ติดตั้งและกำหนดค่า" data-title="Pool &amp; Site" data-full="การสร้าง Application Pool และ Site">
       <div class="col">
         <div class="sec-head"><span class="sec-no">05</span><h2>การสร้าง Application Pool และ Site</h2></div>
         <p class="sec-sub">มีค่าหนึ่งที่ต้องปรับจากค่าเริ่มต้นเสมอ</p>
@@ -1088,7 +1157,7 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
     </section>
 
     <!-- ============ หน้า 7 ============ -->
-    <section class="pg" id="s6" hidden data-title="web.config" data-full="การกำหนดกฎใน web.config">
+    <section class="pg" id="s6" hidden data-num="06" data-group="IIS · ติดตั้งและกำหนดค่า" data-title="web.config" data-full="การกำหนดกฎใน web.config">
       <div class="col">
         <div class="sec-head"><span class="sec-no">06</span><h2>การกำหนดกฎใน web.config</h2></div>
         <p class="sec-sub">ลำดับของกฎมีผลต่อการทำงานโดยตรง การสลับลำดับทำให้ระบบทำงานผิดพลาด</p>
@@ -1285,7 +1354,7 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
     </section>
 
     <!-- ============ หน้า 8 ============ -->
-    <section class="pg" id="s7" hidden data-title="เฮดเดอร์" data-full="การส่งข้อมูลผู้เรียกไปยังเซิร์ฟเวอร์ปลายทาง">
+    <section class="pg" id="s7" hidden data-num="07" data-group="IIS · ใช้งานจริง" data-title="เฮดเดอร์" data-full="การส่งข้อมูลผู้เรียกไปยังเซิร์ฟเวอร์ปลายทาง">
       <div class="col">
         <div class="sec-head"><span class="sec-no">07</span><h2>การส่งข้อมูลผู้เรียกไปยังเซิร์ฟเวอร์ปลายทาง</h2></div>
         <p class="sec-sub">เมื่อมี proxy คั่นกลาง เซิร์ฟเวอร์ปลายทางจะได้รับ IP ของ IIS แทน IP ของผู้ใช้</p>
@@ -1458,7 +1527,7 @@ appcmd.exe set config <span class="s">"corp-web"</span> ^
     </section>
 
     <!-- ============ หน้า 9 ============ -->
-    <section class="pg" id="s8" hidden data-title="HTTPS" data-full="การกำหนด HTTPS และ Binding">
+    <section class="pg" id="s8" hidden data-num="08" data-group="IIS · ใช้งานจริง" data-title="HTTPS" data-full="การกำหนด HTTPS และ Binding">
       <div class="col">
         <div class="sec-head"><span class="sec-no">08</span><h2>การกำหนด HTTPS และ Binding</h2></div>
         <p class="sec-sub">TLS สิ้นสุดที่ชั้น IIS ส่วนการสื่อสารภายในเป็น HTTP ธรรมดาบน loopback</p>
@@ -1581,7 +1650,7 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
     </section>
 
     <!-- ============ หน้า 10 ============ -->
-    <section class="pg" id="s9" hidden data-title="วิเคราะห์ปัญหา" data-full="การตรวจสอบและวิเคราะห์ปัญหา">
+    <section class="pg" id="s9" hidden data-num="09" data-group="IIS · ใช้งานจริง" data-title="วิเคราะห์ปัญหา" data-full="การตรวจสอบและวิเคราะห์ปัญหา">
       <div class="col">
         <div class="sec-head"><span class="sec-no">09</span><h2>การตรวจสอบและวิเคราะห์ปัญหา</h2></div>
         <p class="sec-sub">ระบุไฟล์บันทึกที่ถูกต้องก่อน แล้วจึงวิเคราะห์สาเหตุ</p>
@@ -1743,7 +1812,7 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
     </section>
 
     <!-- ============ หน้า 11 ============ -->
-    <section class="pg" id="s10" hidden data-title="Spring Boot" data-full="การเตรียม Spring Boot ให้ทำงานกับ IIS">
+    <section class="pg" id="s10" hidden data-num="10" data-group="Java" data-title="Spring Boot" data-full="การเตรียม Spring Boot ให้ทำงานกับ IIS">
       <div class="col">
         <div class="sec-head"><span class="sec-no">10</span><h2>การเตรียม Spring Boot ให้ทำงานกับ IIS</h2></div>
         <p class="sec-sub">งานฝั่งแอปพลิเคชันที่ต้องสอดคล้องกับการตั้งค่า IIS ในส่วนก่อนหน้า</p>
@@ -2060,7 +2129,7 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
     </section>
 
     <!-- ============ หน้า 12 ============ -->
-    <section class="pg" id="s11" hidden data-title="React" data-full="การเตรียม React ให้ทำงานกับ IIS">
+    <section class="pg" id="s11" hidden data-num="11" data-group="React" data-title="React" data-full="การเตรียม React ให้ทำงานกับ IIS">
       <div class="col">
         <div class="sec-head"><span class="sec-no">11</span><h2>การเตรียม React ให้ทำงานกับ IIS</h2></div>
         <p class="sec-sub">ผลลัพธ์ของการ build และค่าที่ต้องตรงกับการตั้งค่า IIS</p>
@@ -2311,7 +2380,7 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
     </section>
 
     <!-- ============ หน้า 13 ============ -->
-    <section class="pg" id="ref" hidden data-title="อ้างอิง" data-full="แหล่งอ้างอิง">
+    <section class="pg" id="ref" hidden data-num="—" data-group="อ้างอิง" data-title="อ้างอิง" data-full="แหล่งอ้างอิง">
       <div class="col refs">
         <div class="sec-head"><span class="sec-no">—</span><h2>แหล่งอ้างอิง</h2></div>
         <p class="sec-sub">เอกสารทุกรายการด้านล่างถูกเปิดอ่านเนื้อหาเต็มเพื่อตรวจสอบ มิใช่อ้างจากผลการค้นหา</p>
@@ -2503,6 +2572,8 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
   </div>
   <p class="hint">ใช้ปุ่มลูกศรซ้าย–ขวาเพื่อเปลี่ยนส่วนได้</p>
 </div>
+  </div>
+</div>
 
 <script>
 (function () {
@@ -2515,14 +2586,47 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
   var nextTitle = document.getElementById('nextTitle');
   var current = 0;
 
+  var sidebar = document.getElementById('sidebar');
+  var scrim = document.getElementById('scrim');
+  var menuBtn = document.getElementById('menuBtn');
+  var navBtns = [];
+  var lastGroup = null;
+
   pages.forEach(function (pg, i) {
+    var g = pg.dataset.group || '';
+    if (g !== lastGroup) {
+      var h = document.createElement('div');
+      h.className = 'nav-group';
+      h.textContent = g;
+      nav.appendChild(h);
+      lastGroup = g;
+    }
     var b = document.createElement('button');
     b.type = 'button';
-    b.innerHTML = '<span class="num">' + String(i + 1).padStart(2, '0') + '</span>' + pg.dataset.title;
-    b.addEventListener('click', function () { show(i, true); });
+    var num = pg.dataset.num || '';
+    b.innerHTML = '<span class="num">' + num + '</span><span>' + pg.dataset.title + '</span>';
+    b.addEventListener('click', function () { show(i, true); closeMenu(); });
     nav.appendChild(b);
+    navBtns.push(b);
   });
-  var navBtns = Array.prototype.slice.call(nav.children);
+
+  function isNarrow() { return window.matchMedia('(max-width: 900px)').matches; }
+  function openMenu() {
+    sidebar.classList.add('open');
+    scrim.classList.add('show');
+    menuBtn.setAttribute('aria-expanded', 'true');
+  }
+  function closeMenu() {
+    if (!isNarrow()) return;
+    sidebar.classList.remove('open');
+    scrim.classList.remove('show');
+    menuBtn.setAttribute('aria-expanded', 'false');
+  }
+  menuBtn.addEventListener('click', function () {
+    if (sidebar.classList.contains('open')) { closeMenu(); } else { openMenu(); }
+  });
+  scrim.addEventListener('click', closeMenu);
+  window.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeMenu(); } });
 
   function show(i, scroll) {
     if (i < 0 || i >= pages.length) return;
