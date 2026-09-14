@@ -387,7 +387,7 @@
         <div class="kicker">Internet Information Services</div>
         <h1>เจาะโครงสร้าง IIS</h1>
         <p class="dek">
-          กลไกการทำงานภายในของ IIS หน่วยการจัดการ การติดตั้งโมดูล การกำหนดกฎการเขียน URL
+          กลไกการทำงานภายในของ IIS หน่วยการจัดการ การติดตั้ง module การกำหนดกฎการเขียน URL
           และแนวทางวิเคราะห์ปัญหา สำหรับการนำเว็บแอปพลิเคชันขึ้นให้บริการบน Windows Server
         </p>
         <div class="cover-meta">
@@ -416,9 +416,9 @@
         </div>
         <p>
           สัดส่วนเนื้อหาเอนไปทาง IIS มากที่สุด เพราะเป็นตัวที่อยู่หน้าสุดและเป็นจุดที่
-          ปัญหาส่วนใหญ่เกิดขึ้น ส่วนที่ 01 ถึง 09 จึงเรียกปลายทางว่า <em>เซิร์ฟเวอร์ปลายทาง</em>
+          ปัญหาส่วนใหญ่เกิดขึ้น ส่วนที่ 01 ถึง 09 จึงเรียกปลายทางว่า <em>upstream</em>
           แบบกลาง ๆ ไว้ก่อน แล้วส่วนที่ 10 ถึง 12 ค่อยลงรายละเอียดว่าปลายทางจริงคือ
-          <strong>Spring Boot บน Tomcat 11</strong> และหน้าบ้านคือ <strong>React</strong>
+          <strong>Spring Boot บน Tomcat 11</strong> และ frontend คือ <strong>React</strong>
         </p>
         <div class="callout tip">
           <span class="ttl">ทำไมต้องเป็น IIS</span>
@@ -434,7 +434,7 @@
           และ business logic ของระบบ
         </p>
         <p>
-          ชื่อ site พาธของไฟล์ และหมายเลขพอร์ตที่ปรากฏในคำสั่งทั้งหมด เป็น
+          ชื่อ site path ของไฟล์ และหมายเลข port ที่ปรากฏในคำสั่งทั้งหมด เป็น
           <strong>ค่าตัวอย่างที่กำหนดขึ้นเพื่อให้คำสั่งเป็นรูปธรรม</strong>
           เมื่อนำไปใช้งานจริงให้แทนที่ด้วยค่าที่องค์กรกำหนด
         </p>
@@ -448,8 +448,8 @@
               <tr><td>IIS Site</td><td class="k">corp-web</td></tr>
               <tr><td>Application Pool</td><td class="k">CorpWebPool</td></tr>
               <tr><td>โฟลเดอร์ไฟล์ static</td><td class="k">D:\apps\corp-web</td></tr>
-              <tr><td>เซิร์ฟเวอร์ปลายทางของ proxy</td><td class="k">http://127.0.0.1:8080</td></tr>
-              <tr><td>พาธบนเซิร์ฟเวอร์ปลายทาง</td><td class="k">/corp-api</td></tr>
+              <tr><td>upstream ของ proxy</td><td class="k">http://127.0.0.1:8080</td></tr>
+              <tr><td>path บน upstream</td><td class="k">/corp-api</td></tr>
             </tbody>
           </table>
         </div>
@@ -460,8 +460,8 @@
             <thead><tr><th>ส่วน</th><th>หัวข้อ</th><th>สาระสำคัญ</th></tr></thead>
             <tbody>
               <tr><td class="n">01–03</td><td>พื้นฐานและสถาปัตยกรรม</td><td>องค์ประกอบภายในของ IIS หน่วยการจัดการ และหน้าที่สองประการที่ IIS รับผิดชอบ</td></tr>
-              <tr><td class="n">04–06</td><td>การติดตั้งและกำหนดค่า</td><td>ติดตั้งโมดูล สร้าง Application Pool และ Site และกำหนดกฎใน web.config</td></tr>
-              <tr><td class="n">07–09</td><td>การใช้งานจริง</td><td>การส่งต่อข้อมูลผู้เรียก การกำหนด HTTPS และแนวทางวิเคราะห์ปัญหา</td></tr>
+              <tr><td class="n">04–06</td><td>การติดตั้งและกำหนดค่า</td><td>ติดตั้ง module สร้าง Application Pool และ Site และกำหนดกฎใน web.config</td></tr>
+              <tr><td class="n">07–09</td><td>การใช้งานจริง</td><td>การส่งต่อข้อมูล client การกำหนด HTTPS และแนวทางวิเคราะห์ปัญหา</td></tr>
               <tr><td class="n">10–12</td><td>ฝั่งแอปพลิเคชัน</td><td>การเตรียม Spring Boot และ React ให้ค่าตรงกับ IIS · Tomcat และการพัฒนาแบบแยกส่วน</td></tr>
               <tr><td class="n">13</td><td>Full Stack Architecture</td><td>ร้อยทุกส่วนเข้าด้วยกัน ชื่อเรียกของสถาปัตยกรรม เหตุผลที่เลือก และค่าที่ต้องตรงกัน</td></tr>
             </tbody>
@@ -478,7 +478,7 @@
         <p>
           IIS มักถูกเข้าใจว่าเป็นโปรแกรมเดียว แต่ในทางเทคนิคประกอบด้วยองค์ประกอบสามส่วนที่อยู่คนละระดับของระบบปฏิบัติการ
           ส่วนหนึ่งทำงานในเคอร์เนลของ Windows ส่วนหนึ่งทำงานเป็น Windows Service
-          และอีกส่วนเป็นโปรเซสที่ถูกสร้างและยุติตามปริมาณการใช้งาน
+          และอีกส่วนเป็น process ที่ถูกสร้างและยุติตามปริมาณการใช้งาน
         </p>
       </div>
 
@@ -551,7 +551,7 @@
             <b>รูปที่ 1 — ตำแหน่งขององค์ประกอบแต่ละส่วน</b> ·
             request เข้าสู่ระบบที่ HTTP.sys ซึ่งเป็น device driver ระดับเคอร์เนล ไม่ใช่โปรแกรมที่เปิดใช้งานได้โดยตรง
             ส่วน W3SVC และ WAS ทำงานภายใต้บัญชี <code>LocalSystem</code> ใน <code>svchost.exe</code> เดียวกัน
-            และ <code>w3wp.exe</code> คือโปรเซสที่ประมวลผล request จริง หนึ่งโปรเซสต่อหนึ่ง Application Pool
+            และ <code>w3wp.exe</code> คือ process ที่ประมวลผล request จริง หนึ่ง process ต่อหนึ่ง Application Pool
           </figcaption>
         </figure>
       </div>
@@ -561,9 +561,9 @@
           <div>
             <dt>HTTP.sys<small>KERNEL-MODE DRIVER</small></dt>
             <dd>
-              องค์ประกอบที่ <strong>รับฟังพอร์ต 80 และ 443 โดยตรง</strong>
+              องค์ประกอบที่ <strong>รับฟัง port 80 และ 443 โดยตรง</strong>
               เอกสารของ Microsoft ระบุคุณประโยชน์ไว้สามประการ ได้แก่
-              การแคชระดับเคอร์เนล ซึ่งตอบ request ที่แคชไว้โดยไม่ต้องสลับไปยัง user mode,
+              การ cache ระดับเคอร์เนล ซึ่งตอบ request ที่ cache ไว้โดยไม่ต้องสลับไปยัง user mode,
               การจัดคิวระดับเคอร์เนล ซึ่งเก็บ request ไว้จนกว่าจะมี worker process พร้อมรับ
               และการกรองความปลอดภัยเบื้องต้น
             </dd>
@@ -587,9 +587,9 @@
           <div>
             <dt>w3wp.exe<small>WORKER PROCESS</small></dt>
             <dd>
-              โปรเซสที่ประมวลผล request จริง โดยค่าเริ่มต้นมีหนึ่งโปรเซสต่อหนึ่ง Application Pool
-              ภายในประกอบด้วยลำดับของโมดูลที่ทำงานต่อเนื่องกัน ได้แก่ โมดูล static file,
-              โมดูล rewrite และโมดูล proxy เป็นต้น
+              process ที่ประมวลผล request จริง โดยค่าเริ่มต้นมีหนึ่ง process ต่อหนึ่ง Application Pool
+              ภายในประกอบด้วยลำดับของ module ที่ทำงานต่อเนื่องกัน ได้แก่ module static file,
+              module rewrite และ module proxy เป็นต้น
             </dd>
           </div>
         </dl>
@@ -606,12 +606,12 @@
               <tr><td class="n">5</td><td class="k">W3SVC → HTTP.sys</td><td>นำข้อมูลการตั้งค่าไปกำหนดให้ HTTP.sys</td></tr>
               <tr><td class="n">6</td><td class="k">WAS</td><td>เริ่มการทำงานของ worker process สำหรับ pool ที่เกี่ยวข้อง</td></tr>
               <tr><td class="n">7</td><td class="k">w3wp.exe</td><td>ประมวลผลและส่ง response กลับไปยัง HTTP.sys</td></tr>
-              <tr><td class="n">8</td><td class="k">HTTP.sys</td><td>ส่ง response ถึงไคลเอนต์</td></tr>
+              <tr><td class="n">8</td><td class="k">HTTP.sys</td><td>ส่ง response ถึง client</td></tr>
             </tbody>
           </table>
         </div>
         <p class="note" style="margin-top:10px">
-          ขั้นที่ 2 ถึง 5 เกิดขึ้นเฉพาะกรณีที่ยังไม่มีข้อมูลในแคช หรือ configuration เพิ่งมีการเปลี่ยนแปลง
+          ขั้นที่ 2 ถึง 5 เกิดขึ้นเฉพาะกรณีที่ยังไม่มีข้อมูลใน cache หรือ configuration เพิ่งมีการเปลี่ยนแปลง
           request ในลำดับถัดไปจะเข้าสู่คิวของ worker process ที่ทำงานอยู่แล้วโดยตรง
         </p>
 
@@ -619,8 +619,8 @@
           <span class="ttl">ข้อสังเกตที่ใช้ในการวิเคราะห์ปัญหา</span>
           <p>
             request บางส่วนถูกปฏิเสธตั้งแต่ชั้น HTTP.sys ซึ่งยังไม่ถึง <code>w3wp.exe</code>
-            จึง <strong>ไม่ปรากฏในไฟล์บันทึกของ IIS</strong> แต่ถูกบันทึกในไฟล์ <code>httperr</code> แทน
-            ข้อเท็จจริงนี้อธิบายอาการที่ผู้ใช้แจ้งว่าเข้าใช้งานไม่ได้ แต่ไม่พบข้อมูลใดในไฟล์บันทึก
+            จึง <strong>ไม่ปรากฏใน log ของ IIS</strong> แต่ถูกบันทึกในไฟล์ <code>httperr</code> แทน
+            ข้อเท็จจริงนี้อธิบายอาการที่ผู้ใช้แจ้งว่าเข้าใช้งานไม่ได้ แต่ไม่พบข้อมูลใดใน log
             รายละเอียดอยู่ในส่วนที่ 09
           </p>
         </div>
@@ -631,10 +631,10 @@
     <section class="pg" id="s2" hidden data-num="02" data-group="IIS · พื้นฐาน" data-title="หน่วยจัดการ" data-full="หน่วยการจัดการทั้งสี่">
       <div class="col">
         <div class="sec-head"><span class="sec-no">02</span><h2>หน่วยการจัดการทั้งสี่</h2></div>
-        <p class="sec-sub">Site, Application และ Virtual Directory เป็นแกนของ URL ส่วน Application Pool เป็นแกนของโปรเซส ทั้งสองแกนเป็นอิสระต่อกัน</p>
+        <p class="sec-sub">Site, Application และ Virtual Directory เป็นแกนของ URL ส่วน Application Pool เป็นแกนของ process ทั้งสองแกนเป็นอิสระต่อกัน</p>
         <p>
           ความเข้าใจที่คลาดเคลื่อนที่พบบ่อยที่สุดคือการมองว่า Application Pool อยู่ภายใต้ Site
-          ในความเป็นจริง Site กำหนดว่า URL ใดแมปไปยังไฟล์ใด ขณะที่ Pool กำหนดว่าโค้ดนั้นทำงานในโปรเซสใด
+          ในความเป็นจริง Site กำหนดว่า URL ใดแมปไปยังไฟล์ใด ขณะที่ Pool กำหนดว่าโค้ดนั้นทำงานใน process ใด
           และ Application จาก Site ที่ต่างกันสามารถใช้ Pool ร่วมกันได้
         </p>
       </div>
@@ -642,7 +642,7 @@
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 320" role="img" aria-label="แผนภาพแสดงว่า Site Application และ Virtual Directory เป็นแกนของ URL ส่วน Application Pool เป็นแกนของโปรเซส โดย Application ผูกกับ Pool ด้วยเส้นประ">
+            <svg viewBox="0 0 760 320" role="img" aria-label="แผนภาพแสดงว่า Site Application และ Virtual Directory เป็นแกนของ URL ส่วน Application Pool เป็นแกนของ process โดย Application ผูกกับ Pool ด้วยเส้นประ">
               <defs>
                 <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd"/>
@@ -690,7 +690,7 @@
           <figcaption>
             <b>รูปที่ 2 — ความสัมพันธ์ระหว่างสองแกน</b> ·
             เส้นประแสดงการผูก Application เข้ากับ Pool จะสังเกตได้ว่า Virtual Directory ไม่มีเส้นเชื่อมของตนเอง
-            เนื่องจากทำงานในโปรเซสของ Application ที่ครอบอยู่ ข้อแตกต่างนี้เป็นเกณฑ์ในการตัดสินใจว่าควรสร้างหน่วยใด
+            เนื่องจากทำงานใน process ของ Application ที่ครอบอยู่ ข้อแตกต่างนี้เป็นเกณฑ์ในการตัดสินใจว่าควรสร้างหน่วยใด
           </figcaption>
         </figure>
       </div>
@@ -714,24 +714,24 @@
           </div>
           <div>
             <dt>Application Pool</dt>
-            <dd>ขอบเขตเชิงโปรเซส เทียบเท่ากับ <code>w3wp.exe</code> หนึ่งโปรเซส แอปพลิเคชันที่อยู่คนละ pool แยกหน่วยความจำและสิทธิ์ออกจากกันโดยสมบูรณ์</dd>
+            <dd>ขอบเขตเชิง process เทียบเท่ากับ <code>w3wp.exe</code> หนึ่ง process แอปพลิเคชันที่อยู่คนละ pool แยกหน่วยความจำและสิทธิ์ออกจากกันโดยสมบูรณ์</dd>
             <dd>เอกสารของ Microsoft ระบุว่า pool ถูกออกแบบมาเพื่อ <strong>ป้องกันไม่ให้แอปพลิเคชันหนึ่งส่งผลกระทบต่อแอปพลิเคชันอื่นบนเครื่องเดียวกัน</strong></dd>
           </div>
         </dl>
 
         <h3>Binding — องค์ประกอบสามส่วนที่ต้องไม่ซ้ำกัน</h3>
         <p>
-          Binding กำหนดว่า request ลักษณะใดจะเข้าสู่ site นี้ ประกอบด้วย <strong>IP : พอร์ต : ชื่อโฮสต์</strong>
+          Binding กำหนดว่า request ลักษณะใดจะเข้าสู่ site นี้ ประกอบด้วย <strong>IP : port : ชื่อโฮสต์</strong>
           ชุดข้อมูลสามส่วนนี้ต้องไม่ซ้ำกับ site อื่นบนเครื่องเดียวกัน ซึ่งเป็นเหตุผลที่ระบบหลายระบบ
-          สามารถใช้พอร์ต 443 ร่วมกันได้ตราบใดที่ชื่อโฮสต์แตกต่างกัน
+          สามารถใช้ port 443 ร่วมกันได้ตราบใดที่ชื่อโฮสต์แตกต่างกัน
         </p>
         <div class="callout">
           <span class="ttl">ข้อผิดพลาดที่พบบ่อย</span>
           <p>
-            การกำหนด binding ของ IIS ให้ตรงกับพอร์ตที่เซิร์ฟเวอร์ปลายทางใช้งาน เช่นกำหนด site ไว้ที่ 8080
-            ขณะที่เซิร์ฟเวอร์ปลายทางก็รับฟังที่ 8080 เช่นกัน จะทำให้พอร์ตขัดแย้งกัน
-            และมีบริการหนึ่งไม่สามารถเริ่มทำงานได้ binding ของ IIS ควรเป็น<strong>พอร์ตที่ผู้ใช้เรียกเท่านั้น</strong>
-            ส่วนพอร์ตของเซิร์ฟเวอร์ปลายทางให้ระบุในกฎการส่งต่อ ตามส่วนที่ 06
+            การกำหนด binding ของ IIS ให้ตรงกับ port ที่ upstream ใช้งาน เช่นกำหนด site ไว้ที่ 8080
+            ขณะที่ upstream ก็รับฟังที่ 8080 เช่นกัน จะทำให้ port ขัดแย้งกัน
+            และมีบริการหนึ่งไม่สามารถเริ่มทำงานได้ binding ของ IIS ควรเป็น <strong>port ที่ผู้ใช้เรียกเท่านั้น</strong>
+            ส่วน port ของ upstream ให้ระบุในกฎการส่งต่อ ตามส่วนที่ 06
           </p>
         </div>
 
@@ -756,7 +756,7 @@
     <section class="pg" id="s3" hidden data-num="03" data-group="IIS · พื้นฐาน" data-title="หน้าที่ของ IIS" data-full="หน้าที่สองประการของ IIS">
       <div class="col">
         <div class="sec-head"><span class="sec-no">03</span><h2>หน้าที่สองประการของ IIS</h2></div>
-        <p class="sec-sub">ส่งไฟล์จากดิสก์ และส่งต่อ request ไปยังเซิร์ฟเวอร์ปลายทาง</p>
+        <p class="sec-sub">ส่งไฟล์จากดิสก์ และส่งต่อ request ไปยัง upstream</p>
         <p>
           เมื่อ request เข้าสู่ <code>w3wp.exe</code> ตามลำดับในส่วนที่ 01 แล้ว
           IIS จะตัดสินใจอย่างใดอย่างหนึ่งในสองทางนี้เสมอ ทางแรกคือ
@@ -774,7 +774,7 @@
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 312" role="img" aria-label="แผนภาพสองหน้าที่ของ IIS request แบบ GET หน้าเว็บจะถูกตอบด้วยไฟล์จากดิสก์ด้วยสถานะ 200 ส่วน request ที่ขึ้นต้นด้วย /api จะถูกเขียน URL ใหม่แล้วส่งต่อไปยัง 127.0.0.1 พอร์ต 8080 แล้วได้ JSON กลับมา" data-v2="1">
+            <svg viewBox="0 0 760 312" role="img" aria-label="แผนภาพสองหน้าที่ของ IIS request แบบ GET หน้าเว็บจะถูกตอบด้วยไฟล์จากดิสก์ด้วยสถานะ 200 ส่วน request ที่ขึ้นต้นด้วย /api จะถูกเขียน URL ใหม่แล้วส่งต่อไปยัง 127.0.0.1 port 8080 แล้วได้ JSON กลับมา" data-v2="1">
               <defs>
                 <marker id="a3c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-c"/>
@@ -829,18 +829,18 @@
           </div>
           <figcaption>
             <b>รูปที่ 3 — สองหน้าที่ที่แยกจากกันตั้งแต่ชั้น IIS</b> ·
-            เส้นทางด้านบนจบที่ดิสก์ของเซิร์ฟเวอร์ ไม่ผ่านเซิร์ฟเวอร์ปลายทางเลย
-            การแก้ไขไฟล์ static จึงทำได้โดยไม่กระทบเซิร์ฟเวอร์ปลายทาง
-            ส่วนเส้นทางด้านล่างเป็นช่องทางเดียวที่เข้าถึงเซิร์ฟเวอร์ปลายทางได้
+            เส้นทางด้านบนจบที่ดิสก์ของเซิร์ฟเวอร์ ไม่ผ่าน upstream เลย
+            การแก้ไขไฟล์ static จึงทำได้โดยไม่กระทบ upstream
+            ส่วนเส้นทางด้านล่างเป็นช่องทางเดียวที่เข้าถึง upstream ได้
             เนื่องจากเซิร์ฟเวอร์นั้นผูกไว้ที่ <code>127.0.0.1</code>
           </figcaption>
         </figure>
       </div>
 
       <div class="col">
-        <h3>เหตุผลของการผูกเซิร์ฟเวอร์ปลายทางไว้ที่ loopback</h3>
+        <h3>เหตุผลของการผูก upstream ไว้ที่ loopback</h3>
         <p>
-          การกำหนดให้เซิร์ฟเวอร์ปลายทางรับฟังเฉพาะ <code>127.0.0.1</code> แทน <code>0.0.0.0</code>
+          การกำหนดให้ upstream รับฟังเฉพาะ <code>127.0.0.1</code> แทน <code>0.0.0.0</code>
           ทำให้ <strong>ไม่มีผู้ใดเรียกเข้าไปได้โดยตรงจากเครือข่าย</strong> ทุก request
           ต้องผ่าน IIS ซึ่งเป็นจุดเดียวที่บังคับใช้ TLS ตรวจสอบสิทธิ์ระดับเครือข่าย และบันทึก log
           ข้อกำหนดนี้เป็นเงื่อนไขจำเป็นของแนวทางในส่วนที่ 07 ด้วย
@@ -849,11 +849,11 @@
         <div class="callout">
           <span class="ttl">เหตุผลของกฎ “ไม่ตรงไฟล์ ให้ส่ง index.html”</span>
           <p>
-            เว็บแอปพลิเคชันที่จัดการเส้นทางฝั่งไคลเอนต์ หรือที่เรียกว่า SPA
+            เว็บแอปพลิเคชันที่จัดการ client-side routing หรือที่เรียกว่า SPA
             ไม่ได้มีไฟล์ <code>/orders/1024.html</code> อยู่บนดิสก์จริง
             หากผู้ใช้สั่ง refresh ที่หน้าดังกล่าว IIS จะไม่พบไฟล์และตอบกลับด้วยสถานะ <strong>404</strong>
             กฎข้อที่สองจึงกำหนดว่า หาก path ที่ร้องขอไม่ใช่ไฟล์และไม่ใช่โฟลเดอร์จริง
-            ให้ส่ง <code>index.html</code> กลับไปแทน เพื่อให้โค้ดฝั่งไคลเอนต์ดำเนินการต่อ
+            ให้ส่ง <code>index.html</code> กลับไปแทน เพื่อให้โค้ดฝั่ง client ดำเนินการต่อ
           </p>
         </div>
       </div>
@@ -863,7 +863,7 @@
     <section class="pg" id="s4" hidden data-num="04" data-group="IIS · ติดตั้งและกำหนดค่า" data-title="ติดตั้ง" data-full="การติดตั้งองค์ประกอบที่จำเป็น">
       <div class="col">
         <div class="sec-head"><span class="sec-no">04</span><h2>การติดตั้งองค์ประกอบที่จำเป็น</h2></div>
-        <p class="sec-sub">IIS มาตรฐานไม่รองรับการทำ reverse proxy ต้องติดตั้งโมดูลเพิ่มสองรายการ และลำดับการติดตั้งมีผลต่อการทำงาน</p>
+        <p class="sec-sub">IIS มาตรฐานไม่รองรับการทำ reverse proxy ต้องติดตั้ง module เพิ่มสองรายการ และลำดับการติดตั้งมีผลต่อการทำงาน</p>
       </div>
 
       <div class="breakout">
@@ -908,7 +908,7 @@
 
               <line class="ln dash" x1="24" y1="192" x2="736" y2="192"/>
               <text class="ta" x="24" y="214">ไม่ต้องติดตั้ง — .NET Hosting Bundle</text>
-              <text class="tm" x="24" y="234">ANCM มีไว้ให้ IIS โหลด .NET assembly ในโปรเซสตัวเอง ซึ่งสถาปัตยกรรมนี้ไม่ได้ใช้</text>
+              <text class="tm" x="24" y="234">ANCM มีไว้ให้ IIS โหลด .NET assembly ใน process ตัวเอง ซึ่งสถาปัตยกรรมนี้ไม่ได้ใช้</text>
             </svg>
           </div>
           <figcaption>
@@ -969,7 +969,7 @@ Invoke-WebRequest http://localhost -UseBasicParsing | Select-Object StatusCode</
           <div class="st">
             <h4>ติดตั้ง URL Rewrite</h4>
             <p>
-              โมดูลนี้ไม่ได้ติดตั้งมาพร้อม IIS ต้องดาวน์โหลด standalone installer จากเว็บไซต์ IIS ของ Microsoft
+              module นี้ไม่ได้ติดตั้งมาพร้อม IIS ต้องดาวน์โหลด standalone installer จากเว็บไซต์ IIS ของ Microsoft
               เวอร์ชันปัจจุบันคือ <strong>URL Rewrite 2.1</strong> ซึ่งเป็นองค์ประกอบที่รองรับการกำหนดกฎ
               <code>&lt;rewrite&gt;</code> ในไฟล์ <code>web.config</code>
             </p>
@@ -1010,16 +1010,16 @@ Invoke-WebRequest http://localhost -UseBasicParsing | Select-Object StatusCode</
               <p>
                 กฎ rewrite ถูกกำหนดไว้อย่างถูกต้องทั้งหมด แต่ <code>/api</code> คืนค่าสถานะ
                 <strong>404</strong> หรือ <strong>500</strong> เนื่องจาก IIS ตีความ URL ปลายทาง
-                เป็นพาธภายในเครื่องแทนการส่งต่อออกไปภายนอก
+                เป็น path ภายในเครื่องแทนการส่งต่อออกไปภายนอก
               </p>
             </div>
           </div>
         </div>
 
         <div class="callout">
-          <span class="ttl">การตรวจสอบโมดูลที่ติดตั้งแล้ว</span>
+          <span class="ttl">การตรวจสอบ module ที่ติดตั้งแล้ว</span>
           <p>
-            ใช้ <code>appcmd</code> เพื่อแสดงรายการโมดูลที่ลงทะเบียนกับ IIS
+            ใช้ <code>appcmd</code> เพื่อแสดงรายการ module ที่ลงทะเบียนกับ IIS
             ซึ่งเป็นวิธีที่ตรงที่สุดในการยืนยันว่าการติดตั้งสมบูรณ์
           </p>
           <div class="code" style="margin-bottom:0">
@@ -1120,10 +1120,10 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
             <div class="callout">
               <span class="ttl">เหตุผลของการกำหนด No Managed Code</span>
               <p>
-                ค่าเริ่มต้นของ pool ที่สร้างใหม่คือการโหลด .NET CLR เข้าสู่โปรเซส
+                ค่าเริ่มต้นของ pool ที่สร้างใหม่คือการโหลด .NET CLR เข้าสู่ process
                 แต่ตามส่วนที่ 03 <code>w3wp.exe</code> ในสถาปัตยกรรมนี้ทำหน้าที่เพียงสองประการ
-                คือส่งไฟล์ static และส่ง request ต่อไปยังเซิร์ฟเวอร์ปลายทาง
-                โดยไม่มีโค้ด managed ที่ต้องประมวลผลภายในโปรเซสเลย
+                คือส่งไฟล์ static และส่ง request ต่อไปยัง upstream
+                โดยไม่มีโค้ด managed ที่ต้องประมวลผลภายใน process เลย
                 การกำหนดเป็นค่าว่างจึงเป็นการตัดองค์ประกอบที่ไม่ได้ใช้งานออก
                 ในหน้าจอ IIS Manager ค่านี้คือรายการ <strong>.NET CLR version → No Managed Code</strong>
               </p>
@@ -1140,7 +1140,7 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
   -HostHeader <span class="s">"app.corp.local"</span> -Port 80</pre>
             </div>
             <p class="note">
-              ในขั้นนี้กำหนดที่พอร์ต 80 ก่อนเพื่อการทดสอบ แล้วจึงเพิ่ม binding ของพอร์ต 443 ในส่วนที่ 08
+              ในขั้นนี้กำหนดที่ port 80 ก่อนเพื่อการทดสอบ แล้วจึงเพิ่ม binding ของ port 443 ในส่วนที่ 08
             </p>
             <div class="verify">
               <b>ผลลัพธ์ที่ควรได้รับ</b>
@@ -1162,7 +1162,7 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
 <pre>icacls "D:\apps\corp-web" /grant "IIS AppPool\CorpWebPool":(OI)(CI)RX</pre>
         </div>
         <p class="note">
-          หากโฟลเดอร์อยู่ภายใต้พาธที่สืบทอดสิทธิ์มาอย่างครบถ้วนอยู่แล้ว ขั้นตอนนี้อาจไม่จำเป็น
+          หากโฟลเดอร์อยู่ภายใต้ path ที่สืบทอดสิทธิ์มาอย่างครบถ้วนอยู่แล้ว ขั้นตอนนี้อาจไม่จำเป็น
           ให้ตรวจสอบด้วยการเรียกหน้าเว็บก่อน หากได้รับสถานะ <code>401</code> หรือ <code>403</code>
           จึงค่อยกำหนดสิทธิ์เพิ่ม
         </p>
@@ -1187,7 +1187,7 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
     <span class="t">&lt;rewrite&gt;</span>
       <span class="t">&lt;rules&gt;</span>
 
-        <span class="c">&lt;!-- กฎที่ 1 : ส่ง /api ต่อไปยังเซิร์ฟเวอร์ปลายทาง --&gt;</span>
+        <span class="c">&lt;!-- กฎที่ 1 : ส่ง /api ต่อไปยัง upstream --&gt;</span>
         <span class="t">&lt;rule</span> name=<span class="s">"api-to-backend"</span> stopProcessing=<span class="s">"true"</span><span class="t">&gt;</span>
           <span class="t">&lt;match</span> url=<span class="s">"^api/(.*)"</span> <span class="t">/&gt;</span>
           <span class="t">&lt;action</span> type=<span class="s">"Rewrite"</span>
@@ -1276,7 +1276,7 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
           <figcaption>
             <b>รูปที่ 6 — เส้นทางการตัดสินใจของกฎสองข้อ</b> ·
             หากสลับลำดับ กฎที่ 2 จะดักจับ <code>/api/...</code> ไปก่อน
-            เพราะพาธนั้นก็ไม่ใช่ไฟล์จริงเช่นกัน ผลคือได้ <code>index.html</code> กลับไปแทนข้อมูล
+            เพราะ path นั้นก็ไม่ใช่ไฟล์จริงเช่นกัน ผลคือได้ <code>index.html</code> กลับไปแทนข้อมูล
             ซึ่งเป็นอาการที่หาสาเหตุได้ยากเพราะสถานะที่คืนกลับมายังเป็น 200
           </figcaption>
         </figure>
@@ -1298,7 +1298,7 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
               </tr>
               <tr>
                 <td class="kw">type="Rewrite"</td>
-                <td>เขียน URL ใหม่และส่งต่อภายในเซิร์ฟเวอร์ ซึ่ง<strong>ต่างจาก</strong> <code>Redirect</code> ที่จะสั่งให้เบราว์เซอร์เรียกใหม่เอง และทำให้พอร์ตภายในเปิดเผยสู่ภายนอก</td>
+                <td>เขียน URL ใหม่และส่งต่อภายในเซิร์ฟเวอร์ ซึ่ง<strong>ต่างจาก</strong> <code>Redirect</code> ที่จะสั่งให้เบราว์เซอร์เรียกใหม่เอง และทำให้ port ภายในเปิดเผยสู่ภายนอก</td>
               </tr>
               <tr>
                 <td class="kw">stopProcessing="true"</td>
@@ -1306,7 +1306,7 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
               </tr>
               <tr>
                 <td class="kw">IsFile / IsDirectory<br>+ negate="true"</td>
-                <td>เงื่อนไขที่ระบุว่า path นี้<strong>ไม่ใช่</strong>ไฟล์จริงและ<strong>ไม่ใช่</strong>โฟลเดอร์จริง ซึ่งเป็นวิธีแยกเส้นทางฝั่งไคลเอนต์ออกจากไฟล์ <code>.js</code> และ <code>.css</code> ที่มีอยู่บนดิสก์</td>
+                <td>เงื่อนไขที่ระบุว่า path นี้<strong>ไม่ใช่</strong>ไฟล์จริงและ<strong>ไม่ใช่</strong>โฟลเดอร์จริง ซึ่งเป็นวิธีแยก client-side routing ออกจากไฟล์ <code>.js</code> และ <code>.css</code> ที่มีอยู่บนดิสก์</td>
               </tr>
             </tbody>
           </table>
@@ -1327,9 +1327,9 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
           <span class="ttl">path ภายนอกไม่จำเป็นต้องตรงกับ path ภายใน</span>
           <p>
             จะสังเกตได้ว่าการเรียกจากภายนอกใช้ <code>/api/orders/1024</code>
-            ขณะที่เซิร์ฟเวอร์ปลายทางรับเป็น <code>/corp-api/orders/1024</code>
+            ขณะที่ upstream รับเป็น <code>/corp-api/orders/1024</code>
             โดยมีกฎ rewrite ทำหน้าที่แปลง ซึ่งเป็นข้อดีในเชิงปฏิบัติ คือ
-            <strong>สามารถเปลี่ยนพาธของเซิร์ฟเวอร์ปลายทางได้โดยไม่ต้องแก้ไขโค้ดฝั่งหน้าบ้าน</strong>
+            <strong>สามารถเปลี่ยน path ของ upstream ได้โดยไม่ต้องแก้ไขโค้ดฝั่ง frontend</strong>
             เพียงแก้ไขค่าเดียวในไฟล์ <code>web.config</code>
           </p>
         </div>
@@ -1343,8 +1343,8 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
           และอธิบายว่าเป็นพฤติกรรมที่ออกแบบมาเพื่อป้องกันการเข้าถึงไฟล์ที่ไม่ได้ประกาศไว้ใน configuration
         </p>
         <p>
-          รหัสสถานะที่ได้รับในกรณีนี้คือ <strong><code>404.3</code></strong>
-          ซึ่งเอกสารรายการรหัสสถานะของ IIS นิยามไว้ว่า <em>MIME type restriction</em>
+          status code ที่ได้รับในกรณีนี้คือ <strong><code>404.3</code></strong>
+          ซึ่งเอกสารรายการ status code ของ IIS นิยามไว้ว่า <em>MIME type restriction</em>
           หมายถึง MIME mapping ปัจจุบันสำหรับนามสกุลที่ร้องขอไม่ถูกต้องหรือยังไม่ได้กำหนดค่า
         </p>
         <p>
@@ -1375,16 +1375,16 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
     </section>
 
     <!-- ============ หน้า 8 ============ -->
-    <section class="pg" id="s7" hidden data-num="07" data-group="IIS · ใช้งานจริง" data-title="เฮดเดอร์" data-full="การส่งข้อมูลผู้เรียกไปยังเซิร์ฟเวอร์ปลายทาง">
+    <section class="pg" id="s7" hidden data-num="07" data-group="IIS · ใช้งานจริง" data-title="header" data-full="การส่งข้อมูล client ไปยัง upstream">
       <div class="col">
-        <div class="sec-head"><span class="sec-no">07</span><h2>การส่งข้อมูลผู้เรียกไปยังเซิร์ฟเวอร์ปลายทาง</h2></div>
-        <p class="sec-sub">เมื่อมี proxy คั่นกลาง เซิร์ฟเวอร์ปลายทางจะได้รับ IP ของ IIS แทน IP ของผู้ใช้</p>
+        <div class="sec-head"><span class="sec-no">07</span><h2>การส่งข้อมูล client ไปยัง upstream</h2></div>
+        <p class="sec-sub">เมื่อมี proxy คั่นกลาง upstream จะได้รับ IP ของ IIS แทน IP ของผู้ใช้</p>
       </div>
 
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 272" role="img" aria-label="แผนภาพแสดงว่าการเชื่อมต่อถูกแบ่งเป็นสองช่วง ช่วงแรกจากผู้ใช้ถึง IIS มี remote address เป็น IP จริง ช่วงที่สองจาก IIS ถึง upstream มี remote address เป็น 127.0.0.1 ทำให้ IP เดิมต้องเดินทางผ่านเฮดเดอร์">
+            <svg viewBox="0 0 760 272" role="img" aria-label="แผนภาพแสดงว่าการเชื่อมต่อถูกแบ่งเป็นสองช่วง ช่วงแรกจากผู้ใช้ถึง IIS มี remote address เป็น IP จริง ช่วงที่สองจาก IIS ถึง upstream มี remote address เป็น 127.0.0.1 ทำให้ IP เดิมต้องเดินทางผ่าน header">
               <defs>
                 <marker id="h1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-c"/>
@@ -1422,14 +1422,14 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
               <text class="ta" x="24" y="190">IIS เป็นผู้ใส่</text>
 
               <line class="ln dash" x1="24" y1="240" x2="736" y2="240"/>
-              <text class="tm" x="24" y="262">IIS ตรวจความถูกต้องของเฮดเดอร์นี้ — ค่าที่ผิดรูปแบบได้ status 400.10 Invalid X-Forwarded-For</text>
+              <text class="tm" x="24" y="262">IIS ตรวจความถูกต้องของ header นี้ — ค่าที่ผิดรูปแบบได้ status 400.10 Invalid X-Forwarded-For</text>
             </svg>
           </div>
           <figcaption>
             <b>รูปที่ 7 — จุดที่หมายเลข IP เดิมหายไป</b> ·
             ระหว่างทางมีการเชื่อมต่อสองช่วงที่แยกจากกัน ช่วงที่สองเกิดจาก IIS เอง
-            เซิร์ฟเวอร์ปลายทางจึงอ่าน IP จริงจากชั้นเครือข่ายไม่ได้
-            ข้อมูลนั้นเดินทางต่อได้ในรูปเฮดเดอร์เท่านั้น
+            upstream จึงอ่าน IP จริงจากชั้นเครือข่ายไม่ได้
+            ข้อมูลนั้นเดินทางต่อได้ในรูป header เท่านั้น
           </figcaption>
         </figure>
       </div>
@@ -1438,36 +1438,36 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
         <p>
           ประเด็นนี้เป็นผลสืบเนื่องที่เกิดขึ้นกับสถาปัตยกรรม reverse proxy ทุกรูปแบบ
           และส่งผลกระทบต่อสองเรื่องที่มักพบเมื่อระบบเริ่มใช้งานจริง ได้แก่
-          การบันทึก IP ที่คลาดเคลื่อนในไฟล์บันทึกของเซิร์ฟเวอร์ปลายทาง
+          การบันทึก IP ที่คลาดเคลื่อนใน log ของ upstream
           และลิงก์ที่เซิร์ฟเวอร์นั้นสร้างขึ้นเองซึ่งชี้กลับไปยังชื่อโฮสต์ภายใน
         </p>
 
         <h3>หมายเลข IP ของผู้ใช้</h3>
         <p>
-          เมื่อ IIS ส่ง request ต่อไปยังเซิร์ฟเวอร์ปลายทาง การเชื่อมต่อในช่วงนั้นเกิดจาก IIS เอง
-          เซิร์ฟเวอร์ปลายทางจึงเห็น IP ต้นทางเป็นของ IIS ไม่ใช่ของผู้ใช้
-          ข้อมูล IP เดิมจะเดินทางต่อไปได้ก็ต่อเมื่อถูกใส่ไว้ในเฮดเดอร์
+          เมื่อ IIS ส่ง request ต่อไปยัง upstream การเชื่อมต่อในช่วงนั้นเกิดจาก IIS เอง
+          upstream จึงเห็น IP ต้นทางเป็นของ IIS ไม่ใช่ของผู้ใช้
+          ข้อมูล IP เดิมจะเดินทางต่อไปได้ก็ต่อเมื่อถูกใส่ไว้ใน header
         </p>
         <p>
-          เฮดเดอร์ที่ IIS ใช้กับข้อมูลนี้คือ <code>X-Forwarded-For</code>
-          ซึ่งยืนยันได้จากรายการรหัสสถานะของ IIS ที่กำหนดรหัสย่อย <code>400.10</code>
+          header ที่ IIS ใช้กับข้อมูลนี้คือ <code>X-Forwarded-For</code>
+          ซึ่งยืนยันได้จากรายการ status code ของ IIS ที่กำหนดรหัสย่อย <code>400.10</code>
           ไว้ตั้งแต่ IIS 8.0 โดยมีนิยามว่า <em>Invalid X-Forwarded-For (XFF) header</em>
-          กล่าวคือ <strong>IIS ตรวจสอบความถูกต้องของเฮดเดอร์นี้และปฏิเสธ request
+          กล่าวคือ <strong>IIS ตรวจสอบความถูกต้องของ header นี้และปฏิเสธ request
           เมื่อค่าไม่ถูกต้อง</strong>
         </p>
         <p class="note">
-          ก่อนนำไปใช้จริง ให้ทดสอบด้วยการอ่านเฮดเดอร์ที่เซิร์ฟเวอร์ปลายทางได้รับจริงหนึ่งครั้ง
+          ก่อนนำไปใช้จริง ให้ทดสอบด้วยการอ่าน header ที่ upstream ได้รับจริงหนึ่งครั้ง
           เพื่อยืนยันว่ามีค่านี้เดินทางมาถึงและอยู่ในรูปแบบที่แอปพลิเคชันอ่านได้
         </p>
 
         <h3>ชื่อโฮสต์เดิม</h3>
         <p>
-          ค่า <code>preserveHostHeader</code> ทำให้ request ที่ส่งต่อไปยังเซิร์ฟเวอร์ปลายทาง
-          <strong>มีเฮดเดอร์ Host เช่นเดียวกับที่ได้รับเข้ามาที่ IIS</strong>
+          ค่า <code>preserveHostHeader</code> ทำให้ request ที่ส่งต่อไปยัง upstream
+          <strong>มี header Host เช่นเดียวกับที่ได้รับเข้ามาที่ IIS</strong>
           แทนที่จะเป็นค่าที่ถูกแก้ไขเพื่อการ routing ของ ARR
           เอกสารกรณีศึกษาการใช้ ARR ของ Microsoft ระบุเหตุผลของการตั้งค่านี้เป็น <code>true</code>
           ไว้ตรงกันว่า แอปพลิเคชันจำเป็นต้องเห็น host header เดิมบน request ที่ถูก proxy มา
-          ซึ่งจำเป็นเมื่อเซิร์ฟเวอร์ปลายทางสร้าง absolute URL จากค่า Host ที่ได้รับ
+          ซึ่งจำเป็นเมื่อ upstream สร้าง absolute URL จากค่า Host ที่ได้รับ
         </p>
         <p>
           เอกสารฉบับเดียวกันแสดงให้เห็นว่า<strong>ค่าในกลุ่มนี้อยู่ในองค์ประกอบ
@@ -1487,16 +1487,16 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
         <div class="callout stop">
           <span class="ttl">ข้อกำหนดด้านความปลอดภัย</span>
           <p>
-            เฮดเดอร์เป็นข้อมูลที่ผู้เรียกสามารถกำหนดค่าเองได้ หากเซิร์ฟเวอร์ปลายทางจะเชื่อถือค่าจาก
-            <code>X-Forwarded-For</code> หรือเฮดเดอร์ที่ระบุตัวตนผู้ใช้ซึ่ง proxy เป็นผู้กำหนด
+            header เป็นข้อมูลที่ client สามารถกำหนดค่าเองได้ หาก upstream จะเชื่อถือค่าจาก
+            <code>X-Forwarded-For</code> หรือ header ที่ระบุตัวตนผู้ใช้ซึ่ง proxy เป็นผู้กำหนด
             ต้องปฏิบัติตามเงื่อนไขสองข้อพร้อมกัน
           </p>
           <ul>
-            <li><strong>proxy ต้องเขียนทับค่าในเฮดเดอร์นั้นเสมอ ไม่ใช่การต่อท้าย</strong>
-              มิฉะนั้นค่าที่ผู้เรียกกำหนดมาเองจะปะปนอยู่ในข้อมูล</li>
-            <li><strong>เซิร์ฟเวอร์ปลายทางต้องเข้าถึงได้จาก proxy เท่านั้น</strong>
+            <li><strong>proxy ต้องเขียนทับค่าใน header นั้นเสมอ ไม่ใช่การต่อท้าย</strong>
+              มิฉะนั้นค่าที่ client กำหนดมาเองจะปะปนอยู่ในข้อมูล</li>
+            <li><strong>upstream ต้องเข้าถึงได้จาก proxy เท่านั้น</strong>
               กล่าวคือต้องผูกไว้ที่ <code>127.0.0.1</code> ตามรูปที่ 3
-              หากผู้ใดสามารถเรียกตรงไปยังพอร์ต 8080 ได้ ผู้นั้นจะกำหนดเฮดเดอร์ใดก็ได้
+              หากผู้ใดสามารถเรียกตรงไปยัง port 8080 ได้ ผู้นั้นจะกำหนด header ใดก็ได้
               และระบบจะเชื่อถือค่านั้นทันที</li>
           </ul>
         </div>
@@ -1504,7 +1504,7 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
         <h3>การส่งผลการยืนยันตัวตนของ Windows</h3>
         <p>
           กรณีที่องค์กรต้องการให้ IIS เป็นผู้ยืนยันตัวตนกับ Active Directory
-          แล้วส่งผลการตรวจสอบต่อไปให้เซิร์ฟเวอร์ปลายทาง จะต้องเปิดใช้งาน Windows Authentication
+          แล้วส่งผลการตรวจสอบต่อไปให้ upstream จะต้องเปิดใช้งาน Windows Authentication
           เอกสารของ <code>&lt;windowsAuthentication&gt;</code> ระบุว่า
           <strong>การติดตั้ง IIS ตามค่าเริ่มต้นไม่มี role service นี้มาด้วย</strong>
           และกำหนดลำดับการดำเนินการไว้สามขั้นตามนี้
@@ -1539,9 +1539,9 @@ appcmd.exe set config <span class="s">"corp-web"</span> ^
           </p>
         </div>
         <p class="note">
-          เมื่อเปิดค่านี้แล้ว IIS จะเป็นผู้จัดการการยืนยันตัวตนทั้งหมด และเซิร์ฟเวอร์ปลายทาง
+          เมื่อเปิดค่านี้แล้ว IIS จะเป็นผู้จัดการการยืนยันตัวตนทั้งหมด และ upstream
           จะได้รับเฉพาะ request ที่ผ่านการตรวจสอบแล้ว ส่วนการส่งชื่อผู้ใช้ต่อไปให้เซิร์ฟเวอร์นั้น
-          ต้องกำหนดเป็นเฮดเดอร์เพิ่มเติม ซึ่งอยู่ภายใต้ข้อกำหนดด้านความปลอดภัยข้างต้นทุกประการ
+          ต้องกำหนดเป็น header เพิ่มเติม ซึ่งอยู่ภายใต้ข้อกำหนดด้านความปลอดภัยข้างต้นทุกประการ
         </p>
       </div>
     </section>
@@ -1558,10 +1558,10 @@ appcmd.exe set config <span class="s">"corp-web"</span> ^
           <div class="fig-frame">
             <svg viewBox="0 0 760 232" role="img" aria-label="แผนภาพขอบเขตการเข้ารหัส ช่วงจากเบราว์เซอร์ถึง IIS เข้ารหัสด้วย TLS ส่วนช่วงจาก IIS ไปยัง upstream เป็น HTTP ธรรมดาบน loopback ภายในเครื่องเดียวกัน">
               <defs>
-                <marker id="s1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <marker id="e1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
                 </marker>
-                <marker id="s2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <marker id="e2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd"/>
                 </marker>
               </defs>
@@ -1581,11 +1581,11 @@ appcmd.exe set config <span class="s">"corp-web"</span> ^
               <text class="t" x="536" y="88">upstream</text>
               <text class="tm" x="536" y="108">127.0.0.1:8080</text>
 
-              <line class="ln-a flow" x1="240" y1="96" x2="282" y2="96" stroke-width="3" marker-end="url(#s1)"/>
+              <line class="ln-a flow" x1="240" y1="96" x2="282" y2="96" stroke-width="3" marker-end="url(#e1)"/>
               <text class="ta" x="246" y="86">TLS :443</text>
               <text class="tm" x="246" y="120">encrypted</text>
 
-              <line class="ln flow" x1="480" y1="96" x2="514" y2="96" marker-end="url(#s2)"/>
+              <line class="ln flow" x1="480" y1="96" x2="514" y2="96" marker-end="url(#e2)"/>
               <text class="tm" x="486" y="86">HTTP</text>
               <text class="tm" x="486" y="120">plaintext</text>
 
@@ -1604,7 +1604,7 @@ appcmd.exe set config <span class="s">"corp-web"</span> ^
 
       <div class="col">
         <p>
-          ในสถาปัตยกรรมนี้ IIS เป็นจุดเดียวที่รับ TLS ขณะที่ช่วงระหว่าง IIS กับเซิร์ฟเวอร์ปลายทาง
+          ในสถาปัตยกรรมนี้ IIS เป็นจุดเดียวที่รับ TLS ขณะที่ช่วงระหว่าง IIS กับ upstream
           สื่อสารผ่าน <code>127.0.0.1</code> ซึ่งไม่ออกจากเครื่อง จึงไม่จำเป็นต้องทำ TLS ซ้ำอีกชั้น
         </p>
         <div class="code">
@@ -1623,7 +1623,7 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
           <code>2</code> central certificate store ·
           <code>3</code> SNI ใน central certificate store
           ค่า <code>1</code> จึงเป็นการเปิดใช้งาน SNI ซึ่งทำให้ site หลายรายการ
-          ใช้ใบรับรองต่างกันบนพอร์ต 443 เดียวกันได้ ตามหลักการ binding ในส่วนที่ 02
+          ใช้ใบรับรองต่างกันบน port 443 เดียวกันได้ ตามหลักการ binding ในส่วนที่ 02
         </p>
 
         <div class="callout stop">
@@ -1674,17 +1674,17 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
     <section class="pg" id="s9" hidden data-num="09" data-group="IIS · ใช้งานจริง" data-title="วิเคราะห์ปัญหา" data-full="การตรวจสอบและวิเคราะห์ปัญหา">
       <div class="col">
         <div class="sec-head"><span class="sec-no">09</span><h2>การตรวจสอบและวิเคราะห์ปัญหา</h2></div>
-        <p class="sec-sub">ระบุไฟล์บันทึกที่ถูกต้องก่อน แล้วจึงวิเคราะห์สาเหตุ</p>
+        <p class="sec-sub">ระบุ log ที่ถูกต้องก่อน แล้วจึงวิเคราะห์สาเหตุ</p>
         <p>
           ตามรูปที่ 1 request เดินทางผ่านหลายชั้น และ <strong>แต่ละชั้นบันทึกข้อมูลลงคนละไฟล์</strong>
-          การเปิดไฟล์บันทึกที่ไม่ตรงกับชั้นที่เกิดปัญหา เป็นสาเหตุที่ทำให้เข้าใจว่าระบบไม่ได้บันทึกข้อมูลใดไว้
+          การเปิด log ที่ไม่ตรงกับชั้นที่เกิดปัญหา เป็นสาเหตุที่ทำให้เข้าใจว่าระบบไม่ได้บันทึกข้อมูลใดไว้
         </p>
       </div>
 
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 256" role="img" aria-label="แผนภาพแสดงว่า request ที่ถูกปฏิเสธที่ HTTP.sys จะถูกบันทึกใน httperr ส่วนที่ถึง w3wp จะอยู่ใน IIS log และที่ส่งต่อออกไปจะอยู่ในไฟล์บันทึกของ upstream">
+            <svg viewBox="0 0 760 256" role="img" aria-label="แผนภาพแสดงว่า request ที่ถูกปฏิเสธที่ HTTP.sys จะถูกบันทึกใน httperr ส่วนที่ถึง w3wp จะอยู่ใน IIS log และที่ส่งต่อออกไปจะอยู่ใน log ของ upstream">
               <defs>
                 <marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd"/>
@@ -1730,8 +1730,8 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
             </svg>
           </div>
           <figcaption>
-            <b>รูปที่ 4 — ชั้นที่ request สิ้นสุด และไฟล์บันทึกที่ควรตรวจสอบ</b> ·
-            หากผู้ใช้แจ้งว่าเข้าใช้งานไม่ได้ แต่ไฟล์บันทึกของ IIS ไม่มีข้อมูล
+            <b>รูปที่ 4 — ชั้นที่ request สิ้นสุด และ log ที่ควรตรวจสอบ</b> ·
+            หากผู้ใช้แจ้งว่าเข้าใช้งานไม่ได้ แต่ log ของ IIS ไม่มีข้อมูล
             แสดงว่า request ไม่เคยเดินทางถึง <code>w3wp.exe</code>
             ให้ตรวจสอบไฟล์ <code>httperr</code> เป็นลำดับแรก
           </figcaption>
@@ -1749,7 +1749,7 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
                 <td>ยังไม่ได้กำหนดกฎ <code>spa-fallback</code> หรือยังไม่ได้ติดตั้ง URL Rewrite (ส่วนที่ 04)</td>
               </tr>
               <tr>
-                <td><code>/api</code> คืนสถานะ <strong>404</strong> ขณะที่เซิร์ฟเวอร์ปลายทางทำงานปกติ</td>
+                <td><code>/api</code> คืนสถานะ <strong>404</strong> ขณะที่ upstream ทำงานปกติ</td>
                 <td>ยังไม่ได้เปิดใช้งาน <strong>Enable Proxy</strong> ของ ARR ซึ่งเป็นจุดที่ถูกมองข้ามบ่อยที่สุด (ส่วนที่ 04)</td>
               </tr>
               <tr>
@@ -1762,19 +1762,19 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
               </tr>
               <tr>
                 <td><code>/api</code> คืนสถานะ <strong>502</strong></td>
-                <td>เซิร์ฟเวอร์ปลายทางไม่ได้ทำงานอยู่ หรือรับฟังคนละพอร์ตกับที่ระบุไว้ในกฎ rewrite</td>
+                <td>upstream ไม่ได้ทำงานอยู่ หรือรับฟังคนละ port กับที่ระบุไว้ในกฎ rewrite</td>
               </tr>
               <tr>
                 <td>คืนสถานะ <strong>401</strong> หรือ <strong>403</strong> กับไฟล์ static</td>
                 <td>บัญชี <code>IIS AppPool\CorpWebPool</code> ยังไม่มีสิทธิ์อ่านโฟลเดอร์ (ส่วนที่ 05)</td>
               </tr>
               <tr>
-                <td>ผู้ใช้แจ้งว่าเข้าใช้งานไม่ได้ แต่ไฟล์บันทึกของ IIS ไม่มีข้อมูล</td>
+                <td>ผู้ใช้แจ้งว่าเข้าใช้งานไม่ได้ แต่ log ของ IIS ไม่มีข้อมูล</td>
                 <td>ไฟล์ <code>httperr</code> ตามรูปที่ 4 เนื่องจาก request ถูกปฏิเสธตั้งแต่ชั้น HTTP.sys</td>
               </tr>
               <tr>
-                <td>ไฟล์บันทึกปลายทางแสดง IP เป็น <code>127.0.0.1</code> ทุกรายการ</td>
-                <td>เซิร์ฟเวอร์ปลายทางยังไม่ได้อ่านค่าจากเฮดเดอร์ <code>X-Forwarded-For</code> (ส่วนที่ 07)</td>
+                <td>log ปลายทางแสดง IP เป็น <code>127.0.0.1</code> ทุกรายการ</td>
+                <td>upstream ยังไม่ได้อ่านค่าจาก header <code>X-Forwarded-For</code> (ส่วนที่ 07)</td>
               </tr>
             </tbody>
           </table>
@@ -1783,7 +1783,7 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
         <div class="callout tip">
           <span class="ttl">วิธีจำแนกว่าปัญหาอยู่ที่ชั้น IIS หรืออยู่นอกขอบเขต</span>
           <p>
-            เรียกตรงไปยังเซิร์ฟเวอร์ปลายทางจากบนเซิร์ฟเวอร์เดียวกันด้วยคำสั่ง
+            เรียกตรงไปยัง upstream จากบนเซิร์ฟเวอร์เดียวกันด้วยคำสั่ง
             <code>curl http://127.0.0.1:8080/corp-api/...</code>
             หากได้รับผลลัพธ์ที่ถูกต้อง แสดงว่าปลายทางทำงานปกติ
             ให้ย้อนกลับไปตรวจสอบกฎ rewrite และการเปิดใช้งาน Enable Proxy
@@ -1793,7 +1793,7 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
 
         <h3>การเปิด Failed Request Tracing</h3>
         <p>
-          เมื่อไฟล์บันทึกปกติยังไม่เพียงพอ IIS มีเครื่องมือที่บันทึกรายละเอียดของ request
+          เมื่อ log ปกติยังไม่เพียงพอ IIS มีเครื่องมือที่บันทึกรายละเอียดของ request
           ที่ล้มเหลวเป็นรายครั้ง เอกสารของ Microsoft อธิบายหลักการทำงานไว้ว่า
           <strong>เครื่องมือนี้เก็บ trace event ของ request ไว้ในบัฟเฟอร์
           และเขียนลงดิสก์เฉพาะเมื่อ request นั้นล้มเหลว</strong>
@@ -1805,7 +1805,7 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
           <em>World Wide Web Services → Health and Diagnostics → Tracing</em>
           ตามที่เอกสารระบุ จากนั้นเปิดใช้งานที่ระดับ site ผ่าน IIS Manager
           โดยเลือก site แล้วเลือก <em>Failed Request Tracing</em> ในบานหน้าต่าง Actions
-          และเพิ่มกฎที่ <em>Failed Request Tracing Rules</em> พร้อมระบุรหัสสถานะที่ต้องการติดตาม
+          และเพิ่มกฎที่ <em>Failed Request Tracing Rules</em> พร้อมระบุ status code ที่ต้องการติดตาม
         </p>
         <div class="code">
           <div class="code-head"><span>applicationHost.config</span><span class="where">ผลลัพธ์ที่ IIS Manager เขียนให้</span></div>
@@ -1838,7 +1838,7 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
         <div class="sec-head"><span class="sec-no">10</span><h2>การเตรียม Spring Boot ให้ทำงานกับ IIS</h2></div>
         <p class="sec-sub">งานฝั่งแอปพลิเคชันที่ต้องสอดคล้องกับการตั้งค่า IIS ในส่วนก่อนหน้า</p>
         <p>
-          ส่วนที่ 01 ถึง 09 อธิบายเฉพาะชั้น IIS โดยเรียกปลายทางว่า <em>เซิร์ฟเวอร์ปลายทาง</em>
+          ส่วนที่ 01 ถึง 09 อธิบายเฉพาะชั้น IIS โดยเรียกปลายทางว่า <em>upstream</em>
           เพื่อให้ใช้ได้กับทุกเทคโนโลยี ส่วนนี้ลงรายละเอียดเฉพาะกรณีที่ปลายทางคือ
           <strong>Spring Boot ที่ทำงานบน Apache Tomcat</strong>
           โดยจำกัดเฉพาะจุดที่ต้องตั้งค่าให้สอดคล้องกับ IIS เท่านั้น
@@ -1848,8 +1848,8 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
         <h3>ขอบเขตที่ IIS ไม่เกี่ยวข้อง</h3>
         <p>
           ประเด็นที่ต้องเข้าใจก่อนคือ <strong><code>w3wp.exe</code> ไม่ได้ประมวลผลโค้ด Java เลย</strong>
-          JVM ที่รัน Spring Boot อยู่ในโปรเซสของ Tomcat ซึ่งแยกจากกันโดยสิ้นเชิง
-          IIS เพียงเปิดการเชื่อมต่อ HTTP ไปยังพอร์ตที่ Tomcat รับฟัง แล้วส่งผลลัพธ์กลับมาให้ผู้ใช้
+          JVM ที่รัน Spring Boot อยู่ใน process ของ Tomcat ซึ่งแยกจากกันโดยสิ้นเชิง
+          IIS เพียงเปิดการเชื่อมต่อ HTTP ไปยัง port ที่ Tomcat รับฟัง แล้วส่งผลลัพธ์กลับมาให้ผู้ใช้
           ตามที่อธิบายไว้ในส่วนที่ 03
         </p>
         <div class="callout tip">
@@ -1860,8 +1860,8 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
             <li>การกำหนดหน่วยความจำเป็นคนละเรื่องกัน — ค่าของ Application Pool
               ควบคุมเฉพาะ <code>w3wp.exe</code> ส่วนขนาด heap ของ JVM กำหนดที่ Tomcat</li>
             <li>ด้วยเหตุผลเดียวกัน <strong>จึงไม่ต้องติดตั้ง .NET Hosting Bundle</strong>
-              ซึ่งมีไว้ให้ IIS เรียกใช้โค้ด .NET ภายในโปรเซสของตนเอง
-              โมดูลที่จำเป็นมีเพียง URL Rewrite และ ARR ตามส่วนที่ 04</li>
+              ซึ่งมีไว้ให้ IIS เรียกใช้โค้ด .NET ภายใน process ของตนเอง
+              module ที่จำเป็นมีเพียง URL Rewrite และ ARR ตามส่วนที่ 04</li>
           </ul>
         </div>
 
@@ -2045,7 +2045,7 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
 
         <h3>จำกัดการรับฟังของ Tomcat</h3>
         <p>
-          ส่วนที่ 03 และ 07 ตั้งอยู่บนเงื่อนไขว่าเซิร์ฟเวอร์ปลายทางเข้าถึงได้จาก IIS เท่านั้น
+          ส่วนที่ 03 และ 07 ตั้งอยู่บนเงื่อนไขว่า upstream เข้าถึงได้จาก IIS เท่านั้น
           เอกสารของ HTTP Connector ระบุว่าแอตทริบิวต์ <code>address</code>
           ใช้กำหนดว่าจะรับฟังที่ที่อยู่ใด และ
           <strong>โดยค่าเริ่มต้น connector จะรับฟังทุกที่อยู่ในเครื่อง</strong>
@@ -2062,10 +2062,10 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
           มาใช้ให้ตรงกับข้อกำหนดด้านความปลอดภัยในส่วนที่ 07 ของเอกสารฉบับนี้
         </p>
 
-        <h3>การรับค่าเฮดเดอร์ที่ IIS ส่งมา</h3>
+        <h3>การรับค่า header ที่ IIS ส่งมา</h3>
         <p>
-          ส่วนที่ 07 อธิบายว่า IIS ส่งข้อมูลผู้เรียกต่อมาในรูปเฮดเดอร์
-          ฝั่ง Spring Boot ต้องถูกกำหนดค่าให้นำเฮดเดอร์เหล่านั้นมาใช้ด้วย มิฉะนั้นจะถูกละเลย
+          ส่วนที่ 07 อธิบายว่า IIS ส่งข้อมูล client ต่อมาในรูป header
+          ฝั่ง Spring Boot ต้องถูกกำหนดค่าให้นำ header เหล่านั้นมาใช้ด้วย มิฉะนั้นจะถูกละเลย
           เอกสารระบุ property ชื่อ <code>server.forward-headers-strategy</code> ซึ่งรับค่าได้สามแบบ
         </p>
         <div class="tbl">
@@ -2074,8 +2074,8 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
             <tbody>
               <tr>
                 <td class="k">NATIVE</td>
-                <td>ตัว web server จัดการเฮดเดอร์ forwarded เอง เอกสารระบุว่าการตั้งค่านี้
-                  <strong>เพียงพอสำหรับเฮดเดอร์ที่ใช้กันทั่วไปคือ <code>X-Forwarded-For</code>
+                <td>ตัว web server จัดการ header forwarded เอง เอกสารระบุว่าการตั้งค่านี้
+                  <strong>เพียงพอสำหรับ header ที่ใช้กันทั่วไปคือ <code>X-Forwarded-For</code>
                   และ <code>X-Forwarded-Proto</code></strong></td>
               </tr>
               <tr>
@@ -2085,7 +2085,7 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
               </tr>
               <tr>
                 <td class="k">NONE</td>
-                <td>ไม่ประมวลผลเฮดเดอร์ forwarded</td>
+                <td>ไม่ประมวลผล header forwarded</td>
               </tr>
             </tbody>
           </table>
@@ -2100,11 +2100,11 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
             เอกสารของ Spring Boot เตือนไว้เมื่อกล่าวถึงการตั้งค่า proxy ของ Tomcat ว่า
             <strong>สามารถเชื่อถือ proxy ทุกตัวได้ด้วยการตั้ง <code>internal-proxies</code>
             เป็นค่าว่าง แต่ห้ามทำเช่นนั้นในระบบที่ใช้งานจริง</strong>
-            เนื่องจากจะเปิดช่องให้ผู้เรียกปลอมแปลงหมายเลข IP และเฮดเดอร์ forwarded ได้
+            เนื่องจากจะเปิดช่องให้ client ปลอมแปลงหมายเลข IP และ header forwarded ได้
           </p>
           <p>
             ข้อนี้สอดคล้องกับข้อกำหนดสองข้อในส่วนที่ 07 คือ
-            proxy ต้องเขียนทับเฮดเดอร์เสมอ และปลายทางต้องเข้าถึงได้จาก proxy เท่านั้น
+            proxy ต้องเขียนทับ header เสมอ และปลายทางต้องเข้าถึงได้จาก proxy เท่านั้น
           </p>
         </div>
 
@@ -2114,12 +2114,12 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
             <thead><tr><th>รายการ</th><th>ฝั่ง IIS</th><th>ฝั่ง Spring Boot และ Tomcat</th></tr></thead>
             <tbody>
               <tr>
-                <td>พอร์ตปลายทาง</td>
+                <td>port ปลายทาง</td>
                 <td class="kw">ปลายทางในกฎ rewrite (ส่วน 06)</td>
                 <td class="kw">port ของ Connector</td>
               </tr>
               <tr>
-                <td>พาธปลายทาง</td>
+                <td>path ปลายทาง</td>
                 <td class="kw">/corp-api ในกฎ rewrite</td>
                 <td class="kw">ชื่อไฟล์ WAR</td>
               </tr>
@@ -2129,8 +2129,8 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
                 <td class="kw">address ของ Connector</td>
               </tr>
               <tr>
-                <td>ข้อมูลผู้เรียก</td>
-                <td class="kw">เฮดเดอร์ forwarded (ส่วน 07)</td>
+                <td>ข้อมูล client</td>
+                <td class="kw">header forwarded (ส่วน 07)</td>
                 <td class="kw">server.forward-headers-strategy</td>
               </tr>
             </tbody>
@@ -2146,9 +2146,9 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
     <section class="pg" id="s12" hidden data-num="11" data-group="Java" data-title="Tomcat" data-full="Tomcat และการพัฒนาแบบแยกส่วน">
       <div class="col">
         <div class="sec-head"><span class="sec-no">11</span><h2>Tomcat และการพัฒนาแบบแยกส่วน</h2></div>
-        <p class="sec-sub">เซิร์ฟเวอร์ปลายทางคืออะไร และตอนพัฒนาต่างจากตอนใช้งานจริงอย่างไร</p>
+        <p class="sec-sub">upstream คืออะไร และตอนพัฒนาต่างจากตอนใช้งานจริงอย่างไร</p>
         <p>
-          ตลอดส่วนที่ 01 ถึง 09 เราเรียกปลายทางว่า <em>เซิร์ฟเวอร์ปลายทาง</em> โดยไม่ระบุว่าเป็นอะไร
+          ตลอดส่วนที่ 01 ถึง 09 เราเรียกปลายทางว่า <em>upstream</em> โดยไม่ระบุว่าเป็นอะไร
           ส่วนนี้อธิบายว่าเมื่อปลายทางคือ Tomcat แล้วมันคืออะไร ทำงานอย่างไร
           และเหตุใดสภาพแวดล้อมตอนพัฒนาจึงต่างจากตอนใช้งานจริง
         </p>
@@ -2313,7 +2313,7 @@ service.bat install MyService</pre>
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 340" role="img" aria-label="แผนภาพเปรียบเทียบสภาพแวดล้อมสองแบบ ตอนพัฒนาเบราว์เซอร์เรียก Vite dev server ที่พอร์ต 5173 ซึ่งส่งต่อ slash api ไปยัง Spring Boot ที่พอร์ต 8080 ส่วนตอนใช้งานจริงเบราว์เซอร์เรียก IIS ที่พอร์ต 443 ซึ่งส่งไฟล์ static เองและส่งต่อ slash api ไปยัง Tomcat">
+            <svg viewBox="0 0 760 340" role="img" aria-label="แผนภาพเปรียบเทียบสภาพแวดล้อมสองแบบ ตอนพัฒนาเบราว์เซอร์เรียก Vite dev server ที่ port 5173 ซึ่งส่งต่อ slash api ไปยัง Spring Boot ที่ port 8080 ส่วนตอนใช้งานจริงเบราว์เซอร์เรียก IIS ที่ port 443 ซึ่งส่งไฟล์ static เองและส่งต่อ slash api ไปยัง Tomcat">
               <defs>
                 <marker id="d1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-c"/>
@@ -2337,7 +2337,7 @@ service.bat install MyService</pre>
 
               <rect class="bx-c" x="244" y="56" width="200" height="72" rx="7"/>
               <text class="t" x="344" y="80" text-anchor="middle">Vite dev server</text>
-              <text class="tm" x="344" y="100" text-anchor="middle">พอร์ตเริ่มต้น 5173</text>
+              <text class="tm" x="344" y="100" text-anchor="middle">port เริ่มต้น 5173</text>
               <text class="tm" x="344" y="116" text-anchor="middle">server.proxy ส่งต่อ /api</text>
 
               <line class="ln-p flow" x1="444" y1="92" x2="500" y2="92" marker-end="url(#d2)"/>
@@ -2379,7 +2379,7 @@ service.bat install MyService</pre>
             <b>รูปที่ 13 — สองสภาพแวดล้อมที่มีรูปร่างเดียวกัน</b> ·
             ตำแหน่งของตัวส่งต่อเปลี่ยนจาก Vite dev server เป็น IIS
             และปลายทางเปลี่ยนจาก Tomcat ที่ฝังมากับ Spring Boot เป็น Tomcat ที่ติดตั้งแยก
-            แต่โค้ดฝั่งหน้าบ้านยังเรียก <code>/api</code> เหมือนเดิมทั้งสองกรณี
+            แต่โค้ดฝั่ง frontend ยังเรียก <code>/api</code> เหมือนเดิมทั้งสองกรณี
           </figcaption>
         </figure>
       </div>
@@ -2387,14 +2387,14 @@ service.bat install MyService</pre>
       <div class="col">
         <h3>เหตุผลที่แยก frontend กับ backend ตอนพัฒนา</h3>
         <p>
-          บนเครื่องของผู้พัฒนา ทั้งสองฝั่งรันเป็นคนละโปรเซสและคนละพอร์ต
-          เอกสารของ Vite ระบุว่า <strong>พอร์ตเริ่มต้นของ dev server คือ 5173</strong>
-          และหากพอร์ตนั้นถูกใช้อยู่แล้ว Vite จะลองหาพอร์ตว่างถัดไปให้เอง
-          ส่วนฝั่ง Spring Boot รันแยกต่างหากที่พอร์ตของตัวเอง
+          บนเครื่องของผู้พัฒนา ทั้งสองฝั่งรันเป็นคนละ process และคนละ port
+          เอกสารของ Vite ระบุว่า <strong>port เริ่มต้นของ dev server คือ 5173</strong>
+          และหาก port นั้นถูกใช้อยู่แล้ว Vite จะลองหา port ว่างถัดไปให้เอง
+          ส่วนฝั่ง Spring Boot รันแยกต่างหากที่ port ของตัวเอง
         </p>
         <p>
           การแยกเช่นนี้ทำให้แต่ละฝั่ง <strong>รีโหลดตัวเองได้โดยไม่กระทบอีกฝั่ง</strong>
-          ฝั่งหน้าบ้านเห็นผลทันทีเมื่อแก้ไฟล์ ส่วนฝั่งหลังบ้าน
+          ฝั่ง frontend เห็นผลทันทีเมื่อแก้ไฟล์ ส่วนฝั่ง backend
           เอกสาร Spring Boot ระบุว่าแอปที่ใช้ <code>spring-boot-devtools</code>
           <strong>จะรีสตาร์ทอัตโนมัติเมื่อไฟล์บน classpath เปลี่ยนแปลง</strong>
           ซึ่งเอกสารอธิบายว่าเป็นประโยชน์เมื่อทำงานใน IDE เพราะได้ผลตอบกลับที่รวดเร็วมาก
@@ -2403,10 +2403,10 @@ service.bat install MyService</pre>
         <div class="callout">
           <span class="ttl">สิ่งที่ทำให้ทั้งสองสภาพแวดล้อมเขียนโค้ดชุดเดียวกันได้</span>
           <p>
-            กุญแจอยู่ที่การใช้ <strong>พาธเดียวกันทั้งสองฝั่ง</strong> คือ <code>/api</code>
+            กุญแจอยู่ที่การใช้ <strong>path เดียวกันทั้งสองฝั่ง</strong> คือ <code>/api</code>
             โดยตอนพัฒนาให้ <code>server.proxy</code> ของ Vite เป็นผู้ส่งต่อ
             และตอนใช้งานจริงให้กฎ rewrite ของ IIS เป็นผู้ส่งต่อ
-            โค้ดหน้าบ้านจึงไม่ต้องมีเงื่อนไขแยกตามสภาพแวดล้อม
+            โค้ด frontend จึงไม่ต้องมีเงื่อนไขแยกตามสภาพแวดล้อม
           </p>
         </div>
 
@@ -2415,7 +2415,7 @@ service.bat install MyService</pre>
             <thead><tr><th>ประเด็น</th><th>ตอนพัฒนา</th><th>ตอนใช้งานจริง</th></tr></thead>
             <tbody>
               <tr>
-                <td>ผู้ให้บริการไฟล์หน้าบ้าน</td>
+                <td>ผู้ให้บริการไฟล์ frontend</td>
                 <td class="kw">Vite dev server</td>
                 <td class="kw">IIS</td>
               </tr>
@@ -2449,7 +2449,7 @@ service.bat install MyService</pre>
             สิ่งที่ทำงานได้บนเครื่องพัฒนาอาจไม่ทำงานบนเซิร์ฟเวอร์ เพราะ
             <strong>ตอนพัฒนาไม่มี IIS อยู่ในเส้นทางเลย</strong>
             กฎ rewrite ทั้งหมดในส่วนที่ 06 · การกำหนด base path ในส่วนที่ 12 ·
-            การรับเฮดเดอร์ forwarded ในส่วนที่ 07 และ 10 ·
+            การรับ header forwarded ในส่วนที่ 07 และ 10 ·
             รวมถึงชนิดไฟล์ที่ IIS ไม่รู้จักในส่วนที่ 06
             ล้วนเป็นประเด็นที่ปรากฏเฉพาะตอนใช้งานจริงทั้งสิ้น
           </p>
@@ -2463,7 +2463,7 @@ service.bat install MyService</pre>
         <div class="sec-head"><span class="sec-no">12</span><h2>การเตรียม React ให้ทำงานกับ IIS</h2></div>
         <p class="sec-sub">ผลลัพธ์ของการ build และค่าที่ต้องตรงกับการตั้งค่า IIS</p>
         <p>
-          ส่วนนี้จำกัดเฉพาะจุดที่หน้าบ้านมาบรรจบกับ IIS คือ
+          ส่วนนี้จำกัดเฉพาะจุดที่ frontend มาบรรจบกับ IIS คือ
           <strong>ไฟล์ที่ได้จากการ build วางอย่างไร</strong> และ
           <strong>ค่าใดต้องตรงกับกฎที่ตั้งไว้ในส่วนที่ 06</strong>
           มิได้ครอบคลุมการเขียนคอมโพเนนต์หรือการออกแบบหน้าจอ
@@ -2525,7 +2525,7 @@ service.bat install MyService</pre>
           <figcaption>
             <b>รูปที่ 10 — เส้นทางของไฟล์และจุดที่ต้องระวัง</b> ·
             ไฟล์ในโฟลเดอร์ปลายทางมาจากสองแหล่งที่ไม่เหมือนกัน
-            ไฟล์ของหน้าบ้านถูกสร้างใหม่ทุกครั้งที่ build ส่วน <code>web.config</code>
+            ไฟล์ของ frontend ถูกสร้างใหม่ทุกครั้งที่ build ส่วน <code>web.config</code>
             เขียนขึ้นครั้งเดียวและต้องอยู่ต่อไป
           </figcaption>
         </figure>
@@ -2560,7 +2560,7 @@ service.bat install MyService</pre>
           กฎ <code>spa-fallback</code> ในส่วนที่ 06 ไม่ใช่เทคนิคเฉพาะของ IIS
           แต่เป็นข้อกำหนดของแอปพลิเคชันแบบหน้าเดียวทุกตัว เอกสารของ React Router ระบุไว้ว่า
           <strong>เป็นเรื่องปกติของการ deploy SPA ทุกแบบที่ต้องกำหนดค่าให้โฮสต์
-          ส่งทุก URL ไปยัง <code>index.html</code> ของผลลัพธ์ฝั่งไคลเอนต์</strong>
+          ส่งทุก URL ไปยัง <code>index.html</code> ของผลลัพธ์ฝั่ง client</strong>
           พร้อมระบุว่าโฮสต์บางรายทำให้โดยค่าเริ่มต้น แต่บางรายไม่ทำ
         </p>
         <div class="callout stop">
@@ -2589,8 +2589,8 @@ service.bat install MyService</pre>
           หรือสตริงว่างกับ <code>./</code> สำหรับการฝังไว้ในระบบอื่น
         </p>
         <p>
-          เอกสารระบุเพิ่มว่า หากนำโปรเจกต์ไป deploy ใต้พาธย่อย
-          <strong>เพียงกำหนดค่า <code>base</code> แล้วพาธของ asset ทั้งหมดจะถูกเขียนใหม่ให้เอง</strong>
+          เอกสารระบุเพิ่มว่า หากนำโปรเจกต์ไป deploy ใต้ path ย่อย
+          <strong>เพียงกำหนดค่า <code>base</code> แล้ว path ของ asset ทั้งหมดจะถูกเขียนใหม่ให้เอง</strong>
           ครอบคลุมทั้ง URL ของ asset ที่ import ผ่าน JavaScript, การอ้างอิงด้วย
           <code>url()</code> ใน CSS และการอ้างอิง asset ในไฟล์ HTML
         </p>
@@ -2616,10 +2616,10 @@ service.bat install MyService</pre>
         <div class="callout">
           <span class="ttl">อาการเมื่อค่าไม่ตรง</span>
           <p>
-            หากวางไว้ใต้พาธย่อยแต่ build ด้วยค่าเริ่มต้น เบราว์เซอร์จะร้องขอไฟล์จากรากของโดเมน
+            หากวางไว้ใต้ path ย่อยแต่ build ด้วยค่าเริ่มต้น เบราว์เซอร์จะร้องขอไฟล์จากรากของโดเมน
             ซึ่งไม่ตรงกับตำแหน่งจริง ผลคือหน้าเว็บโหลดขึ้นแต่ไม่มีสไตล์และไม่ทำงาน
             โดยไฟล์ JavaScript และ CSS ได้รับสถานะ 404 ทั้งหมด
-            อาการนี้ต่างจากกรณี <code>404.3</code> ในส่วนที่ 06 ตรงที่พาธผิด ไม่ใช่ชนิดไฟล์ไม่รู้จัก
+            อาการนี้ต่างจากกรณี <code>404.3</code> ในส่วนที่ 06 ตรงที่ path ผิด ไม่ใช่ชนิดไฟล์ไม่รู้จัก
           </p>
         </div>
 
@@ -2659,7 +2659,7 @@ service.bat install MyService</pre>
           บนเครื่องของผู้พัฒนาไม่มี IIS คอยส่งต่อ <code>/api</code> ให้
           เครื่องมือพัฒนาจึงมีกลไกของตัวเองมาแทน เอกสารของ Vite ระบุว่าค่า
           <code>server.proxy</code> ใช้ <strong>กำหนดกฎ proxy สำหรับ dev server</strong>
-          โดยคำขอที่พาธขึ้นต้นด้วยคีย์ที่ระบุจะถูกส่งต่อไปยังปลายทางที่กำหนด
+          โดยคำขอที่ path ขึ้นต้นด้วยคีย์ที่ระบุจะถูกส่งต่อไปยังปลายทางที่กำหนด
         </p>
         <div class="callout stop">
           <span class="ttl">จุดที่ต้องไม่สับสน</span>
@@ -2669,7 +2669,7 @@ service.bat install MyService</pre>
             <strong>ตัวส่งต่อใน production คือ IIS เสมอ</strong> ตามกฎในส่วนที่ 06
           </p>
           <p>
-            ข้อดีของการตั้งคีย์ให้ตรงกันทั้งสองฝั่ง คือโค้ดหน้าบ้านเรียก <code>/api/...</code>
+            ข้อดีของการตั้งคีย์ให้ตรงกันทั้งสองฝั่ง คือโค้ด frontend เรียก <code>/api/...</code>
             ได้เหมือนกันทั้งตอนพัฒนาและตอนใช้งานจริง โดยไม่ต้องมีเงื่อนไขแยกตามสภาพแวดล้อม
           </p>
         </div>
@@ -2685,12 +2685,12 @@ service.bat install MyService</pre>
                 <td class="kw">เนื้อหาของโฟลเดอร์ผลลัพธ์</td>
               </tr>
               <tr>
-                <td>พาธที่ให้บริการ</td>
+                <td>path ที่ให้บริการ</td>
                 <td class="kw">Site หรือ Application (ส่วน 02)</td>
                 <td class="kw">ค่า base ตอน build</td>
               </tr>
               <tr>
-                <td>เส้นทางฝั่งไคลเอนต์</td>
+                <td>client-side routing</td>
                 <td class="kw">กฎ spa-fallback (ส่วน 06)</td>
                 <td class="kw">เส้นทางที่ router กำหนด</td>
               </tr>
@@ -2726,7 +2726,7 @@ service.bat install MyService</pre>
           <div>
             <dt>Decoupled architecture<small>บางที่เรียก HEADLESS</small></dt>
             <dd>
-              การแยกหน้าบ้านกับหลังบ้านออกเป็นคนละโปรเจกต์ที่ build และ deploy แยกกัน
+              การแยก frontend กับ backend ออกเป็นคนละโปรเจกต์ที่ build และ deploy แยกกัน
               โดยสื่อสารกันผ่าน HTTP เท่านั้น <strong>ทั้งสองฝั่งไม่รู้จักโค้ดของกันและกันเลย</strong>
               รู้เพียงว่าต้องเรียก URL ไหนและจะได้ข้อมูลรูปแบบใดกลับมา
             </dd>
@@ -2771,7 +2771,7 @@ service.bat install MyService</pre>
               </tr>
               <tr>
                 <td>เป็นการรื้อหน้าจอใหม่ทั้งหมด</td>
-                <td>ช่วงแรกหน้าจอจะถูกแก้บ่อยกว่าหลังบ้านมาก การแยกทำให้<strong>แก้หน้าจอแล้วคัดลอกไฟล์ทับได้เลย ไม่ต้อง build ฝั่ง Java ใหม่</strong></td>
+                <td>ช่วงแรกหน้าจอจะถูกแก้บ่อยกว่า backend มาก การแยกทำให้<strong>แก้หน้าจอแล้วคัดลอกไฟล์ทับได้เลย ไม่ต้อง build ฝั่ง Java ใหม่</strong></td>
               </tr>
               <tr>
                 <td>เป็นระบบภายในองค์กร</td>
@@ -2779,7 +2779,7 @@ service.bat install MyService</pre>
               </tr>
               <tr>
                 <td>ทีมแบ่งงานกันได้</td>
-                <td>คนทำหน้าบ้านกับหลังบ้านทำงานคนละ repository และคนละจังหวะได้ ไม่ต้องรอกัน</td>
+                <td>คนทำ frontend กับ backend ทำงานคนละ repository และคนละจังหวะได้ ไม่ต้องรอกัน</td>
               </tr>
             </tbody>
           </table>
@@ -2907,7 +2907,7 @@ service.bat install MyService</pre>
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 344" role="img" aria-label="แผนภาพเปรียบเทียบโปรเซสที่รันจริง ฝั่งเครื่องพัฒนามีโปรเซส Node ที่รัน Vite และโปรเซส JVM ที่รัน Spring Boot ฝั่งเซิร์ฟเวอร์มีโปรเซส w3wp ของ IIS และโปรเซส JVM ของ Tomcat โดยมีขั้นตอน build คั่นกลาง">
+            <svg viewBox="0 0 760 344" role="img" aria-label="แผนภาพเปรียบเทียบ process ที่รันจริง ฝั่งเครื่องพัฒนามี process Node ที่รัน Vite และ process JVM ที่รัน Spring Boot ฝั่งเซิร์ฟเวอร์มี process w3wp ของ IIS และ process JVM ของ Tomcat โดยมีขั้นตอน build คั่นกลาง">
               <defs>
                 <marker id="g1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
@@ -2974,7 +2974,7 @@ service.bat install MyService</pre>
               <tr>
                 <td class="kw">React</td>
                 <td>เบราว์เซอร์ของผู้ใช้</td>
-                <td>แสดงหน้าจอ จัดการเส้นทางฝั่งไคลเอนต์ เรียก API</td>
+                <td>แสดงหน้าจอ จัดการ client-side routing เรียก API</td>
                 <td class="k">12</td>
               </tr>
               <tr>
@@ -3018,8 +3018,8 @@ service.bat install MyService</pre>
               </tr>
               <tr>
                 <td class="n">3</td>
-                <td>พาธไม่ขึ้นต้นด้วย <code>/api</code></td>
-                <td>พาธขึ้นต้นด้วย <code>/api</code></td>
+                <td>path ไม่ขึ้นต้นด้วย <code>/api</code></td>
+                <td>path ขึ้นต้นด้วย <code>/api</code></td>
               </tr>
               <tr>
                 <td class="n">4</td>
@@ -3054,12 +3054,12 @@ service.bat install MyService</pre>
                 <td class="kw">รูปแบบในกฎ rewrite · ส่วน 06</td>
               </tr>
               <tr>
-                <td>พอร์ตปลายทาง</td>
+                <td>port ปลายทาง</td>
                 <td class="kw">ปลายทางในกฎ rewrite</td>
                 <td class="kw">port ของ Tomcat Connector</td>
               </tr>
               <tr>
-                <td>พาธปลายทาง</td>
+                <td>path ปลายทาง</td>
                 <td class="kw">/corp-api ในกฎ rewrite</td>
                 <td class="kw">ชื่อไฟล์ .war · ส่วน 11</td>
               </tr>
@@ -3074,8 +3074,8 @@ service.bat install MyService</pre>
                 <td class="kw">address ของ Connector · ส่วน 11</td>
               </tr>
               <tr>
-                <td>ข้อมูลผู้เรียก</td>
-                <td class="kw">เฮดเดอร์ที่ IIS ส่ง · ส่วน 07</td>
+                <td>ข้อมูล client</td>
+                <td class="kw">header ที่ IIS ส่ง · ส่วน 07</td>
                 <td class="kw">forward-headers-strategy · ส่วน 10</td>
               </tr>
             </tbody>
@@ -3087,11 +3087,11 @@ service.bat install MyService</pre>
           <p>
             สิ่งที่ทำให้ทั้งระบบทำงานร่วมกันได้ ไม่ใช่เทคโนโลยีใดเทคโนโลยีหนึ่ง
             แต่คือ <strong>การที่ทุกฝั่งตกลงกันที่ค่าเดียวกัน</strong>
-            IIS ไม่รู้ว่าปลายทางเป็น Tomcat · Tomcat ไม่รู้ว่าหน้าบ้านเป็น React ·
+            IIS ไม่รู้ว่าปลายทางเป็น Tomcat · Tomcat ไม่รู้ว่า frontend เป็น React ·
             React ไม่รู้ว่ามี IIS อยู่ตรงกลาง
           </p>
           <p>
-            แต่ละฝั่งรู้เพียงสัญญาที่ตกลงไว้ คือพาธ พอร์ต และเฮดเดอร์
+            แต่ละฝั่งรู้เพียงสัญญาที่ตกลงไว้ คือ path port และ header
             ซึ่งเป็นเหตุผลที่เปลี่ยนเทคโนโลยีฝั่งใดฝั่งหนึ่งได้โดยไม่ต้องรื้อทั้งระบบ
           </p>
         </div>
@@ -3113,15 +3113,15 @@ service.bat install MyService</pre>
           <table>
             <thead><tr><th>คำ</th><th>ความหมาย</th><th>ส่วนที่</th></tr></thead>
             <tbody>
-              <tr><td class="kw">HTTP.sys</td><td>ตัวรับฟังพอร์ต 80 และ 443 จริง ทำงานในเคอร์เนลของ Windows ไม่ใช่โปรแกรมที่เปิดได้เอง</td><td class="k">01</td></tr>
+              <tr><td class="kw">HTTP.sys</td><td>ตัวรับฟัง port 80 และ 443 จริง ทำงานในเคอร์เนลของ Windows ไม่ใช่โปรแกรมที่เปิดได้เอง</td><td class="k">01</td></tr>
               <tr><td class="kw">W3SVC</td><td>บริการที่คอยตั้งค่าให้ HTTP.sys และแจ้ง WAS เมื่อมี request เข้าคิว</td><td class="k">01</td></tr>
               <tr><td class="kw">WAS</td><td>บริการที่อ่านไฟล์ตั้งค่าแล้วสร้างหรือรีไซเคิล worker process</td><td class="k">01</td></tr>
-              <tr><td class="kw">w3wp.exe</td><td>โปรเซสที่ประมวลผล request จริง หนึ่งตัวต่อหนึ่ง Application Pool</td><td class="k">01</td></tr>
+              <tr><td class="kw">w3wp.exe</td><td>process ที่ประมวลผล request จริง หนึ่งตัวต่อหนึ่ง Application Pool</td><td class="k">01</td></tr>
               <tr><td class="kw">Site</td><td>หน่วยใหญ่สุดของ IIS มี binding และโฟลเดอร์รากเป็นของตัวเอง</td><td class="k">02</td></tr>
               <tr><td class="kw">Application</td><td>ขอบเขตภายใน Site ที่กำหนด Application Pool ของตัวเองได้</td><td class="k">02</td></tr>
               <tr><td class="kw">Virtual Directory</td><td>การแมป URL ไปยังโฟลเดอร์ที่อยู่คนละที่ ใช้ pool ของ Application ที่ครอบอยู่</td><td class="k">02</td></tr>
-              <tr><td class="kw">Application Pool</td><td>ขอบเขตเชิงโปรเซส แอปคนละ pool แยกหน่วยความจำและสิทธิ์กัน</td><td class="k">02 · 05</td></tr>
-              <tr><td class="kw">Binding</td><td>ชุด IP พอร์ต และชื่อโฮสต์ ที่กำหนดว่า request แบบไหนเข้ามาที่ Site นี้</td><td class="k">02 · 08</td></tr>
+              <tr><td class="kw">Application Pool</td><td>ขอบเขตเชิง process แอปคนละ pool แยกหน่วยความจำและสิทธิ์กัน</td><td class="k">02 · 05</td></tr>
+              <tr><td class="kw">Binding</td><td>ชุด IP port และชื่อโฮสต์ ที่กำหนดว่า request แบบไหนเข้ามาที่ Site นี้</td><td class="k">02 · 08</td></tr>
               <tr><td class="kw">applicationHost.config</td><td>ไฟล์ตั้งค่าหลักของ IIS ทั้งเครื่อง</td><td class="k">02</td></tr>
               <tr><td class="kw">web.config</td><td>ไฟล์ตั้งค่าระดับโฟลเดอร์ เดินทางไปพร้อมไฟล์เมื่อคัดลอก</td><td class="k">02 · 06</td></tr>
               <tr><td class="kw">ApplicationPoolIdentity</td><td>บัญชีเสมือนที่ถูกสร้างพร้อม pool ใช้ชื่อรูปแบบ <code>IIS AppPool\ชื่อ pool</code></td><td class="k">05</td></tr>
@@ -3129,20 +3129,21 @@ service.bat install MyService</pre>
           </table>
         </div>
 
-        <h3>โมดูลและการส่งต่อ</h3>
+        <h3>module และการส่งต่อ</h3>
         <div class="tbl">
           <table>
             <thead><tr><th>คำ</th><th>ความหมาย</th><th>ส่วนที่</th></tr></thead>
             <tbody>
-              <tr><td class="kw">URL Rewrite</td><td>โมดูลเสริมที่ทำให้เขียนกฎแปลง URL ได้ ต้องติดตั้งก่อน ARR</td><td class="k">04 · 06</td></tr>
-              <tr><td class="kw">ARR</td><td>Application Request Routing — โมดูลที่ทำให้ IIS ส่ง request ต่อไปเซิร์ฟเวอร์อื่นได้</td><td class="k">04</td></tr>
+              <tr><td class="kw">URL Rewrite</td><td>module เสริมที่ทำให้เขียนกฎแปลง URL ได้ ต้องติดตั้งก่อน ARR</td><td class="k">04 · 06</td></tr>
+              <tr><td class="kw">ARR</td><td>Application Request Routing — module ที่ทำให้ IIS ส่ง request ต่อไปเซิร์ฟเวอร์อื่นได้</td><td class="k">04</td></tr>
+              <tr><td class="kw">upstream</td><td>เซิร์ฟเวอร์ที่อยู่หลัง reverse proxy และเป็นผู้ประมวลผล request จริง ในเอกสารนี้คือ Tomcat ที่ <code>127.0.0.1:8080</code></td><td class="k">03 · 07 · 11</td></tr>
               <tr><td class="kw">Reverse proxy</td><td>ตัวกลางที่รับ request แทนเซิร์ฟเวอร์จริงแล้วส่งต่อให้เบื้องหลัง ผู้ใช้เห็นแค่ปลายทางเดียว</td><td class="k">03 · 13</td></tr>
               <tr><td class="kw">Rewrite</td><td>การเขียน URL ใหม่แล้วส่งต่อภายใน ผู้ใช้ไม่เห็นการเปลี่ยนแปลง</td><td class="k">06</td></tr>
               <tr><td class="kw">Redirect</td><td>การสั่งให้เบราว์เซอร์ไปเรียก URL ใหม่เอง แถบที่อยู่จะเปลี่ยนตาม</td><td class="k">06 · 08</td></tr>
               <tr><td class="kw">SPA fallback</td><td>กฎที่ส่ง <code>index.html</code> กลับไปเมื่อ path ที่ขอไม่ใช่ไฟล์จริง</td><td class="k">03 · 06</td></tr>
               <tr><td class="kw">MIME type</td><td>ชนิดของไฟล์ที่ IIS ต้องรู้จักก่อนจึงจะยอมส่งออก มิฉะนั้นได้ <code>404.3</code></td><td class="k">06</td></tr>
-              <tr><td class="kw">X-Forwarded-For</td><td>เฮดเดอร์ที่พา IP เดิมของผู้ใช้ไปให้เซิร์ฟเวอร์ปลายทาง เพราะ IP จริงหายเมื่อผ่าน proxy</td><td class="k">07 · 10</td></tr>
-              <tr><td class="kw">SNI</td><td>ความสามารถที่ทำให้หลาย Site ใช้ใบรับรองต่างกันบนพอร์ต 443 เดียวกันได้</td><td class="k">08</td></tr>
+              <tr><td class="kw">X-Forwarded-For</td><td>header ที่พา IP เดิมของผู้ใช้ไปให้ upstream เพราะ IP จริงหายเมื่อผ่าน proxy</td><td class="k">07 · 10</td></tr>
+              <tr><td class="kw">SNI</td><td>ความสามารถที่ทำให้หลาย Site ใช้ใบรับรองต่างกันบน port 443 เดียวกันได้</td><td class="k">08</td></tr>
               <tr><td class="kw">loopback</td><td>ที่อยู่ <code>127.0.0.1</code> ซึ่งวนกลับเข้าเครื่องตัวเอง ไม่ออกสู่เครือข่าย</td><td class="k">03 · 11</td></tr>
             </tbody>
           </table>
@@ -3158,18 +3159,18 @@ service.bat install MyService</pre>
               <tr><td class="kw">Jakarta EE</td><td>ชุดมาตรฐานของ Java ฝั่งเซิร์ฟเวอร์ Tomcat 11 implement เวอร์ชัน 11 ของชุดนี้</td><td class="k">11</td></tr>
               <tr><td class="kw">WAR</td><td>ไฟล์แอปพลิเคชันของ Java ที่นำไปวางใน servlet container ที่ติดตั้งแยก</td><td class="k">10 · 11</td></tr>
               <tr><td class="kw">JAR</td><td>ไฟล์ที่มี servlet container ฝังอยู่ในตัวและรันเองได้ — ไม่ใช่รูปแบบที่ใช้ในเอกสารนี้</td><td class="k">10</td></tr>
-              <tr><td class="kw">context path</td><td>พาธนำหน้าที่ Tomcat ใช้แยกแต่ละแอป มาจากชื่อไฟล์ WAR โดยตรง</td><td class="k">11</td></tr>
+              <tr><td class="kw">context path</td><td>path นำหน้าที่ Tomcat ใช้แยกแต่ละแอป มาจากชื่อไฟล์ WAR โดยตรง</td><td class="k">11</td></tr>
               <tr><td class="kw">webapps</td><td>โฟลเดอร์ของ Tomcat ที่ใช้วางไฟล์ WAR</td><td class="k">11</td></tr>
               <tr><td class="kw">CATALINA_HOME</td><td>รากของการติดตั้ง Tomcat ที่เก็บไฟล์ที่ใช้ร่วมกัน</td><td class="k">11</td></tr>
               <tr><td class="kw">CATALINA_BASE</td><td>รากของค่าตั้งเฉพาะ instance ใช้เมื่อต้องการหลาย instance บนเครื่องเดียว</td><td class="k">11</td></tr>
-              <tr><td class="kw">Connector</td><td>ส่วนของ Tomcat ที่กำหนดว่าจะรับฟังพอร์ตใดและที่อยู่ใด</td><td class="k">11</td></tr>
+              <tr><td class="kw">Connector</td><td>ส่วนของ Tomcat ที่กำหนดว่าจะรับฟัง port ใดและที่อยู่ใด</td><td class="k">11</td></tr>
               <tr><td class="kw">catalina.out</td><td>ไฟล์ที่รับทุกอย่างที่โปรแกรมเขียนออกทางหน้าจอ รวมถึง error ที่ไม่ถูกดักจับ</td><td class="k">11</td></tr>
               <tr><td class="kw">classpath</td><td>รายการตำแหน่งที่ JVM ใช้ค้นหาไฟล์โปรแกรม devtools เฝ้าดูที่นี่เพื่อรีสตาร์ทอัตโนมัติ</td><td class="k">11</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h3>ฝั่งหน้าบ้านและสถาปัตยกรรม</h3>
+        <h3>ฝั่ง frontend และสถาปัตยกรรม</h3>
         <div class="tbl">
           <table>
             <thead><tr><th>คำ</th><th>ความหมาย</th><th>ส่วนที่</th></tr></thead>
@@ -3179,11 +3180,11 @@ service.bat install MyService</pre>
               <tr><td class="kw">build</td><td>ขั้นตอนแปลงซอร์สโค้ดเป็นไฟล์ที่นำขึ้นเซิร์ฟเวอร์ได้จริง</td><td class="k">12</td></tr>
               <tr><td class="kw">static file</td><td>ไฟล์ที่ส่งออกไปตามเนื้อหาเดิมทุกไบต์ ไม่ต้องผ่านการประมวลผล</td><td class="k">03 · 12</td></tr>
               <tr><td class="kw">hashed assets</td><td>ไฟล์ผลลัพธ์ที่ชื่อผูกกับเนื้อหา จึงเปลี่ยนชื่อทุกครั้งที่ build ใหม่</td><td class="k">12</td></tr>
-              <tr><td class="kw">base path</td><td>พาธนำหน้าที่ฝังอยู่ในลิงก์ของไฟล์ตั้งแต่ตอน build ต้องตรงกับตำแหน่งที่วางจริง</td><td class="k">12</td></tr>
+              <tr><td class="kw">base path</td><td>path นำหน้าที่ฝังอยู่ในลิงก์ของไฟล์ตั้งแต่ตอน build ต้องตรงกับตำแหน่งที่วางจริง</td><td class="k">12</td></tr>
               <tr><td class="kw">dev server</td><td>เซิร์ฟเวอร์ชั่วคราวบนเครื่องผู้พัฒนา ไม่มีอยู่บนเซิร์ฟเวอร์จริง</td><td class="k">11 · 12</td></tr>
               <tr><td class="kw">CORS</td><td>กติกาของเบราว์เซอร์ที่จำกัดการเรียกข้ามโดเมน — สถาปัตยกรรมนี้เลี่ยงได้เพราะอยู่โดเมนเดียวกัน</td><td class="k">03 · 13</td></tr>
               <tr><td class="kw">Same-origin</td><td>สภาพที่ไฟล์หน้าเว็บและ API อยู่ใต้โดเมนเดียวกันในสายตาเบราว์เซอร์</td><td class="k">13</td></tr>
-              <tr><td class="kw">Decoupled architecture</td><td>การแยกหน้าบ้านกับหลังบ้านเป็นคนละโปรเจกต์ที่ build และ deploy แยกกัน</td><td class="k">13</td></tr>
+              <tr><td class="kw">Decoupled architecture</td><td>การแยก frontend กับ backend เป็นคนละโปรเจกต์ที่ build และ deploy แยกกัน</td><td class="k">13</td></tr>
               <tr><td class="kw">TLS</td><td>การเข้ารหัสระหว่างเบราว์เซอร์กับเซิร์ฟเวอร์ ในระบบนี้สิ้นสุดที่ IIS</td><td class="k">08</td></tr>
             </tbody>
           </table>
@@ -3248,7 +3249,7 @@ service.bat install MyService</pre>
           </li>
         </ol>
 
-        <h3>เนื้อหาแบบ static รหัสสถานะ และไฟล์บันทึก</h3>
+        <h3>เนื้อหาแบบ static status code และ log</h3>
         <ol start="9">
           <li>
             Adding Static Content MIME Mappings &lt;mimeMap&gt; — ข้อความว่า IIS
@@ -3262,7 +3263,7 @@ service.bat install MyService</pre>
             <span class="src">learn.microsoft.com/en-us/troubleshoot/developer/webapps/iis/health-diagnostic-performance/http-status-code</span>
           </li>
           <li>
-            Configure Logging in IIS — ตำแหน่งเริ่มต้นของไฟล์บันทึก IIS
+            Configure Logging in IIS — ตำแหน่งเริ่มต้นของ log IIS
             คือ <code>%SystemDrive%\inetpub\logs\LogFiles</code><span class="doc">MICROSOFT</span><br>
             <span class="src">learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis</span>
           </li>
@@ -3332,7 +3333,7 @@ service.bat install MyService</pre>
         <ol start="21">
           <li>
             Vite — Building for Production — หัวข้อ Public Base Path
-            การเขียนพาธของ asset ใหม่ตามค่า <code>base</code> และการเรียกไฟล์ผลลัพธ์ว่า
+            การเขียน path ของ asset ใหม่ตามค่า <code>base</code> และการเรียกไฟล์ผลลัพธ์ว่า
             hashed assets<span class="doc">VITE</span><br>
             <span class="src">vite.dev/guide/build</span>
           </li>
@@ -3403,7 +3404,7 @@ service.bat install MyService</pre>
 
         <div class="closing">
           <p>
-            ชื่อ site พาธของไฟล์ หมายเลขพอร์ต และพาธปลายทางทั้งหมดในเอกสารนี้
+            ชื่อ site path ของไฟล์ หมายเลข port และ path ปลายทางทั้งหมดในเอกสารนี้
             เป็นค่าตัวอย่างที่กำหนดขึ้น มิใช่ค่าที่ตรวจวัดหรือดึงมาจากระบบจริง
             ส่วน Thumbprint ของใบรับรองในส่วนที่ 08 เป็นค่าตัวอย่างที่ปรากฏในเอกสารของ Microsoft
           </p>
