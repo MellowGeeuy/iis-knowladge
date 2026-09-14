@@ -398,21 +398,40 @@
       </div>
 
       <div class="col">
-        <h3>วัตถุประสงค์ของเอกสาร</h3>
+        <h3>เอกสารนี้ทำไว้เพื่ออะไร</h3>
         <p>
-          เอกสารฉบับนี้อธิบาย <strong>ชั้น IIS</strong> คือส่วนที่รับ request จากผู้ใช้
-          ตัดสินใจว่าจะตอบด้วยไฟล์บนดิสก์หรือส่งต่อไปยังเซิร์ฟเวอร์อื่น และบันทึกผลลัพธ์ไว้
+          ระบบหนึ่งระบบประกอบด้วยซอฟต์แวร์หลายตัวที่ทำงานคนละหน้าที่
+          คนที่เพิ่งเข้ามาร่วมทีมมักเห็นแต่ละตัวแยกกัน แต่ยังไม่เห็นว่ามันต่อกันตรงไหน
+          เอกสารนี้จึงเขียนขึ้นเพื่อตอบสามคำถาม
         </p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>คำถาม</th><th>ตอบอยู่ที่</th></tr></thead>
+            <tbody>
+              <tr><td><strong>แต่ละตัวคืออะไร</strong> — IIS, Tomcat, Spring Boot, React คือซอฟต์แวร์ประเภทไหน ทำหน้าที่อะไร</td><td class="k">01 · 11 · 10 · 12</td></tr>
+              <tr><td><strong>แต่ละตัวทำงานอย่างไร</strong> — ข้างในมีองค์ประกอบอะไร รับ request มาแล้วทำอะไรต่อ ตั้งค่าที่ไหน</td><td class="k">02–09</td></tr>
+              <tr><td><strong>รวมกันแล้วเป็นระบบอย่างไร</strong> — ต่อกันตรงไหน ค่าใดต้องตรงกัน เรียกสถาปัตยกรรมแบบนี้ว่าอะไร</td><td class="k">13</td></tr>
+            </tbody>
+          </table>
+        </div>
         <p>
-          ส่วนที่ 01 ถึง 09 เรียกปลายทางว่า <em>เซิร์ฟเวอร์ปลายทาง</em> แบบกลาง ๆ
-          จึงใช้ได้โดยไม่ขึ้นกับว่าแอปพลิเคชันเบื้องหลังพัฒนาด้วยเทคโนโลยีใด
-          ส่วนที่ 10 ถึง 12 จึงค่อยลงรายละเอียดเฉพาะกรณีที่ปลายทางคือ
-          <strong>Spring Boot บน Apache Tomcat</strong> และหน้าบ้านเป็น <strong>React</strong>
-          โดยจำกัดเฉพาะค่าที่ต้องตั้งให้สอดคล้องกับ IIS
+          สัดส่วนเนื้อหาเอนไปทาง IIS มากที่สุด เพราะเป็นตัวที่อยู่หน้าสุดและเป็นจุดที่
+          ปัญหาส่วนใหญ่เกิดขึ้น ส่วนที่ 01 ถึง 09 จึงเรียกปลายทางว่า <em>เซิร์ฟเวอร์ปลายทาง</em>
+          แบบกลาง ๆ ไว้ก่อน แล้วส่วนที่ 10 ถึง 12 ค่อยลงรายละเอียดว่าปลายทางจริงคือ
+          <strong>Spring Boot บน Tomcat 11</strong> และหน้าบ้านคือ <strong>React</strong>
         </p>
+        <div class="callout tip">
+          <span class="ttl">ทำไมต้องเป็น IIS</span>
+          <p>
+            ไม่ใช่เพราะบังคับ แต่เพราะ <strong>ระบบรันอยู่บน Windows Server ซึ่งมี IIS
+            เป็น web server ติดมากับระบบปฏิบัติการอยู่แล้ว</strong>
+            เมื่อสถาปัตยกรรมต้องการ reverse proxy อยู่แล้ว การใช้ของที่มีอยู่จึงสมเหตุสมผลกว่า
+            การติดตั้งตัวกลางเพิ่ม
+          </p>
+        </div>
         <p>
-          สิ่งที่อยู่นอกขอบเขต ได้แก่ การพัฒนาแอปพลิเคชัน การออกแบบฐานข้อมูล
-          และกติกาทางธุรกิจของระบบ
+          สิ่งที่อยู่นอกขอบเขต ได้แก่ การเขียนโค้ดแอปพลิเคชัน การออกแบบฐานข้อมูล
+          และ business logic ของระบบ
         </p>
         <p>
           ชื่อ site พาธของไฟล์ และหมายเลขพอร์ตที่ปรากฏในคำสั่งทั้งหมด เป็น
@@ -466,73 +485,66 @@
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 430" role="img" aria-label="แผนภาพองค์ประกอบของ IIS แบ่งเป็นชั้นเคอร์เนลที่มี HTTP.sys กับคิวและแคช และชั้นผู้ใช้ที่มี svchost.exe ซึ่งบรรจุ W3SVC และ WAS อ่านไฟล์ applicationHost.config แล้วสร้าง worker process w3wp.exe">
+            <svg viewBox="0 0 760 392" role="img" aria-label="แผนภาพองค์ประกอบของ IIS แบ่งเป็น kernel mode ที่มี HTTP.sys พร้อม request queue และ response cache กับ user mode ที่มี svchost.exe ซึ่งบรรจุ W3SVC และ WAS อ่าน applicationHost.config แล้วสร้าง worker process">
               <defs>
-                <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd"/>
                 </marker>
-                <marker id="a1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="a1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
                 </marker>
-                <marker id="a1c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="a1c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-c"/>
                 </marker>
               </defs>
 
-              <rect class="bx-c" x="286" y="14" width="188" height="44" rx="7"/>
-              <text class="t" x="380" y="41" text-anchor="middle">เบราว์เซอร์ของผู้ใช้</text>
-              <line class="ln-c flow" x1="380" y1="58" x2="380" y2="112" marker-end="url(#a1c)"/>
-              <text class="tm" x="392" y="90">:443</text>
+              <rect class="bx-c" x="272" y="16" width="216" height="48" rx="7"/>
+              <text class="tm" x="288" y="38">client</text>
+              <text class="t" x="288" y="56">TCP :443</text>
+              <line class="ln-c flow" x1="380" y1="64" x2="380" y2="96" marker-end="url(#a1c)"/>
 
-              <rect class="band" x="30" y="118" width="700" height="104" rx="8"/>
-              <text class="tl" x="44" y="137">KERNEL MODE</text>
-              <rect class="bx-a" x="60" y="146" width="196" height="56" rx="7"/>
-              <text class="t" x="158" y="170" text-anchor="middle">HTTP.sys</text>
-              <text class="tm" x="158" y="188" text-anchor="middle">รับฟังพอร์ต 80 / 443</text>
+              <rect class="band" x="24" y="104" width="712" height="96" rx="7"/>
+              <text class="tl" x="40" y="124">ring 0 · kernel mode</text>
 
-              <rect class="bx" x="296" y="146" width="172" height="56" rx="7"/>
-              <text class="t" x="382" y="170" text-anchor="middle">คิวของ request</text>
-              <text class="tm" x="382" y="188" text-anchor="middle">รอ worker ว่าง</text>
+              <rect class="bx-a" x="40" y="132" width="216" height="52" rx="7"/>
+              <text class="t" x="56" y="154">HTTP.sys</text>
+              <text class="tm" x="56" y="172">kernel driver · listener</text>
 
-              <rect class="bx" x="508" y="146" width="172" height="56" rx="7"/>
-              <text class="t" x="594" y="170" text-anchor="middle">แคชระดับเคอร์เนล</text>
-              <text class="tm" x="594" y="188" text-anchor="middle">ตอบโดยไม่ขึ้น user mode</text>
+              <rect class="bx" x="288" y="132" width="216" height="52" rx="7"/>
+              <text class="t" x="304" y="154">request queue</text>
+              <text class="tm" x="304" y="172">รอ worker process ว่าง</text>
 
-              <line class="ln flow" x1="256" y1="174" x2="290" y2="174" marker-end="url(#a1)"/>
-              <line class="ln flow" x1="468" y1="174" x2="502" y2="174" marker-end="url(#a1)"/>
+              <rect class="bx" x="536" y="132" width="184" height="52" rx="7"/>
+              <text class="t" x="552" y="154">response cache</text>
+              <text class="tm" x="552" y="172">ตอบโดยไม่ขึ้น ring 3</text>
 
-              <line class="ln dash" x1="30" y1="238" x2="730" y2="238"/>
+              <line class="ln flow" x1="256" y1="158" x2="282" y2="158" marker-end="url(#a1)"/>
+              <line class="ln flow" x1="504" y1="158" x2="530" y2="158" marker-end="url(#a1)"/>
 
-              <rect class="band" x="30" y="252" width="700" height="162" rx="8"/>
-              <text class="tl" x="44" y="271">USER MODE</text>
+              <rect class="band" x="24" y="216" width="712" height="144" rx="7"/>
+              <text class="tl" x="40" y="236">ring 3 · user mode</text>
 
-              <rect class="bx" x="60" y="280" width="256" height="74" rx="7"/>
-              <text class="tm" x="214" y="298">svchost.exe</text>
-              <rect class="bx" x="74" y="306" width="112" height="36" rx="7"/>
-              <text class="t" x="130" y="329" text-anchor="middle">W3SVC</text>
-              <rect class="bx" x="196" y="306" width="106" height="36" rx="7"/>
-              <text class="t" x="249" y="329" text-anchor="middle">WAS</text>
+              <rect class="bx" x="40" y="244" width="336" height="96" rx="7"/>
+              <text class="tm" x="208" y="266" text-anchor="middle">svchost.exe · LocalSystem</text>
+              <rect class="bx" x="56" y="276" width="152" height="48" rx="7"/>
+              <text class="t" x="72" y="298">W3SVC</text>
+              <text class="tm" x="72" y="316">listener adapter</text>
+              <rect class="bx" x="224" y="276" width="136" height="48" rx="7"/>
+              <text class="t" x="240" y="298">WAS</text>
+              <text class="tm" x="240" y="316">process manager</text>
 
-              <rect class="bx" x="60" y="368" width="256" height="34" rx="7"/>
-              <text class="tm" x="188" y="390" text-anchor="middle">applicationHost.config</text>
-              <line class="ln flow" x1="250" y1="368" x2="250" y2="348" marker-end="url(#a1)"/>
-              <text class="tm" x="258" y="364">อ่าน</text>
+              <rect class="bx-a" x="408" y="244" width="312" height="48" rx="7"/>
+              <text class="t" x="424" y="266">w3wp.exe</text>
+              <text class="tm" x="424" y="284">CorpWebPool · module pipeline</text>
 
-              <rect class="bx-a" x="470" y="272" width="210" height="50" rx="7"/>
-              <text class="t" x="575" y="295" text-anchor="middle">w3wp.exe</text>
-              <text class="tm" x="575" y="312" text-anchor="middle">pool ที่ 1</text>
-              <rect class="bx" x="470" y="342" width="210" height="50" rx="7"/>
-              <text class="t" x="575" y="365" text-anchor="middle">w3wp.exe</text>
-              <text class="tm" x="575" y="382" text-anchor="middle">pool ที่ 2</text>
+              <rect class="bx" x="408" y="304" width="312" height="36" rx="7"/>
+              <text class="tm" x="424" y="326">w3wp.exe · pool อื่น · แยก memory และ token</text>
 
-              <path class="ln-a flow-slow" d="M316 330 L 400 330 L 400 300 L 464 300" marker-end="url(#a1a)"/>
-              <text class="ta" x="322" y="322">สร้าง / รีไซเคิล</text>
+              <path class="ln flow" d="M380 184 L 380 212 L 564 212 L 564 238" marker-end="url(#a1a)"/>
+              <text class="tm" x="392" y="208">dequeue → dispatch</text>
 
-              <path class="ln flow-rel" d="M130 306 L 130 242" marker-end="url(#a1)"/>
-              <text class="tm" x="142" y="258">ตั้งค่า HTTP.sys</text>
-
-              <path class="ln flow" d="M382 202 L 382 256 L 430 256 L 430 288 L 464 288" marker-end="url(#a1a)"/>
-              <text class="tm" x="392" y="232">ส่ง request</text>
+              <path class="ln-a flow-rel" d="M312 276 L 312 258 L 402 258" marker-end="url(#a1a)"/>
+              <text class="tm" x="40" y="376">applicationHost.config  →  WAS อ่านตอน start และเมื่อไฟล์เปลี่ยน  →  spawn / recycle worker process</text>
             </svg>
           </div>
           <figcaption>
@@ -630,51 +642,49 @@
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 340" role="img" aria-label="แผนภาพแสดงว่า Site ประกอบด้วย Application และ Virtual Directory ซึ่งเป็นแกนของ URL ขณะที่ Application Pool เป็นแกนของโปรเซสแยกต่างหาก และแต่ละ Application ผูกกับ Pool ด้วยเส้นประ">
+            <svg viewBox="0 0 760 320" role="img" aria-label="แผนภาพแสดงว่า Site Application และ Virtual Directory เป็นแกนของ URL ส่วน Application Pool เป็นแกนของโปรเซส โดย Application ผูกกับ Pool ด้วยเส้นประ">
               <defs>
-                <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd"/>
                 </marker>
-                <marker id="a2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="a2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
                 </marker>
               </defs>
 
-              <text class="tl" x="30" y="22">แกนของ URL และไฟล์</text>
-              <text class="tl" x="500" y="22">แกนของโปรเซส</text>
+              <text class="tl" x="24" y="20">URL namespace</text>
+              <text class="tl" x="464" y="20">process boundary</text>
 
-              <rect class="bx" x="30" y="36" width="400" height="278" rx="8"/>
-              <text class="t" x="46" y="62" style="font-weight:600">Site · corp-web</text>
-              <text class="tm" x="46" y="82">binding  *:443:app.corp.local</text>
-              <text class="tm" x="46" y="100">root     D:\apps\corp-web</text>
+              <rect class="bx" x="24" y="32" width="400" height="216" rx="7"/>
+              <text class="tm" x="40" y="54">&lt;site name="corp-web"&gt;</text>
+              <text class="tm" x="40" y="72">binding  *:443:app.corp.local</text>
 
-              <rect class="bx-a" x="52" y="118" width="356" height="52" rx="7"/>
-              <text class="t" x="68" y="140">Application  /</text>
-              <text class="tm" x="68" y="158">D:\apps\corp-web · ไฟล์ static ของเว็บ</text>
+              <rect class="bx-a" x="44" y="84" width="360" height="48" rx="7"/>
+              <text class="t" x="60" y="106">application path="/"</text>
+              <text class="tm" x="60" y="124">physicalPath  D:\apps\corp-web</text>
 
-              <rect class="bx" x="52" y="182" width="356" height="52" rx="7"/>
-              <text class="t" x="68" y="204">Application  /reports</text>
-              <text class="tm" x="68" y="222">D:\apps\corp-reports · กำหนด pool แยกได้</text>
+              <rect class="bx" x="44" y="144" width="360" height="48" rx="7"/>
+              <text class="t" x="60" y="166">application path="/reports"</text>
+              <text class="tm" x="60" y="184">กำหนด applicationPool ของตัวเองได้</text>
 
-              <rect class="bx" x="72" y="246" width="336" height="52" rx="7"/>
-              <text class="t" x="88" y="268">Virtual Directory  /reports/files</text>
-              <text class="tm" x="88" y="286">E:\archive · อยู่คนละไดรฟ์ได้</text>
+              <rect class="bx" x="64" y="204" width="340" height="36" rx="7"/>
+              <text class="tm" x="80" y="226">virtualDirectory path="/files"  →  E:\archive</text>
 
-              <rect class="bx-a" x="500" y="118" width="230" height="52" rx="7"/>
-              <text class="t" x="516" y="140">CorpWebPool</text>
-              <text class="tm" x="516" y="158">w3wp.exe · No Managed Code</text>
+              <rect class="bx-a" x="464" y="84" width="272" height="48" rx="7"/>
+              <text class="t" x="480" y="106">CorpWebPool</text>
+              <text class="tm" x="480" y="124">w3wp.exe · managedRuntimeVersion=""</text>
 
-              <rect class="bx" x="500" y="182" width="230" height="52" rx="7"/>
-              <text class="t" x="516" y="204">ReportsPool</text>
-              <text class="tm" x="516" y="222">w3wp.exe · หน่วยความจำแยกกัน</text>
+              <rect class="bx" x="464" y="144" width="272" height="48" rx="7"/>
+              <text class="t" x="480" y="166">ReportsPool</text>
+              <text class="tm" x="480" y="184">w3wp.exe คนละตัว · แยก memory</text>
 
-              <path class="ln-a flow-rel" d="M408 144 L 494 144" marker-end="url(#a2a)"/>
-              <path class="ln flow-rel" d="M408 208 L 494 208" marker-end="url(#a2)"/>
-              <path class="ln flow-rel" d="M408 272 L 462 272 L 462 216 L 494 216" marker-end="url(#a2)"/>
+              <path class="ln-a flow-rel" d="M404 108 L 458 108" marker-end="url(#a2a)"/>
+              <path class="ln flow-rel" d="M404 168 L 458 168" marker-end="url(#a2)"/>
+              <path class="ln flow-rel" d="M404 222 L 434 222 L 434 176 L 458 176" marker-end="url(#a2)"/>
 
-              <text class="tl" x="500" y="266">ขอบเขตความเสียหาย</text>
-              <text class="tm" x="500" y="288">แอปใน pool หนึ่งหยุดทำงาน</text>
-              <text class="tm" x="500" y="306">ไม่กระทบ pool อื่น</text>
+              <line class="ln dash" x1="24" y1="266" x2="736" y2="266"/>
+              <text class="tm" x="24" y="288">virtualDirectory ไม่มีเส้นผูกของตัวเอง — inherit pool จาก application ที่ครอบอยู่</text>
+              <text class="tm" x="24" y="308">application คนละ site ใช้ pool ร่วมกันได้ · สองแกนนี้ตัดขวางกัน ไม่ใช่ลำดับชั้นเดียวกัน</text>
             </svg>
           </div>
           <figcaption>
@@ -764,54 +774,57 @@
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 300" role="img" aria-label="แผนภาพเส้นทาง request สองเส้น เส้นแรกขอหน้าเว็บแล้ว IIS ตอบด้วยไฟล์จากดิสก์ เส้นที่สองขอ /api แล้ว IIS เขียน URL ใหม่ส่งต่อไปยังเซิร์ฟเวอร์ปลายทางที่ 127.0.0.1:8080">
+            <svg viewBox="0 0 760 312" role="img" aria-label="แผนภาพสองหน้าที่ของ IIS request แบบ GET หน้าเว็บจะถูกตอบด้วยไฟล์จากดิสก์ด้วยสถานะ 200 ส่วน request ที่ขึ้นต้นด้วย /api จะถูกเขียน URL ใหม่แล้วส่งต่อไปยัง 127.0.0.1 พอร์ต 8080 แล้วได้ JSON กลับมา" data-v2="1">
               <defs>
-                <marker id="a3c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="a3c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-c"/>
                 </marker>
-                <marker id="a3a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="a3a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
                 </marker>
-                <marker id="a3p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="a3p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-p"/>
                 </marker>
               </defs>
 
-              <rect class="bx-c" x="24" y="96" width="152" height="88" rx="7"/>
-              <text class="t" x="100" y="126" text-anchor="middle">เบราว์เซอร์</text>
-              <text class="tm" x="100" y="148" text-anchor="middle">GET /orders/1024</text>
-              <text class="tm" x="100" y="168" text-anchor="middle">GET /api/orders/1024</text>
+              <!-- คอลัมน์ 1 · client -->
+              <rect class="bx-c" x="24" y="56" width="216" height="96" rx="7"/>
+              <text class="tm" x="40" y="78">Client</text>
+              <text class="t" x="40" y="100">Browser</text>
+              <text class="tm" x="40" y="122">GET /orders/1024</text>
+              <text class="tm" x="40" y="140">GET /api/orders/1024</text>
 
-              <line class="ln-c flow" x1="176" y1="140" x2="234" y2="140" marker-end="url(#a3c)"/>
-              <text class="tm" x="180" y="131">:443</text>
+              <!-- คอลัมน์ 2 · IIS -->
+              <rect class="bx-a" x="272" y="56" width="216" height="96" rx="7"/>
+              <text class="tm" x="288" y="78">Reverse proxy</text>
+              <text class="t" x="288" y="100">IIS · w3wp.exe</text>
+              <text class="tm" x="288" y="122">listen :443 · TLS</text>
+              <text class="tm" x="288" y="140">rewrite rules · ส่วน 06</text>
 
-              <rect class="bx-a" x="236" y="58" width="184" height="164" rx="7"/>
-              <text class="t" x="328" y="84" text-anchor="middle" style="font-weight:600">IIS</text>
-              <text class="tm" x="328" y="104" text-anchor="middle">site: corp-web</text>
-              <line class="ln dash" x1="252" y1="118" x2="404" y2="118"/>
-              <text class="tm" x="252" y="140">กฎที่ 1</text>
-              <text class="tm" x="252" y="158">^api/(.*) → rewrite</text>
-              <text class="tm" x="252" y="184">กฎที่ 2</text>
-              <text class="tm" x="252" y="202">ไม่ตรงไฟล์ → index.html</text>
+              <!-- คอลัมน์ 3 · static -->
+              <rect class="bx-a" x="520" y="24" width="216" height="72" rx="7"/>
+              <text class="tm" x="536" y="46">StaticFileModule</text>
+              <text class="t" x="536" y="68">D:\apps\corp-web</text>
+              <text class="tm" x="536" y="86">index.html · assets/*</text>
 
-              <rect class="bx" x="488" y="44" width="248" height="76" rx="7"/>
-              <text class="t" x="504" y="70">D:\apps\corp-web</text>
-              <text class="tm" x="504" y="90">index.html · assets/*.js · *.css</text>
-              <text class="tm" x="504" y="110">IIS อ่านจากดิสก์และตอบเอง</text>
-              <path class="ln-a flow" d="M420 98 L 452 98 L 452 82 L 482 82" marker-end="url(#a3a)"/>
-              <text class="ta" x="424" y="68">หน้าที่ที่ 1</text>
+              <!-- คอลัมน์ 3 · backend -->
+              <rect class="bx-p" x="520" y="128" width="216" height="72" rx="7"/>
+              <text class="tm" x="536" y="150">Upstream</text>
+              <text class="t" x="536" y="172">127.0.0.1:8080</text>
+              <text class="tm" x="536" y="190">/corp-api/*</text>
 
-              <rect class="bx-p" x="488" y="152" width="248" height="76" rx="7"/>
-              <text class="t" x="504" y="178">เซิร์ฟเวอร์ปลายทาง</text>
-              <text class="tm" x="504" y="198">127.0.0.1:8080/corp-api/...</text>
-              <text class="tm" x="504" y="218">ผูก loopback — เข้าถึงจากภายนอกไม่ได้</text>
-              <path class="ln-p flow" d="M420 168 L 452 168 L 452 190 L 482 190" marker-end="url(#a3p)"/>
-              <text class="tm" x="424" y="242">หน้าที่ที่ 2 · http ภายในเครื่อง</text>
+              <!-- เส้นทาง -->
+              <line class="ln-c flow" x1="240" y1="104" x2="266" y2="104" marker-end="url(#a3c)"/>
 
-              <text class="tl" x="24" y="222">สิ่งที่ต้องเตรียม</text>
-              <text class="tm" x="24" y="244">1 · โฟลเดอร์ไฟล์ static</text>
-              <text class="tm" x="24" y="262">2 · web.config ที่มีกฎสองข้อ</text>
-              <text class="tm" x="24" y="280">3 · เซิร์ฟเวอร์ปลายทางที่ทำงานอยู่</text>
+              <path class="ln-a flow" d="M488 96 L 504 96 L 504 60 L 514 60" marker-end="url(#a3a)"/>
+              <text class="ta" x="380" y="44">[1] ไม่ตรง ^api/ → 200 OK</text>
+
+              <path class="ln-p flow" d="M488 112 L 504 112 L 504 164 L 514 164" marker-end="url(#a3p)"/>
+              <text class="tm" x="380" y="228">[2] ตรง ^api/ → rewrite → 200 OK · application/json</text>
+
+              <line class="ln dash" x1="24" y1="252" x2="736" y2="252"/>
+              <text class="tm" x="24" y="274">[1] StaticFileModule อ่านไฟล์จากดิสก์แล้วตอบเอง — ไม่มี upstream เข้ามาเกี่ยวข้อง</text>
+              <text class="tm" x="24" y="294">[2] ARR เปิด TCP ใหม่ไปยัง upstream แล้ว pipe response กลับให้ client</text>
             </svg>
           </div>
           <figcaption>
@@ -856,51 +869,46 @@
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 250" role="img" aria-label="แผนภาพลำดับการติดตั้งสี่ขั้น จาก Web Server ไปยัง URL Rewrite ไปยัง ARR และจบที่การเปิด Enable Proxy โดยมีเส้นแสดงว่า ARR ต้องติดตั้งหลัง URL Rewrite">
+            <svg viewBox="0 0 760 248" role="img" aria-label="แผนภาพลำดับการติดตั้งสี่ขั้น จาก Web Server role ไปยัง URL Rewrite ไปยัง ARR แล้วจบที่การเปิด Enable Proxy โดย ARR มี dependency กับ URL Rewrite">
               <defs>
-                <marker id="i1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="i1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
                 </marker>
-                <marker id="i2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="i2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-p"/>
                 </marker>
               </defs>
 
-              <text class="tl" x="24" y="24">ลำดับที่ต้องทำตาม</text>
+              <rect class="bx" x="24" y="40" width="157" height="72" rx="7"/>
+              <text class="tm" x="40" y="62">step 1</text>
+              <text class="t" x="40" y="84">Web-Server</text>
+              <text class="tm" x="40" y="102">Install-WindowsFeature</text>
 
-              <rect class="bx" x="24" y="44" width="160" height="66" rx="7"/>
-              <circle class="dot" cx="42" cy="62" r="4" fill="var(--accent)"/>
-              <text class="t" x="56" y="67">Web Server</text>
-              <text class="tm" x="40" y="88">Install-WindowsFeature</text>
-              <text class="tm" x="40" y="103">ได้ IIS พื้นฐาน</text>
+              <rect class="bx-a" x="209" y="40" width="157" height="72" rx="7"/>
+              <text class="tm" x="225" y="62">step 2</text>
+              <text class="t" x="225" y="84">URL Rewrite 2.1</text>
+              <text class="tm" x="225" y="102">standalone installer</text>
 
-              <rect class="bx-a" x="208" y="44" width="160" height="66" rx="7"/>
-              <circle class="dot dot-2" cx="226" cy="62" r="4" fill="var(--accent)"/>
-              <text class="t" x="240" y="67">URL Rewrite</text>
-              <text class="tm" x="224" y="88">เวอร์ชัน 2.1</text>
-              <text class="tm" x="224" y="103">ทำให้เขียนกฎได้</text>
+              <rect class="bx-a" x="394" y="40" width="157" height="72" rx="7"/>
+              <text class="tm" x="410" y="62">step 3</text>
+              <text class="t" x="410" y="84">ARR 3.0</text>
+              <text class="tm" x="410" y="102">standalone installer</text>
 
-              <rect class="bx-a" x="392" y="44" width="160" height="66" rx="7"/>
-              <circle class="dot dot-3" cx="410" cy="62" r="4" fill="var(--accent)"/>
-              <text class="t" x="424" y="67">ARR</text>
-              <text class="tm" x="408" y="88">เวอร์ชัน 3.0</text>
-              <text class="tm" x="408" y="103">ทำให้ส่งต่อออกไปได้</text>
+              <rect class="bx-p" x="579" y="40" width="157" height="72" rx="7"/>
+              <text class="tm" x="595" y="62">step 4</text>
+              <text class="t" x="595" y="84">Enable Proxy</text>
+              <text class="tm" x="595" y="102">default = false</text>
 
-              <rect class="bx-p" x="576" y="44" width="160" height="66" rx="7"/>
-              <text class="t" x="592" y="67">Enable Proxy</text>
-              <text class="tm" x="592" y="88">ค่าเริ่มต้นคือปิด</text>
-              <text class="tm" x="592" y="103">ต้องเปิดเอง</text>
+              <line class="ln-a flow" x1="181" y1="76" x2="203" y2="76" marker-end="url(#i1)"/>
+              <line class="ln-a flow" x1="366" y1="76" x2="388" y2="76" marker-end="url(#i1)"/>
+              <line class="ln-p flow" x1="551" y1="76" x2="573" y2="76" marker-end="url(#i2)"/>
 
-              <line class="ln-a flow" x1="184" y1="77" x2="202" y2="77" marker-end="url(#i1)"/>
-              <line class="ln-a flow" x1="368" y1="77" x2="386" y2="77" marker-end="url(#i1)"/>
-              <line class="ln-p flow" x1="552" y1="77" x2="570" y2="77" marker-end="url(#i2)"/>
-
-              <path class="ln-a flow-rel" d="M288 110 L 288 150 L 472 150 L 472 116" marker-end="url(#i1)"/>
-              <text class="ta" x="300" y="166">ARR ต้องพึ่งพา URL Rewrite จึงติดตั้งสลับลำดับไม่ได้</text>
+              <path class="ln-a flow-rel" d="M288 112 L 288 148 L 472 148 L 472 118" marker-end="url(#i1)"/>
+              <text class="ta" x="296" y="166">ARR depends on URL Rewrite — สลับลำดับแล้วต้องติดตั้ง ARR ซ้ำ</text>
 
               <line class="ln dash" x1="24" y1="192" x2="736" y2="192"/>
-              <text class="tl" x="24" y="214">สิ่งที่ไม่ต้องติดตั้ง</text>
-              <text class="tm" x="24" y="234">.NET Hosting Bundle — มีไว้ให้ IIS เรียกโค้ด .NET ในโปรเซสตนเอง ซึ่งสถาปัตยกรรมนี้ไม่ได้ใช้</text>
+              <text class="ta" x="24" y="214">ไม่ต้องติดตั้ง — .NET Hosting Bundle</text>
+              <text class="tm" x="24" y="234">ANCM มีไว้ให้ IIS โหลด .NET assembly ในโปรเซสตัวเอง ซึ่งสถาปัตยกรรมนี้ไม่ได้ใช้</text>
             </svg>
           </div>
           <figcaption>
@@ -1032,49 +1040,48 @@ Invoke-WebRequest http://localhost -UseBasicParsing | Select-Object StatusCode</
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 260" role="img" aria-label="แผนภาพแสดงสิ่งที่ต้องสร้างสามอย่าง คือโฟลเดอร์ไฟล์ Application Pool และ Site โดย Site เป็นตัวอ้างถึงอีกสองอย่าง และผลลัพธ์คือ worker process ที่ทำงานภายใต้บัญชีเสมือนของ pool">
+            <svg viewBox="0 0 760 264" role="img" aria-label="แผนภาพความสัมพันธ์ของสามสิ่งที่ต้องสร้าง คือโฟลเดอร์ Application Pool และ Site โดย Site อ้างถึงอีกสองอย่างผ่านพารามิเตอร์ และผลลัพธ์คือ worker process ที่รันภายใต้ virtual account">
               <defs>
-                <marker id="p1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="p1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
                 </marker>
-                <marker id="p2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M0,0 L10,5 L0,10 z" class="hd"/>
+                <marker id="p2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-p"/>
                 </marker>
               </defs>
 
-              <rect class="bx" x="24" y="52" width="210" height="76" rx="7"/>
-              <text class="tl" x="40" y="72">ขั้นที่ 1 · โฟลเดอร์</text>
-              <text class="t" x="40" y="96">D:\apps\corp-web</text>
-              <text class="tm" x="40" y="116">ต้องมีอยู่ก่อนสร้าง site</text>
+              <rect class="bx" x="24" y="40" width="216" height="72" rx="7"/>
+              <text class="tm" x="40" y="62">step 1 · New-Item</text>
+              <text class="t" x="40" y="84">D:\apps\corp-web</text>
+              <text class="tm" x="40" y="102">ต้องมีก่อนสร้าง site</text>
 
-              <rect class="bx-a" x="275" y="52" width="210" height="76" rx="7"/>
-              <text class="tl" x="291" y="72">ขั้นที่ 3 · Site</text>
-              <text class="t" x="291" y="96">corp-web</text>
-              <text class="tm" x="291" y="116">binding *:80:app.corp.local</text>
+              <rect class="bx-a" x="272" y="40" width="216" height="72" rx="7"/>
+              <text class="tm" x="288" y="62">step 3 · New-Website</text>
+              <text class="t" x="288" y="84">Site  corp-web</text>
+              <text class="tm" x="288" y="102">binding *:80:app.corp.local</text>
 
-              <rect class="bx-a" x="526" y="52" width="210" height="76" rx="7"/>
-              <text class="tl" x="542" y="72">ขั้นที่ 2 · Application Pool</text>
-              <text class="t" x="542" y="96">CorpWebPool</text>
-              <text class="tm" x="542" y="116">No Managed Code</text>
+              <rect class="bx-a" x="520" y="40" width="216" height="72" rx="7"/>
+              <text class="tm" x="536" y="62">step 2 · New-WebAppPool</text>
+              <text class="t" x="536" y="84">CorpWebPool</text>
+              <text class="tm" x="536" y="102">managedRuntimeVersion=""</text>
 
-              <line class="ln-a flow" x1="269" y1="90" x2="240" y2="90" marker-end="url(#p1)"/>
-              <text class="tm" x="236" y="46" text-anchor="end">-PhysicalPath</text>
-              <line class="ln-a flow" x1="491" y1="90" x2="520" y2="90" marker-end="url(#p1)"/>
-              <text class="tm" x="524" y="46">-ApplicationPool</text>
+              <line class="ln-a flow" x1="266" y1="76" x2="246" y2="76" marker-end="url(#p1)"/>
+              <text class="tm" x="256" y="130" text-anchor="middle">-PhysicalPath</text>
+              <line class="ln-a flow" x1="494" y1="76" x2="514" y2="76" marker-end="url(#p1)"/>
+              <text class="tm" x="504" y="130" text-anchor="middle">-ApplicationPool</text>
 
-              <line class="ln dash" x1="24" y1="156" x2="736" y2="156"/>
+              <line class="ln dash" x1="24" y1="152" x2="736" y2="152"/>
 
-              <text class="tl" x="24" y="180">ผลลัพธ์เมื่อมี request เข้ามา</text>
-              <rect class="bx-p" x="275" y="192" width="210" height="52" rx="7"/>
-              <text class="t" x="380" y="214" text-anchor="middle">w3wp.exe</text>
-              <text class="tm" x="380" y="232" text-anchor="middle">หนึ่งโปรเซสต่อหนึ่ง pool</text>
-              <path class="ln-p flow" d="M631 128 L 631 218 L 491 218" marker-end="url(#p2)"/>
-              <text class="tm" x="516" y="184">WAS สร้างให้ · ส่วน 01</text>
+              <rect class="bx-p" x="272" y="172" width="216" height="60" rx="7"/>
+              <text class="t" x="288" y="196">w3wp.exe</text>
+              <text class="tm" x="288" y="216">spawn โดย WAS เมื่อมี request</text>
+              <path class="ln-p flow" d="M628 112 L 628 202 L 494 202" marker-end="url(#p2)"/>
 
-              <rect class="bx" x="24" y="192" width="210" height="52" rx="7"/>
-              <text class="tm" x="40" y="214">IIS AppPool\CorpWebPool</text>
-              <text class="tm" x="40" y="232">บัญชีเสมือนที่ต้องมีสิทธิ์อ่าน</text>
-              <path class="ln flow-rel" d="M234 218 L 269 218" marker-end="url(#p2)"/>
+              <rect class="bx" x="24" y="172" width="216" height="60" rx="7"/>
+              <text class="tm" x="40" y="196">virtual account</text>
+              <text class="tm" x="40" y="216">IIS AppPool\CorpWebPool</text>
+              <path class="ln flow-rel" d="M240 202 L 266 202" marker-end="url(#p2)"/>
+              <text class="tm" x="24" y="256">icacls ... /grant "IIS AppPool\CorpWebPool":(OI)(CI)RX  —  ถ้าอ่านไฟล์ไม่ได้จะได้ 401 หรือ 403</text>
             </svg>
           </div>
           <figcaption>
@@ -1208,54 +1215,62 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 330" role="img" aria-label="แผนภาพการตัดสินใจของกฎสองข้อ request เข้ามาแล้วผ่านกฎที่หนึ่งซึ่งตรวจว่าขึ้นต้นด้วย api หรือไม่ ถ้าตรงจะส่งต่อไปเซิร์ฟเวอร์ปลายทาง ถ้าไม่ตรงจะผ่านกฎที่สองซึ่งตรวจว่าเป็นไฟล์จริงหรือไม่ ถ้าเป็นไฟล์จริงจะส่งไฟล์นั้น ถ้าไม่ใช่จะส่ง index.html">
+            <svg viewBox="0 0 760 392" role="img" aria-label="แผนภาพการตัดสินใจของกฎ rewrite สองข้อ กฎแรกตรวจว่า URL ขึ้นต้นด้วย api หรือไม่ ถ้าตรงจะ rewrite ไปยัง upstream ถ้าไม่ตรงจะเข้ากฎที่สองซึ่งตรวจว่าเป็นไฟล์จริงหรือไม่ ถ้าใช่จะส่งไฟล์นั้น ถ้าไม่ใช่จะส่ง index.html">
               <defs>
-                <marker id="r1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="r1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
                 </marker>
-                <marker id="r2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="r2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-p"/>
                 </marker>
-                <marker id="r3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="r3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd"/>
                 </marker>
               </defs>
 
-              <rect class="bx-c" x="228" y="12" width="200" height="40" rx="7"/>
-              <text class="t" x="328" y="37" text-anchor="middle">request เข้าสู่ site</text>
-              <line class="ln-c flow" x1="328" y1="52" x2="328" y2="74" marker-end="url(#r1)"/>
+              <text class="tl" x="24" y="20">เงื่อนไข · ประเมินจากบนลงล่าง</text>
+              <text class="tl" x="464" y="20">ผลลัพธ์</text>
 
-              <rect class="bx-a" x="180" y="76" width="296" height="54" rx="7"/>
-              <text class="tl" x="196" y="95">กฎที่ 1 · api-to-backend</text>
-              <text class="tm" x="196" y="118">พาธขึ้นต้นด้วย api/ หรือไม่</text>
+              <rect class="bx-c" x="24" y="32" width="400" height="48" rx="7"/>
+              <text class="tm" x="40" y="62">inbound request  ·  /api/orders/1024  หรือ  /orders/1024</text>
+              <line class="ln-c flow" x1="224" y1="80" x2="224" y2="104" marker-end="url(#r1)"/>
 
-              <path class="ln-p flow" d="M476 103 L 546 103" marker-end="url(#r2)"/>
-              <text class="tm" x="486" y="94">ตรง</text>
-              <rect class="bx-p" x="550" y="79" width="186" height="48" rx="7"/>
-              <text class="t" x="566" y="100">ส่งต่อออกไป</text>
-              <text class="tm" x="566" y="118">127.0.0.1:8080</text>
+              <rect class="bx-a" x="24" y="106" width="400" height="72" rx="7"/>
+              <text class="tm" x="40" y="128">rule[0] · api-to-backend</text>
+              <text class="t" x="40" y="150">match url="^api/(.*)"</text>
+              <text class="tm" x="40" y="168">stopProcessing="true"</text>
 
-              <line class="ln-a flow" x1="328" y1="130" x2="328" y2="160" marker-end="url(#r1)"/>
-              <text class="tm" x="338" y="150">ไม่ตรง</text>
+              <path class="ln-p flow" d="M424 142 L 458 142" marker-end="url(#r2)"/>
+              <text class="tm" x="430" y="132">match</text>
+              <rect class="bx-p" x="464" y="106" width="272" height="72" rx="7"/>
+              <text class="tm" x="480" y="128">action type="Rewrite"</text>
+              <text class="t" x="480" y="150">:8080/corp-api/{R:1}</text>
+              <text class="tm" x="480" y="168">200 OK · application/json</text>
 
-              <rect class="bx-a" x="180" y="162" width="296" height="54" rx="7"/>
-              <text class="tl" x="196" y="181">กฎที่ 2 · spa-fallback</text>
-              <text class="tm" x="196" y="204">เป็นไฟล์หรือโฟลเดอร์จริงหรือไม่</text>
+              <line class="ln-a flow" x1="224" y1="178" x2="224" y2="208" marker-end="url(#r1)"/>
+              <text class="tm" x="234" y="199">no match</text>
 
-              <path class="ln flow" d="M476 189 L 546 189" marker-end="url(#r3)"/>
-              <text class="tm" x="486" y="180">เป็น</text>
-              <rect class="bx" x="550" y="165" width="186" height="48" rx="7"/>
-              <text class="t" x="566" y="186">ส่งไฟล์นั้นออกไป</text>
-              <text class="tm" x="566" y="204">*.js · *.css · รูปภาพ</text>
+              <rect class="bx-a" x="24" y="210" width="400" height="72" rx="7"/>
+              <text class="tm" x="40" y="232">rule[1] · spa-fallback</text>
+              <text class="t" x="40" y="254">matchType="IsFile" negate="true"</text>
+              <text class="tm" x="40" y="272">logicalGrouping="MatchAll"</text>
 
-              <line class="ln-a flow" x1="328" y1="216" x2="328" y2="248" marker-end="url(#r1)"/>
-              <text class="tm" x="338" y="237">ไม่เป็น</text>
+              <path class="ln flow" d="M424 246 L 458 246" marker-end="url(#r3)"/>
+              <text class="tm" x="430" y="236">ไฟล์จริง</text>
+              <rect class="bx" x="464" y="210" width="272" height="72" rx="7"/>
+              <text class="tm" x="480" y="232">StaticFileModule</text>
+              <text class="t" x="480" y="254">assets/index-a1b2c3.js</text>
+              <text class="tm" x="480" y="272">200 OK · text/javascript</text>
 
-              <rect class="bx-a" x="228" y="250" width="200" height="46" rx="7"/>
-              <text class="t" x="328" y="271" text-anchor="middle">ส่ง index.html</text>
-              <text class="tm" x="328" y="288" text-anchor="middle">ให้ router ฝั่งไคลเอนต์จัดการต่อ</text>
+              <line class="ln-a flow" x1="224" y1="282" x2="224" y2="312" marker-end="url(#r1)"/>
+              <text class="tm" x="234" y="303">ไม่ใช่ไฟล์</text>
 
-              <text class="tl" x="24" y="316">อ่านจากบนลงล่าง — กฎที่เจาะจงกว่าต้องอยู่ก่อนเสมอ</text>
+              <rect class="bx-a" x="24" y="314" width="400" height="48" rx="7"/>
+              <text class="t" x="40" y="336">action type="Rewrite" url="/index.html"</text>
+              <text class="tm" x="40" y="354">200 OK · text/html — client-side router รับช่วงต่อ</text>
+
+              <text class="tm" x="464" y="336">ลำดับสลับไม่ได้ เพราะ rule[1] จับ /api ได้ด้วย</text>
+              <text class="tm" x="464" y="354">ผลคือ 200 OK แต่ได้ text/html แทน JSON</text>
             </svg>
           </div>
           <figcaption>
@@ -1369,46 +1384,45 @@ Set-ItemProperty IIS:\AppPools\CorpWebPool -Name managedRuntimeVersion -Value <s
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 290" role="img" aria-label="แผนภาพแสดงว่าหมายเลข IP ของผู้ใช้หายไปเมื่อผ่าน IIS เพราะการเชื่อมต่อช่วงในเกิดจาก IIS เอง เซิร์ฟเวอร์ปลายทางจึงเห็น IP เป็น 127.0.0.1 และต้องอ่านค่าจริงจากเฮดเดอร์ X-Forwarded-For แทน">
+            <svg viewBox="0 0 760 272" role="img" aria-label="แผนภาพแสดงว่าการเชื่อมต่อถูกแบ่งเป็นสองช่วง ช่วงแรกจากผู้ใช้ถึง IIS มี remote address เป็น IP จริง ช่วงที่สองจาก IIS ถึง upstream มี remote address เป็น 127.0.0.1 ทำให้ IP เดิมต้องเดินทางผ่านเฮดเดอร์">
               <defs>
-                <marker id="h1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="h1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-c"/>
                 </marker>
-                <marker id="h2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="h2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-p"/>
+                </marker>
+                <marker id="h3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
                 </marker>
               </defs>
 
-              <rect class="bx-c" x="24" y="52" width="170" height="76" rx="7"/>
-              <text class="t" x="109" y="80" text-anchor="middle">ผู้ใช้</text>
-              <text class="tm" x="109" y="102" text-anchor="middle">10.20.30.40</text>
-              <text class="tm" x="109" y="118" text-anchor="middle">IP จริงของผู้เรียก</text>
+              <rect class="bx-c" x="24" y="48" width="216" height="72" rx="7"/>
+              <text class="tm" x="40" y="70">client</text>
+              <text class="t" x="40" y="92">10.20.30.40</text>
+              <text class="tm" x="40" y="110">source address จริง</text>
 
-              <rect class="bx-a" x="295" y="52" width="170" height="76" rx="7"/>
-              <text class="t" x="380" y="80" text-anchor="middle">IIS</text>
-              <text class="tm" x="380" y="102" text-anchor="middle">รับการเชื่อมต่อจากผู้ใช้</text>
-              <text class="tm" x="380" y="118" text-anchor="middle">แล้วเปิดการเชื่อมต่อใหม่</text>
+              <rect class="bx-a" x="272" y="48" width="216" height="72" rx="7"/>
+              <text class="tm" x="288" y="70">TCP connection #1 ปิดที่นี่</text>
+              <text class="t" x="288" y="92">IIS · ARR</text>
+              <text class="tm" x="288" y="110">เปิด connection ใหม่เอง</text>
 
-              <rect class="bx-p" x="566" y="52" width="170" height="76" rx="7"/>
-              <text class="t" x="651" y="80" text-anchor="middle">เซิร์ฟเวอร์ปลายทาง</text>
-              <text class="tm" x="651" y="102" text-anchor="middle">เห็น IP ต้นทางเป็น</text>
-              <text class="tm" x="651" y="118" text-anchor="middle">127.0.0.1</text>
+              <rect class="bx-p" x="520" y="48" width="216" height="72" rx="7"/>
+              <text class="tm" x="536" y="70">TCP connection #2</text>
+              <text class="t" x="536" y="92">upstream :8080</text>
+              <text class="tm" x="536" y="110">remoteAddr = 127.0.0.1</text>
 
-              <line class="ln-c flow" x1="194" y1="90" x2="289" y2="90" marker-end="url(#h1)"/>
-              <line class="ln-p flow" x1="465" y1="90" x2="560" y2="90" marker-end="url(#h2)"/>
+              <line class="ln-c flow" x1="240" y1="84" x2="266" y2="84" marker-end="url(#h1)"/>
+              <line class="ln-p flow" x1="488" y1="84" x2="514" y2="84" marker-end="url(#h2)"/>
 
-              <text class="tl" x="24" y="164">การเชื่อมต่อที่ 1</text>
-              <text class="tm" x="24" y="184">ต้นทางคือเครื่องของผู้ใช้</text>
-              <text class="tl" x="295" y="164">การเชื่อมต่อที่ 2</text>
-              <text class="tm" x="295" y="184">ต้นทางคือ IIS — IP เดิมหายไปที่จุดนี้</text>
+              <rect class="bx-a" x="272" y="168" width="464" height="52" rx="7"/>
+              <text class="tm" x="288" y="190">X-Forwarded-For: 10.20.30.40</text>
+              <text class="tm" x="288" y="208">IP เดิมเดินทางต่อได้เฉพาะในรูป request header</text>
+              <path class="ln-a flow-rel" d="M380 120 L 380 144 L 256 144 L 256 194 L 266 194" marker-end="url(#h3)"/>
+              <text class="ta" x="24" y="190">IIS เป็นผู้ใส่</text>
 
-              <line class="ln dash" x1="24" y1="204" x2="736" y2="204"/>
-
-              <rect class="bx" x="295" y="222" width="441" height="52" rx="7"/>
-              <text class="tm" x="311" y="243">X-Forwarded-For: 10.20.30.40</text>
-              <text class="tm" x="311" y="262">IP เดิมเดินทางต่อได้ในรูปเฮดเดอร์เท่านั้น</text>
-              <path class="ln-a flow-rel" d="M380 128 L 380 145 L 240 145 L 240 248 L 289 248" marker-end="url(#h2)"/>
-              <text class="ta" x="24" y="252">IIS เป็นผู้ใส่ให้</text>
+              <line class="ln dash" x1="24" y1="240" x2="736" y2="240"/>
+              <text class="tm" x="24" y="262">IIS ตรวจความถูกต้องของเฮดเดอร์นี้ — ค่าที่ผิดรูปแบบได้ status 400.10 Invalid X-Forwarded-For</text>
             </svg>
           </div>
           <figcaption>
@@ -1542,41 +1556,42 @@ appcmd.exe set config <span class="s">"corp-web"</span> ^
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 240" role="img" aria-label="แผนภาพแสดงขอบเขตการเข้ารหัส ช่วงจากผู้ใช้ถึง IIS เข้ารหัสด้วย TLS ส่วนช่วงจาก IIS ไปยังเซิร์ฟเวอร์ปลายทางเป็น HTTP ธรรมดาที่วิ่งบน loopback ภายในเครื่องเดียวกัน">
+            <svg viewBox="0 0 760 232" role="img" aria-label="แผนภาพขอบเขตการเข้ารหัส ช่วงจากเบราว์เซอร์ถึง IIS เข้ารหัสด้วย TLS ส่วนช่วงจาก IIS ไปยัง upstream เป็น HTTP ธรรมดาบน loopback ภายในเครื่องเดียวกัน">
               <defs>
-                <marker id="s1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="s1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
                 </marker>
-                <marker id="s2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="s2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd"/>
                 </marker>
               </defs>
 
-              <rect class="band" x="248" y="34" width="492" height="136" rx="8"/>
-              <text class="tl" x="264" y="54">ภายในเครื่องเดียวกัน</text>
+              <rect class="band" x="264" y="32" width="472" height="112" rx="7"/>
+              <text class="tl" x="280" y="52">process boundary · เครื่องเดียวกัน</text>
 
-              <rect class="bx-c" x="24" y="72" width="150" height="64" rx="7"/>
-              <text class="t" x="99" y="100" text-anchor="middle">เบราว์เซอร์</text>
-              <text class="tm" x="99" y="120" text-anchor="middle">นอกเครื่อง</text>
+              <rect class="bx-c" x="24" y="64" width="216" height="64" rx="7"/>
+              <text class="t" x="40" y="88">Browser</text>
+              <text class="tm" x="40" y="108">นอกเครื่อง · ผ่านเครือข่าย</text>
 
-              <rect class="bx-a" x="290" y="72" width="160" height="64" rx="7"/>
-              <text class="t" x="370" y="100" text-anchor="middle">IIS</text>
-              <text class="tm" x="370" y="120" text-anchor="middle">จุดที่ TLS สิ้นสุด</text>
+              <rect class="bx-a" x="288" y="64" width="192" height="64" rx="7"/>
+              <text class="t" x="304" y="88">IIS</text>
+              <text class="tm" x="304" y="108">TLS termination</text>
 
-              <rect class="bx-p" x="540" y="72" width="160" height="64" rx="7"/>
-              <text class="t" x="620" y="100" text-anchor="middle">เซิร์ฟเวอร์ปลายทาง</text>
-              <text class="tm" x="620" y="120" text-anchor="middle">127.0.0.1:8080</text>
+              <rect class="bx-p" x="520" y="64" width="192" height="64" rx="7"/>
+              <text class="t" x="536" y="88">upstream</text>
+              <text class="tm" x="536" y="108">127.0.0.1:8080</text>
 
-              <line class="ln-a flow" x1="174" y1="104" x2="284" y2="104" stroke-width="3" marker-end="url(#s1)"/>
-              <text class="ta" x="180" y="94">https :443</text>
-              <text class="tm" x="180" y="128">เข้ารหัสตลอดเส้นทาง</text>
+              <line class="ln-a flow" x1="240" y1="96" x2="282" y2="96" stroke-width="3" marker-end="url(#s1)"/>
+              <text class="ta" x="246" y="86">TLS :443</text>
+              <text class="tm" x="246" y="120">encrypted</text>
 
-              <line class="ln flow" x1="450" y1="104" x2="534" y2="104" marker-end="url(#s2)"/>
-              <text class="tm" x="456" y="94">http</text>
-              <text class="tm" x="456" y="128">ไม่เข้ารหัส</text>
+              <line class="ln flow" x1="480" y1="96" x2="514" y2="96" marker-end="url(#s2)"/>
+              <text class="tm" x="486" y="86">HTTP</text>
+              <text class="tm" x="486" y="120">plaintext</text>
 
-              <line class="ln dash" x1="24" y1="190" x2="736" y2="190"/>
-              <text class="tm" x="24" y="212">ช่วงที่ไม่เข้ารหัสไม่ออกจากเครื่อง จึงไม่ต้องทำ TLS ซ้ำ — แต่เงื่อนไขนี้เป็นจริงก็ต่อเมื่อปลายทางผูกไว้ที่ loopback ตามส่วนที่ 03</text>
+              <line class="ln dash" x1="24" y1="168" x2="736" y2="168"/>
+              <text class="tm" x="24" y="190">plaintext ไม่ออกจากเครื่อง จึงไม่ต้องทำ TLS ซ้ำ — เงื่อนไขนี้เป็นจริงก็ต่อเมื่อ Connector bind 127.0.0.1</text>
+              <text class="tm" x="24" y="212">New-WebBinding -SslFlags 1 = SNI  →  ผูกใบรับรองด้วย AddSslCertificate(thumbprint, "my") อีกขั้น</text>
             </svg>
           </div>
           <figcaption>
@@ -1669,49 +1684,49 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 250" role="img" aria-label="แผนภาพแสดงว่า request ที่ถูกปฏิเสธที่ HTTP.sys ไปอยู่ในไฟล์ httperr ส่วน request ที่ถึง worker process อยู่ใน IIS log และ request ที่ส่งต่อออกไปอยู่ในไฟล์บันทึกของเซิร์ฟเวอร์ปลายทาง">
+            <svg viewBox="0 0 760 256" role="img" aria-label="แผนภาพแสดงว่า request ที่ถูกปฏิเสธที่ HTTP.sys จะถูกบันทึกใน httperr ส่วนที่ถึง w3wp จะอยู่ใน IIS log และที่ส่งต่อออกไปจะอยู่ในไฟล์บันทึกของ upstream">
               <defs>
-                <marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd"/>
                 </marker>
-                <marker id="a4s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="a4s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-p"/>
                 </marker>
               </defs>
 
-              <text class="tl" x="30" y="22">ชั้นที่ request เดินทางผ่าน</text>
-              <text class="tl" x="380" y="22">ไฟล์บันทึกที่เกี่ยวข้อง</text>
+              <text class="tl" x="24" y="20">layer ที่ request สิ้นสุด</text>
+              <text class="tl" x="392" y="20">log sink</text>
 
-              <rect class="bx-a" x="30" y="36" width="240" height="52" rx="7"/>
-              <text class="t" x="46" y="60">HTTP.sys</text>
-              <text class="tm" x="46" y="78">ชั้นเคอร์เนล</text>
+              <rect class="bx-a" x="24" y="32" width="312" height="48" rx="7"/>
+              <text class="t" x="40" y="54">HTTP.sys</text>
+              <text class="tm" x="40" y="72">ring 0 · reject ก่อนถึง user mode</text>
 
-              <rect class="bx-a" x="30" y="102" width="240" height="52" rx="7"/>
-              <text class="t" x="46" y="126">w3wp.exe</text>
-              <text class="tm" x="46" y="144">โมดูล rewrite และ proxy ทำงานที่นี่</text>
+              <rect class="bx-a" x="24" y="104" width="312" height="48" rx="7"/>
+              <text class="t" x="40" y="126">w3wp.exe</text>
+              <text class="tm" x="40" y="144">rewrite · proxy · staticContent</text>
 
-              <rect class="bx-p" x="30" y="168" width="240" height="52" rx="7"/>
-              <text class="t" x="46" y="192">เซิร์ฟเวอร์ปลายทาง</text>
-              <text class="tm" x="46" y="210">อยู่นอกขอบเขตของ IIS</text>
+              <rect class="bx-p" x="24" y="176" width="312" height="48" rx="7"/>
+              <text class="t" x="40" y="198">upstream</text>
+              <text class="tm" x="40" y="216">อยู่นอกขอบเขตของ IIS</text>
 
-              <line class="ln flow" x1="150" y1="88" x2="150" y2="98" marker-end="url(#a4)"/>
-              <line class="ln-p flow" x1="150" y1="154" x2="150" y2="164" marker-end="url(#a4s)"/>
+              <line class="ln flow" x1="180" y1="80" x2="180" y2="100" marker-end="url(#a4)"/>
+              <line class="ln-p flow" x1="180" y1="152" x2="180" y2="172" marker-end="url(#a4s)"/>
 
-              <rect class="bx" x="380" y="36" width="350" height="52" rx="7"/>
-              <text class="tm" x="396" y="60">%SystemRoot%\System32\LogFiles\HTTPERR</text>
-              <text class="tm" x="396" y="78">ปฏิเสธก่อนถึง IIS · ไม่ปรากฏใน IIS log</text>
+              <rect class="bx" x="392" y="32" width="344" height="48" rx="7"/>
+              <text class="tm" x="408" y="54">%SystemRoot%\System32\LogFiles\HTTPERR</text>
+              <text class="tm" x="408" y="72">httperr*.log — ไม่ปรากฏใน IIS log</text>
 
-              <rect class="bx" x="380" y="102" width="350" height="52" rx="7"/>
-              <text class="tm" x="396" y="126">%SystemDrive%\inetpub\logs\LogFiles</text>
-              <text class="tm" x="396" y="144">แยกโฟลเดอร์ย่อยตามหมายเลข site</text>
+              <rect class="bx" x="392" y="104" width="344" height="48" rx="7"/>
+              <text class="tm" x="408" y="126">%SystemDrive%\inetpub\logs\LogFiles</text>
+              <text class="tm" x="408" y="144">W3SVC&lt;id&gt;\exYYMMDD.log · W3C format</text>
 
-              <rect class="bx" x="380" y="168" width="350" height="52" rx="7"/>
-              <text class="tm" x="396" y="192">ไฟล์บันทึกของเซิร์ฟเวอร์นั้นเอง</text>
-              <text class="tm" x="396" y="210">ตำแหน่งขึ้นกับซอฟต์แวร์ที่ใช้</text>
+              <rect class="bx" x="392" y="176" width="344" height="48" rx="7"/>
+              <text class="tm" x="408" y="198">%CATALINA_BASE%\logs\catalina.out</text>
+              <text class="tm" x="408" y="216">รับ System.out และ System.err ทั้งหมด</text>
 
-              <line class="ln flow-rel" x1="270" y1="62" x2="374" y2="62" marker-end="url(#a4)"/>
-              <line class="ln flow-rel" x1="270" y1="128" x2="374" y2="128" marker-end="url(#a4)"/>
-              <line class="ln flow-rel" x1="270" y1="194" x2="374" y2="194" marker-end="url(#a4)"/>
+              <line class="ln dash" x1="344" y1="56" x2="386" y2="56"/>
+              <line class="ln dash" x1="344" y1="128" x2="386" y2="128"/>
+              <line class="ln dash" x1="344" y1="200" x2="386" y2="200"/>
             </svg>
           </div>
           <figcaption>
@@ -1861,57 +1876,50 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 330" role="img" aria-label="แผนภาพเปรียบเทียบการส่งมอบสองแบบ แบบ JAR มี Tomcat ฝังอยู่ภายในและรันตัวเองได้ แบบ WAR มีเฉพาะแอปพลิเคชันแล้ววางลงใน Tomcat ที่ติดตั้งแยก พร้อมแสดงว่าชื่อไฟล์ WAR กำหนด context path ซึ่งต้องตรงกับกฎ rewrite ของ IIS">
+            <svg viewBox="0 0 760 296" role="img" aria-label="แผนภาพเปรียบเทียบ packaging สองแบบ แบบ jar มี embedded tomcat อยู่ข้างในและรันเองได้ แบบ war ประกาศ tomcat เป็น provided แล้ววางใน webapps ของ Tomcat ที่ติดตั้งแยก พร้อมแสดงว่าชื่อไฟล์กำหนด context path">
               <defs>
-                <marker id="w1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M0,0 L10,5 L0,10 z" class="hd"/>
-                </marker>
-                <marker id="w2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="w2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
                 </marker>
               </defs>
 
-              <text class="tl" x="24" y="22">แบบที่ไม่ใช้ในสถาปัตยกรรมนี้</text>
-              <rect class="bx" x="24" y="34" width="340" height="122" rx="7"/>
-              <text class="t" x="44" y="60">corp-api.jar</text>
-              <rect class="bx" x="44" y="72" width="140" height="32" rx="5"/>
-              <text class="tm" x="114" y="92" text-anchor="middle">แอปพลิเคชัน</text>
-              <rect class="bx" x="196" y="72" width="148" height="32" rx="5"/>
-              <text class="tm" x="270" y="92" text-anchor="middle">Tomcat ที่ฝังมา</text>
-              <text class="tm" x="44" y="128">รันด้วย java -jar ได้เอง</text>
-              <text class="tm" x="44" y="144">ไม่ต้องมี Tomcat บนเครื่อง</text>
+              <text class="tl" x="24" y="20">packaging = jar · ไม่ใช้ในสถาปัตยกรรมนี้</text>
+              <rect class="bx" x="24" y="32" width="344" height="96" rx="7"/>
+              <text class="t" x="40" y="56">corp-api.jar</text>
+              <rect class="bx" x="40" y="68" width="152" height="44" rx="7"/>
+              <text class="tm" x="56" y="95">application classes</text>
+              <rect class="bx" x="200" y="68" width="152" height="44" rx="7"/>
+              <text class="tm" x="216" y="95">embedded tomcat</text>
 
-              <text class="tl" x="396" y="22">แบบที่ใช้</text>
-              <rect class="bx-a" x="396" y="34" width="340" height="122" rx="7"/>
-              <text class="t" x="416" y="60">corp-api.war</text>
-              <rect class="bx-a" x="416" y="72" width="140" height="32" rx="5"/>
-              <text class="tm" x="486" y="92" text-anchor="middle">แอปพลิเคชัน</text>
-              <rect class="bx" x="568" y="72" width="148" height="32" rx="5" opacity="0.4"/>
-              <text class="tm" x="642" y="92" text-anchor="middle">provided — ไม่บรรจุ</text>
-              <text class="tm" x="416" y="128">วางใน webapps ของ Tomcat</text>
-              <text class="tm" x="416" y="144">ที่ติดตั้งแยกบนเครื่อง</text>
+              <text class="tl" x="392" y="20">packaging = war · ใช้แบบนี้</text>
+              <rect class="bx-a" x="392" y="32" width="344" height="96" rx="7"/>
+              <text class="t" x="408" y="56">corp-api.war</text>
+              <rect class="bx-a" x="408" y="68" width="152" height="44" rx="7"/>
+              <text class="tm" x="424" y="95">application classes</text>
+              <rect class="bx" x="568" y="68" width="152" height="44" rx="7" opacity="0.45"/>
+              <text class="tm" x="584" y="95">scope = provided</text>
 
-              <line class="ln dash" x1="24" y1="178" x2="736" y2="178"/>
-              <text class="tl" x="24" y="200">ชื่อไฟล์กำหนดพาธที่ Tomcat รับ และต้องตรงกับกฎของ IIS</text>
+              <line class="ln dash" x1="24" y1="152" x2="736" y2="152"/>
+              <text class="tl" x="24" y="174">ชื่อไฟล์กำหนด context path — ต้องตรงกับปลายทางในกฎ rewrite</text>
 
-              <rect class="bx-a" x="24" y="216" width="196" height="46" rx="7"/>
-              <text class="tm" x="40" y="237">corp-api.war</text>
-              <text class="tm" x="40" y="254">ชื่อไฟล์</text>
+              <rect class="bx-a" x="24" y="186" width="216" height="52" rx="7"/>
+              <text class="tm" x="40" y="208">file name</text>
+              <text class="t" x="40" y="228">corp-api.war</text>
 
-              <line class="ln-a flow" x1="220" y1="239" x2="266" y2="239" marker-end="url(#w2)"/>
+              <line class="ln-a flow" x1="240" y1="212" x2="266" y2="212" marker-end="url(#w2)"/>
 
-              <rect class="bx-a" x="270" y="216" width="196" height="46" rx="7"/>
-              <text class="tm" x="286" y="237">/corp-api</text>
-              <text class="tm" x="286" y="254">context path</text>
+              <rect class="bx-a" x="272" y="186" width="216" height="52" rx="7"/>
+              <text class="tm" x="288" y="208">context path</text>
+              <text class="t" x="288" y="228">/corp-api</text>
 
-              <line class="ln-a flow" x1="466" y1="239" x2="512" y2="239" marker-end="url(#w2)"/>
+              <line class="ln-a flow" x1="488" y1="212" x2="514" y2="212" marker-end="url(#w2)"/>
 
-              <rect class="bx-p" x="516" y="216" width="220" height="46" rx="7"/>
-              <text class="tm" x="532" y="237">127.0.0.1:8080/corp-api/</text>
-              <text class="tm" x="532" y="254">ปลายทางในกฎ rewrite · ส่วน 06</text>
+              <rect class="bx-p" x="520" y="186" width="216" height="52" rx="7"/>
+              <text class="tm" x="536" y="208">rewrite target</text>
+              <text class="t" x="536" y="228">:8080/corp-api/{R:1}</text>
 
-              <text class="tm" x="24" y="296">ถ้าเปลี่ยนชื่อไฟล์เป็น ROOT.war  context path จะกลายเป็น /  และต้องแก้ปลายทางในกฎ rewrite ตามด้วย</text>
-              <text class="tm" x="24" y="316">ชื่อพิเศษ ROOT ต้องเป็นตัวพิมพ์ใหญ่เสมอ ตามที่เอกสาร Tomcat ระบุ</text>
+              <text class="tm" x="24" y="266">ROOT.war → context path "/" · foo#bar.war → "/foo/bar" · foo##42.war → "/foo" version 42</text>
+              <text class="tm" x="24" y="286">อย่าประกาศ &lt;Context&gt; ใน server.xml — reload ไม่ได้และถูก default context เขียนทับ</text>
             </svg>
           </div>
           <figcaption>
@@ -2213,53 +2221,47 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 300" role="img" aria-label="แผนภาพโครงสร้างไดเรกทอรีของ Tomcat แสดงโฟลเดอร์ bin conf logs และ webapps พร้อมระบุว่าไฟล์ war ถูกวางใน webapps และกลายเป็น context path ที่ IIS ส่ง request ไปหา">
+            <svg viewBox="0 0 760 272" role="img" aria-label="แผนภาพโครงสร้างไดเรกทอรีของ Tomcat มี bin conf logs และ webapps โดยไฟล์ war ที่วางใน webapps จะกลายเป็น context path ที่ IIS ส่ง request ไปหา">
               <defs>
-                <marker id="t1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="t1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
-                </marker>
-                <marker id="t2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M0,0 L10,5 L0,10 z" class="hd-p"/>
                 </marker>
               </defs>
 
-              <text class="tl" x="24" y="24">CATALINA_HOME — รากของการติดตั้ง Tomcat</text>
-              <rect class="bx" x="24" y="38" width="420" height="200" rx="7"/>
+              <text class="tl" x="24" y="20">$CATALINA_HOME</text>
+              <rect class="bx" x="24" y="32" width="400" height="176" rx="7"/>
 
-              <rect class="bx" x="44" y="58" width="180" height="46" rx="5"/>
-              <text class="tm" x="58" y="78">/bin</text>
-              <text class="tm" x="58" y="94">สคริปต์เริ่มและหยุดการทำงาน</text>
+              <rect class="bx" x="44" y="52" width="176" height="48" rx="7"/>
+              <text class="t" x="60" y="74">bin/</text>
+              <text class="tm" x="60" y="92">startup · service.bat</text>
 
-              <rect class="bx" x="244" y="58" width="180" height="46" rx="5"/>
-              <text class="tm" x="258" y="78">/conf</text>
-              <text class="tm" x="258" y="94">server.xml เป็นไฟล์หลัก</text>
+              <rect class="bx" x="236" y="52" width="172" height="48" rx="7"/>
+              <text class="t" x="252" y="74">conf/</text>
+              <text class="tm" x="252" y="92">server.xml</text>
 
-              <rect class="bx" x="44" y="116" width="180" height="46" rx="5"/>
-              <text class="tm" x="58" y="136">/logs</text>
-              <text class="tm" x="58" y="152">ที่เก็บ log ตามค่าเริ่มต้น</text>
+              <rect class="bx" x="44" y="112" width="176" height="48" rx="7"/>
+              <text class="t" x="60" y="134">logs/</text>
+              <text class="tm" x="60" y="152">catalina.out</text>
 
-              <rect class="bx-a" x="244" y="116" width="180" height="46" rx="5"/>
-              <text class="tm" x="258" y="136">/webapps</text>
-              <text class="tm" x="258" y="152">ที่วางแอปพลิเคชัน</text>
+              <rect class="bx-a" x="236" y="112" width="172" height="48" rx="7"/>
+              <text class="t" x="252" y="134">webapps/</text>
+              <text class="tm" x="252" y="152">appBase · autoDeploy</text>
 
-              <rect class="bx-a" x="244" y="176" width="180" height="42" rx="5"/>
-              <text class="tm" x="258" y="196">corp-api.war</text>
-              <text class="tm" x="258" y="211">วางไฟล์ลงที่นี่</text>
-              <line class="ln-a flow" x1="334" y1="162" x2="334" y2="172" marker-end="url(#t1)"/>
+              <rect class="bx-a" x="236" y="172" width="172" height="24" rx="7"/>
+              <text class="tm" x="252" y="189">corp-api.war</text>
+              <line class="ln-a flow" x1="322" y1="160" x2="322" y2="168" marker-end="url(#t1)"/>
 
-              <path class="ln-a flow" d="M444 197 L 500 197" marker-end="url(#t1)"/>
+              <path class="ln-a flow" d="M424 184 L 464 184" marker-end="url(#t1)"/>
 
-              <rect class="bx-p" x="504" y="118" width="232" height="120" rx="7"/>
-              <text class="tl" x="520" y="140">ผลที่ได้</text>
-              <text class="tm" x="520" y="164">context path  /corp-api</text>
-              <text class="tm" x="520" y="184">พร้อมรับที่พอร์ต 8080</text>
-              <line class="ln dash" x1="520" y1="196" x2="720" y2="196"/>
-              <text class="tm" x="520" y="216">ตรงกับปลายทางในกฎ rewrite</text>
-              <text class="tm" x="520" y="231">ของ IIS ตามส่วนที่ 06</text>
+              <rect class="bx-p" x="472" y="112" width="264" height="96" rx="7"/>
+              <text class="tm" x="488" y="134">deploy result</text>
+              <text class="t" x="488" y="156">context path  /corp-api</text>
+              <text class="tm" x="488" y="176">Connector port="8080"</text>
+              <text class="tm" x="488" y="196">address="127.0.0.1"</text>
 
-              <line class="ln dash" x1="24" y1="256" x2="736" y2="256"/>
-              <text class="tm" x="24" y="274">CATALINA_BASE ใช้เมื่อต้องการหลาย instance บนเครื่องเดียว</text>
-              <text class="tm" x="24" y="292">CATALINA_HOME เก็บไฟล์ที่ใช้ร่วมกัน ส่วน BASE เก็บค่าตั้งของแต่ละ instance</text>
+              <line class="ln dash" x1="24" y1="228" x2="736" y2="228"/>
+              <text class="tm" x="24" y="250">$CATALINA_BASE แยกออกจาก HOME เมื่อรันหลาย instance — HOME เก็บ binary ส่วน BASE เก็บ conf และ logs</text>
+              <text class="tm" x="24" y="268">autoDeploy=true (ค่า default) → คัดลอก .war ลง appBase แล้ว deploy เองโดยไม่ต้อง restart</text>
             </svg>
           </div>
           <figcaption>
@@ -2472,55 +2474,52 @@ service.bat install MyService</pre>
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 290" role="img" aria-label="แผนภาพเส้นทางของไฟล์ จากซอร์สโค้ดผ่านการ build ได้โฟลเดอร์ผลลัพธ์ แล้วคัดลอกไปยังโฟลเดอร์ของ site บน IIS โดยมีไฟล์ web.config ที่มาจากคนละแหล่งและต้องไม่ถูกลบ">
+            <svg viewBox="0 0 760 264" role="img" aria-label="แผนภาพเส้นทางของไฟล์จากซอร์สโค้ดผ่าน vite build ได้โฟลเดอร์ dist แล้วคัดลอกไปยังโฟลเดอร์ของ site บน IIS โดย web.config มาจากคนละแหล่งและต้องไม่ถูกลบ">
               <defs>
-                <marker id="b1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="b1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-c"/>
                 </marker>
-                <marker id="b2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="b2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
                 </marker>
               </defs>
 
-              <text class="tl" x="24" y="24">เครื่องของผู้พัฒนา</text>
-              <text class="tl" x="500" y="24">เซิร์ฟเวอร์</text>
-              <line class="ln dash" x1="474" y1="10" x2="474" y2="236"/>
+              <text class="tl" x="24" y="20">dev machine</text>
+              <text class="tl" x="472" y="20">Windows Server</text>
+              <line class="ln dash" x1="456" y1="12" x2="456" y2="206"/>
 
-              <rect class="bx-c" x="24" y="46" width="150" height="72" rx="7"/>
-              <text class="t" x="99" y="74" text-anchor="middle">ซอร์สโค้ด</text>
-              <text class="tm" x="99" y="96" text-anchor="middle">src/ · index.html</text>
-              <text class="tm" x="99" y="110" text-anchor="middle">vite.config</text>
+              <rect class="bx-c" x="24" y="40" width="180" height="72" rx="7"/>
+              <text class="tm" x="40" y="62">source</text>
+              <text class="t" x="40" y="84">src/ · index.html</text>
+              <text class="tm" x="40" y="102">vite.config.ts · base</text>
 
-              <line class="ln-c flow" x1="174" y1="82" x2="222" y2="82" marker-end="url(#b1)"/>
-              <text class="tm" x="178" y="72">build</text>
+              <line class="ln-c flow" x1="204" y1="76" x2="230" y2="76" marker-end="url(#b1)"/>
+              <text class="tm" x="210" y="66">build</text>
 
-              <rect class="bx-c" x="226" y="46" width="200" height="72" rx="7"/>
-              <text class="t" x="326" y="72" text-anchor="middle">โฟลเดอร์ผลลัพธ์</text>
-              <text class="tm" x="242" y="94">index.html</text>
-              <text class="tm" x="242" y="110">assets/index-a1b2c3.js</text>
+              <rect class="bx-c" x="236" y="40" width="180" height="72" rx="7"/>
+              <text class="tm" x="252" y="62">build output</text>
+              <text class="t" x="252" y="84">dist/</text>
+              <text class="tm" x="252" y="102">assets/index-[hash].js</text>
 
-              <path class="ln-a flow" d="M426 82 L 500 82" marker-end="url(#b2)"/>
-              <text class="ta" x="432" y="72">คัดลอก</text>
+              <path class="ln-a flow" d="M416 76 L 466 76" marker-end="url(#b2)"/>
+              <text class="ta" x="420" y="66">copy</text>
 
-              <rect class="bx-a" x="504" y="46" width="232" height="120" rx="7"/>
-              <text class="t" x="520" y="72">D:\apps\corp-web</text>
-              <text class="tm" x="520" y="94">index.html</text>
-              <text class="tm" x="520" y="110">assets/index-a1b2c3.js</text>
-              <line class="ln dash" x1="520" y1="122" x2="720" y2="122"/>
-              <text class="tm" x="520" y="142">web.config</text>
-              <text class="tm" x="520" y="157">ไม่ได้มาจากการ build</text>
+              <rect class="bx-a" x="472" y="40" width="264" height="120" rx="7"/>
+              <text class="t" x="488" y="64">D:\apps\corp-web</text>
+              <text class="tm" x="488" y="86">index.html</text>
+              <text class="tm" x="488" y="104">assets/index-[hash].js</text>
+              <line class="ln dash" x1="488" y1="116" x2="720" y2="116"/>
+              <text class="tm" x="488" y="136">web.config</text>
+              <text class="tm" x="488" y="154">ไม่ได้มาจาก build — เขียนเองครั้งเดียว</text>
 
-              <rect class="bx-p" x="226" y="186" width="200" height="50" rx="7"/>
-              <text class="tm" x="242" y="208">web.config</text>
-              <text class="tm" x="242" y="224">เขียนเองครั้งเดียว · ส่วน 06</text>
-              <path class="ln-p flow-slow" d="M426 211 L 466 211 L 466 144 L 500 144" marker-end="url(#b2)"/>
+              <rect class="bx-p" x="236" y="152" width="180" height="48" rx="7"/>
+              <text class="tm" x="252" y="174">rewrite rules</text>
+              <text class="tm" x="252" y="192">ส่วนที่ 06</text>
+              <path class="ln-p flow-rel" d="M416 176 L 444 176 L 444 140 L 466 140" marker-end="url(#b2)"/>
 
-              <text class="tl" x="24" y="200">ข้อควรระวังตอนคัดลอก</text>
-              <text class="tm" x="24" y="222">ชื่อไฟล์ผูกกับ hash จึงเปลี่ยนทุกครั้ง</text>
-              <text class="tm" x="24" y="238">ต้องลบของเก่าก่อน แต่ต้องคง web.config ไว้</text>
-
-              <line class="ln dash" x1="24" y1="256" x2="736" y2="256"/>
-              <text class="tm" x="24" y="278">ถ้าลบ web.config ไปพร้อมไฟล์เดิม กฎ rewrite จะหายทั้งหมด และระบบจะกลับไปมีอาการ 404 ที่หน้าย่อยทันที</text>
+              <line class="ln dash" x1="24" y1="220" x2="736" y2="220"/>
+              <text class="ta" x="24" y="242">ลบ target dir ก่อน copy ทุกครั้ง แต่ต้องคง web.config ไว้</text>
+              <text class="tm" x="24" y="262">เพราะ [hash] เปลี่ยนทุก build การ copy ทับจะทิ้งไฟล์รุ่นเก่าค้างสะสม แต่ถ้าลบหมดก็จะเสียกฎ rewrite ไปด้วย</text>
             </svg>
           </div>
           <figcaption>
@@ -2767,8 +2766,8 @@ service.bat install MyService</pre>
             <thead><tr><th>เงื่อนไขของงาน</th><th>ทำไม Decoupled ถึงเข้าทาง</th></tr></thead>
             <tbody>
               <tr>
-                <td>IIS เป็นข้อกำหนดขององค์กร ไม่ใช่ตัวเลือก</td>
-                <td>สถาปัตยกรรมนี้ต้องการ reverse proxy อยู่แล้ว จึงใช้สิ่งที่มีอยู่ให้เป็นประโยชน์ได้พอดี โดย IIS ไม่ต้องรันโค้ดใดเลย</td>
+                <td>ระบบรันบน Windows Server จึงมี IIS ติดมาอยู่แล้ว</td>
+                <td>สถาปัตยกรรมนี้ต้องการ reverse proxy อยู่แล้ว จึงใช้ web server ที่มากับระบบปฏิบัติการได้พอดี ไม่ต้องติดตั้งตัวกลางเพิ่ม และ IIS เองไม่ต้องรันโค้ดใดเลย</td>
               </tr>
               <tr>
                 <td>เป็นการรื้อหน้าจอใหม่ทั้งหมด</td>
@@ -2812,92 +2811,88 @@ service.bat install MyService</pre>
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 452" role="img" aria-label="แผนภาพลำดับเวลาแบบ swimlane สี่แถว คือเบราว์เซอร์ IIS Tomcat และ Spring Boot เวลาไหลจากซ้ายไปขวา ช่วงแรกคือการโหลดหน้าเว็บซึ่งจบที่ IIS ไม่ลงไปถึง Tomcat ช่วงที่สองคือการเรียกข้อมูลซึ่งลงไปถึง Spring Boot แล้วส่งผลกลับขึ้นมา">
+            <svg viewBox="0 0 760 470" role="img" aria-label="แผนภาพลำดับเวลาสี่เลน คือ Browser IIS Tomcat และ Spring Boot เวลาไหลจากซ้ายไปขวา ช่วงที่หนึ่งคือ document request สามขั้นซึ่งจบที่ IIS ช่วงที่สองคือ XHR ห้าขั้นซึ่งลงไปถึง Spring Boot แล้วส่ง JSON กลับขึ้นมา">
               <defs>
-                <marker id="f1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+                <marker id="f1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-c"/>
                 </marker>
-                <marker id="f2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+                <marker id="f2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
                 </marker>
-                <marker id="f3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+                <marker id="f3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-p"/>
                 </marker>
               </defs>
 
-              <!-- หัวช่วงเวลา -->
-              <rect class="bx-c" x="150" y="14" width="250" height="26" rx="7"/>
-              <text class="tm" x="275" y="32" text-anchor="middle">ครั้งแรก · โหลดหน้าเว็บ</text>
-              <rect class="bx-a" x="414" y="14" width="326" height="26" rx="7"/>
-              <text class="tm" x="577" y="32" text-anchor="middle">จากนั้น · ทุกครั้งที่ต้องใช้ข้อมูล</text>
-              <line class="ln dash" x1="407" y1="46" x2="407" y2="392"/>
+              <!-- ส่วนหัวของสองเฟส -->
+              <rect class="bx-c" x="168" y="16" width="216" height="28" rx="7"/>
+              <text class="tm" x="276" y="35" text-anchor="middle">phase 1 · document</text>
+              <rect class="bx-a" x="400" y="16" width="336" height="28" rx="7"/>
+              <text class="tm" x="568" y="35" text-anchor="middle">phase 2 · XHR</text>
+              <line class="ln dash" x1="392" y1="52" x2="392" y2="424"/>
 
-              <!-- เลนที่ 1 เบราว์เซอร์ -->
-              <rect class="band" x="150" y="54" width="590" height="60" rx="7"/>
-              <text class="t" x="16" y="82">เบราว์เซอร์</text>
-              <text class="tm" x="16" y="100">React ทำงานที่นี่</text>
+              <!-- สี่เลน -->
+              <rect class="band" x="168" y="56" width="568" height="56" rx="7"/>
+              <text class="t" x="24" y="82">Browser</text>
+              <text class="tm" x="24" y="100">React runtime</text>
 
-              <!-- เลนที่ 2 IIS -->
-              <rect class="band" x="150" y="126" width="590" height="60" rx="7"/>
-              <text class="t" x="16" y="154">IIS</text>
-              <text class="tm" x="16" y="172">ส่วนที่ 01–09</text>
+              <rect class="band" x="168" y="160" width="568" height="56" rx="7"/>
+              <text class="t" x="24" y="186">IIS</text>
+              <text class="tm" x="24" y="204">w3wp.exe :443</text>
 
-              <!-- เลนที่ 3 Tomcat -->
-              <rect class="band" x="150" y="198" width="590" height="60" rx="7"/>
-              <text class="t" x="16" y="226">Tomcat</text>
-              <text class="tm" x="16" y="244">ส่วนที่ 11</text>
+              <rect class="band" x="168" y="264" width="568" height="56" rx="7"/>
+              <text class="t" x="24" y="290">Tomcat</text>
+              <text class="tm" x="24" y="308">JVM :8080</text>
 
-              <!-- เลนที่ 4 Spring Boot -->
-              <rect class="band" x="150" y="270" width="590" height="60" rx="7"/>
-              <text class="t" x="16" y="298">Spring Boot</text>
-              <text class="tm" x="16" y="316">ส่วนที่ 10</text>
+              <rect class="band" x="168" y="368" width="568" height="56" rx="7"/>
+              <text class="t" x="24" y="394">Spring Boot</text>
+              <text class="tm" x="24" y="412">@RestController</text>
 
-              <!-- ══ ช่วงที่ 1 ══ -->
-              <line class="ln-c flow" x1="196" y1="108" x2="196" y2="132" marker-end="url(#f1)"/>
-              <circle class="bx-c" cx="196" cy="70" r="11"/>
-              <text class="tm" x="196" y="74" text-anchor="middle">1</text>
-              <text class="tm" x="212" y="126">ขอหน้าเว็บ</text>
+              <!-- ══ phase 1 ══ -->
+              <line class="ln-c flow" x1="210" y1="112" x2="210" y2="158" marker-end="url(#f1)"/>
+              <circle class="bx-c" cx="210" cy="124" r="11"/>
+              <text class="tm" x="210" y="128" text-anchor="middle">1</text>
+              <text class="tm" x="228" y="128">GET /orders/1024</text>
 
-              <path class="ln-a flow-rel" d="M290 132 L 290 108" marker-end="url(#f2)"/>
-              <circle class="bx-a" cx="290" cy="166" r="11"/>
-              <text class="tm" x="290" y="170" text-anchor="middle">2</text>
-              <text class="tm" x="306" y="150">ส่ง index.html จากดิสก์</text>
+              <path class="ln-a flow-rel" d="M360 158 L 360 114" marker-end="url(#f2)"/>
+              <circle class="bx-a" cx="360" cy="146" r="11"/>
+              <text class="tm" x="360" y="150" text-anchor="middle">2</text>
+              <text class="tm" x="342" y="150" text-anchor="end">200 · index.html</text>
 
-              <circle class="bx-c" cx="366" cy="84" r="11"/>
-              <text class="tm" x="366" y="88" text-anchor="middle">3</text>
-              <text class="tm" x="216" y="102">React เริ่มทำงานในเบราว์เซอร์</text>
+              <circle class="bx-c" cx="210" cy="84" r="11"/>
+              <text class="tm" x="210" y="88" text-anchor="middle">3</text>
+              <text class="tm" x="228" y="88">hydrate + mount</text>
 
-              <text class="ta" x="164" y="356">ช่วงนี้ไม่ลงไปถึง Tomcat เลย</text>
-              <text class="tm" x="164" y="374">เพราะเป็นไฟล์ static ที่ IIS ตอบเองได้</text>
+              <text class="ta" x="176" y="244">phase 1 ไม่แตะ Tomcat</text>
+              <text class="tm" x="176" y="262">static asset ตอบจากดิสก์</text>
 
-              <!-- ══ ช่วงที่ 2 ══ -->
-              <line class="ln-c flow" x1="452" y1="108" x2="452" y2="132" marker-end="url(#f1)"/>
-              <circle class="bx-c" cx="452" cy="70" r="11"/>
-              <text class="tm" x="452" y="74" text-anchor="middle">4</text>
-              <text class="tm" x="468" y="126">GET /api/orders</text>
+              <!-- ══ phase 2 ══ -->
+              <line class="ln-c flow" x1="440" y1="112" x2="440" y2="158" marker-end="url(#f1)"/>
+              <circle class="bx-c" cx="440" cy="124" r="11"/>
+              <text class="tm" x="440" y="128" text-anchor="middle">4</text>
+              <text class="tm" x="458" y="128">GET /api/orders/1024</text>
 
-              <line class="ln-a flow" x1="452" y1="180" x2="452" y2="204" marker-end="url(#f2)"/>
-              <circle class="bx-a" cx="536" cy="152" r="11"/>
-              <text class="tm" x="536" y="156" text-anchor="middle">5</text>
-              <text class="tm" x="552" y="156">ส่งต่อไป 127.0.0.1:8080</text>
+              <line class="ln-a flow" x1="440" y1="216" x2="440" y2="262" marker-end="url(#f2)"/>
+              <circle class="bx-a" cx="440" cy="228" r="11"/>
+              <text class="tm" x="440" y="232" text-anchor="middle">5</text>
+              <text class="tm" x="458" y="232">rewrite → 127.0.0.1:8080</text>
 
-              <line class="ln-p flow" x1="452" y1="252" x2="452" y2="276" marker-end="url(#f3)"/>
-              <circle class="bx-p" cx="536" cy="224" r="11"/>
-              <text class="tm" x="536" y="228" text-anchor="middle">6</text>
-              <text class="tm" x="552" y="228">Tomcat เรียกโค้ดใน .war</text>
+              <line class="ln-p flow" x1="440" y1="320" x2="440" y2="366" marker-end="url(#f3)"/>
+              <circle class="bx-p" cx="440" cy="332" r="11"/>
+              <text class="tm" x="440" y="336" text-anchor="middle">6</text>
+              <text class="tm" x="458" y="336">servlet dispatch</text>
 
-              <circle class="bx-p" cx="536" cy="296" r="11"/>
-              <text class="tm" x="536" y="300" text-anchor="middle">7</text>
-              <text class="tm" x="552" y="300">ประมวลผลและอ่านฐานข้อมูล</text>
+              <circle class="bx-p" cx="440" cy="396" r="11"/>
+              <text class="tm" x="440" y="400" text-anchor="middle">7</text>
+              <text class="tm" x="458" y="400">query + serialize</text>
 
-              <path class="ln-a flow-rel" d="M714 276 L 714 108" marker-end="url(#f2)"/>
-              <circle class="bx-a" cx="714" cy="348" r="11"/>
-              <text class="tm" x="714" y="352" text-anchor="middle">8</text>
-              <text class="tm" x="560" y="374">ส่งข้อมูลกลับตามทางเดิม</text>
-              <text class="tm" x="560" y="392">ผ่าน IIS ถึงเบราว์เซอร์</text>
+              <path class="ln-a flow-rel" d="M700 366 L 700 114" marker-end="url(#f2)"/>
+              <circle class="bx-a" cx="700" cy="146" r="11"/>
+              <text class="tm" x="700" y="150" text-anchor="middle">8</text>
+              <text class="tm" x="682" y="150" text-anchor="end">200 · application/json</text>
 
-              <line class="ln dash" x1="16" y1="410" x2="744" y2="410"/>
-              <text class="tm" x="16" y="432">ทุกขั้นเรียกผ่านโดเมนเดียวกันคือ https://app.corp.local จึงไม่ต้องตั้งค่า CORS และ cookie ทำงานตามปกติ</text>
+              <line class="ln dash" x1="24" y1="440" x2="736" y2="440"/>
+              <text class="tm" x="24" y="460">same-origin ทุกขั้น — https://app.corp.local จึงไม่มี CORS preflight และ cookie เดินทางไปกับทุก request</text>
             </svg>
           </div>
           <figcaption>
@@ -2912,56 +2907,53 @@ service.bat install MyService</pre>
       <div class="breakout">
         <figure>
           <div class="fig-frame">
-            <svg viewBox="0 0 760 330" role="img" aria-label="แผนภาพเปรียบเทียบสิ่งที่รันจริงบนเครื่อง ตอนพัฒนามีสองโปรเซสคือ Node ที่รัน Vite และ JVM ที่รัน Spring Boot โดยไม่มี IIS ตอนใช้งานจริงบนเซิร์ฟเวอร์มี w3wp ของ IIS กับ JVM ของ Tomcat และไฟล์ static วางอยู่บนดิสก์">
+            <svg viewBox="0 0 760 344" role="img" aria-label="แผนภาพเปรียบเทียบโปรเซสที่รันจริง ฝั่งเครื่องพัฒนามีโปรเซส Node ที่รัน Vite และโปรเซส JVM ที่รัน Spring Boot ฝั่งเซิร์ฟเวอร์มีโปรเซส w3wp ของ IIS และโปรเซส JVM ของ Tomcat โดยมีขั้นตอน build คั่นกลาง">
               <defs>
                 <marker id="g1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd-a"/>
                 </marker>
               </defs>
 
-              <text class="tl" x="16" y="20">เครื่องของผู้พัฒนา</text>
-              <rect class="bx-c" x="16" y="32" width="300" height="230" rx="7"/>
+              <text class="tl" x="24" y="20">localhost · dev</text>
+              <rect class="bx-c" x="24" y="32" width="296" height="216" rx="7"/>
 
-              <rect class="bx" x="36" y="56" width="260" height="70" rx="7"/>
-              <text class="tm" x="52" y="78">โปรเซสที่ 1 · Node.js</text>
-              <text class="t" x="52" y="100">Vite dev server</text>
-              <text class="tm" x="52" y="118">:5173 · เสิร์ฟจากหน่วยความจำ</text>
+              <rect class="bx" x="44" y="56" width="256" height="72" rx="7"/>
+              <text class="tm" x="60" y="78">process · node</text>
+              <text class="t" x="60" y="100">vite dev server</text>
+              <text class="tm" x="60" y="118">:5173 · HMR · in-memory</text>
 
-              <rect class="bx" x="36" y="140" width="260" height="70" rx="7"/>
-              <text class="tm" x="52" y="162">โปรเซสที่ 2 · JVM</text>
-              <text class="t" x="52" y="184">Spring Boot</text>
-              <text class="tm" x="52" y="202">:8080 · Tomcat ที่ฝังมาในแอป</text>
+              <rect class="bx" x="44" y="152" width="256" height="72" rx="7"/>
+              <text class="tm" x="60" y="174">process · java</text>
+              <text class="t" x="60" y="196">spring-boot:run</text>
+              <text class="tm" x="60" y="214">:8080 · embedded tomcat</text>
 
-              <text class="ta" x="36" y="238">ไม่มี IIS · ไม่มีไฟล์ .war</text>
-              <text class="tm" x="36" y="256">ไม่มีโฟลเดอร์ผลลัพธ์ของ build</text>
+              <text class="tl" x="440" y="20">Windows Server · production</text>
+              <rect class="bx-a" x="440" y="32" width="296" height="216" rx="7"/>
 
-              <text class="tl" x="444" y="20">Windows Server</text>
-              <rect class="bx-a" x="444" y="32" width="300" height="230" rx="7"/>
+              <rect class="bx" x="460" y="56" width="256" height="72" rx="7"/>
+              <text class="tm" x="476" y="78">process · w3wp.exe</text>
+              <text class="t" x="476" y="100">IIS · CorpWebPool</text>
+              <text class="tm" x="476" y="118">:443 · static + ARR proxy</text>
 
-              <rect class="bx" x="464" y="56" width="260" height="70" rx="7"/>
-              <text class="tm" x="480" y="78">โปรเซสที่ 1 · w3wp.exe</text>
-              <text class="t" x="480" y="100">IIS</text>
-              <text class="tm" x="480" y="118">:443 · อ่านไฟล์จากดิสก์</text>
+              <rect class="bx" x="460" y="152" width="256" height="72" rx="7"/>
+              <text class="tm" x="476" y="174">process · java</text>
+              <text class="t" x="476" y="196">Tomcat service</text>
+              <text class="tm" x="476" y="214">:8080 bind 127.0.0.1</text>
 
-              <rect class="bx" x="464" y="140" width="260" height="70" rx="7"/>
-              <text class="tm" x="480" y="162">โปรเซสที่ 2 · JVM</text>
-              <text class="t" x="480" y="184">Tomcat</text>
-              <text class="tm" x="480" y="202">:8080 loopback · รัน .war</text>
+              <path class="ln-a flow" d="M320 92 L 434 92" marker-end="url(#g1)"/>
+              <text class="ta" x="330" y="82">vite build</text>
+              <text class="tm" x="330" y="110">dist/ → D:\apps\corp-web</text>
 
-              <text class="ta" x="464" y="238">ไม่มี Vite · ไม่มีซอร์สโค้ด</text>
-              <text class="tm" x="464" y="256">ไม่มี node_modules</text>
+              <path class="ln-a flow" d="M320 188 L 434 188" marker-end="url(#g1)"/>
+              <text class="ta" x="330" y="178">mvn package</text>
+              <text class="tm" x="330" y="206">*.war → webapps/</text>
 
-              <path class="ln-a flow" d="M320 110 L 440 110" marker-end="url(#g1)"/>
-              <text class="ta" x="330" y="100">build หน้าบ้าน</text>
-              <text class="tm" x="330" y="128">ได้ไฟล์ static ไปวางบนดิสก์</text>
-
-              <path class="ln-a flow" d="M320 180 L 440 180" marker-end="url(#g1)"/>
-              <text class="ta" x="330" y="170">build หลังบ้าน</text>
-              <text class="tm" x="330" y="198">ได้ .war ไปวางใน webapps</text>
-
-              <line class="ln dash" x1="16" y1="282" x2="744" y2="282"/>
-              <text class="tm" x="16" y="304">ทั้งสองฝั่งมีสองโปรเซสเท่ากัน แต่เป็นคนละตัวกัน — Vite หายไปตอนขึ้นเซิร์ฟเวอร์ ส่วน IIS ไม่เคยมีอยู่บนเครื่องพัฒนา</text>
-              <text class="tm" x="16" y="322">นี่คือเหตุผลที่ต้องทดสอบผลลัพธ์ของ build ก่อนนำขึ้นจริง ตามวิธีในส่วนที่ 12</text>
+              <line class="ln dash" x1="24" y1="266" x2="736" y2="266"/>
+              <text class="ta" x="24" y="288">ไม่มีอยู่ฝั่ง dev</text>
+              <text class="tm" x="24" y="306">IIS · web.config · ไฟล์ .war · โฟลเดอร์ dist</text>
+              <text class="ta" x="440" y="288">ไม่มีอยู่ฝั่ง production</text>
+              <text class="tm" x="440" y="306">vite · node_modules · source map · HMR socket</text>
+              <text class="tm" x="24" y="332">บั๊กที่เกิดจากสองรายการนี้จะไม่ปรากฏตอน dev — ต้องทดสอบด้วย build artifact จริงก่อนขึ้นระบบ</text>
             </svg>
           </div>
           <figcaption>
@@ -3107,7 +3099,100 @@ service.bat install MyService</pre>
     </section>
 
     <!-- ============ หน้า 15 ============ -->
-    <section class="pg" id="ref" hidden data-num="—" data-group="อ้างอิง" data-title="อ้างอิง" data-full="แหล่งอ้างอิง">
+    <section class="pg" id="glossary" hidden data-num="—" data-group="อ้างอิง" data-title="อภิธานศัพท์" data-full="อภิธานศัพท์">
+      <div class="col">
+        <div class="sec-head"><span class="sec-no">—</span><h2>อภิธานศัพท์</h2></div>
+        <p class="sec-sub">คำที่ปรากฏตลอดเอกสาร รวบรวมไว้ที่เดียวเพื่อใช้เปิดย้อนดูระหว่างอ่าน</p>
+        <p>
+          คอลัมน์สุดท้ายบอกว่าคำนั้นถูกอธิบายอย่างละเอียดอยู่ในส่วนใด
+          หากเจอคำที่ไม่คุ้นระหว่างอ่าน ให้กลับมาดูที่นี่ก่อน
+        </p>
+
+        <h3>องค์ประกอบของ IIS</h3>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>คำ</th><th>ความหมาย</th><th>ส่วนที่</th></tr></thead>
+            <tbody>
+              <tr><td class="kw">HTTP.sys</td><td>ตัวรับฟังพอร์ต 80 และ 443 จริง ทำงานในเคอร์เนลของ Windows ไม่ใช่โปรแกรมที่เปิดได้เอง</td><td class="k">01</td></tr>
+              <tr><td class="kw">W3SVC</td><td>บริการที่คอยตั้งค่าให้ HTTP.sys และแจ้ง WAS เมื่อมี request เข้าคิว</td><td class="k">01</td></tr>
+              <tr><td class="kw">WAS</td><td>บริการที่อ่านไฟล์ตั้งค่าแล้วสร้างหรือรีไซเคิล worker process</td><td class="k">01</td></tr>
+              <tr><td class="kw">w3wp.exe</td><td>โปรเซสที่ประมวลผล request จริง หนึ่งตัวต่อหนึ่ง Application Pool</td><td class="k">01</td></tr>
+              <tr><td class="kw">Site</td><td>หน่วยใหญ่สุดของ IIS มี binding และโฟลเดอร์รากเป็นของตัวเอง</td><td class="k">02</td></tr>
+              <tr><td class="kw">Application</td><td>ขอบเขตภายใน Site ที่กำหนด Application Pool ของตัวเองได้</td><td class="k">02</td></tr>
+              <tr><td class="kw">Virtual Directory</td><td>การแมป URL ไปยังโฟลเดอร์ที่อยู่คนละที่ ใช้ pool ของ Application ที่ครอบอยู่</td><td class="k">02</td></tr>
+              <tr><td class="kw">Application Pool</td><td>ขอบเขตเชิงโปรเซส แอปคนละ pool แยกหน่วยความจำและสิทธิ์กัน</td><td class="k">02 · 05</td></tr>
+              <tr><td class="kw">Binding</td><td>ชุด IP พอร์ต และชื่อโฮสต์ ที่กำหนดว่า request แบบไหนเข้ามาที่ Site นี้</td><td class="k">02 · 08</td></tr>
+              <tr><td class="kw">applicationHost.config</td><td>ไฟล์ตั้งค่าหลักของ IIS ทั้งเครื่อง</td><td class="k">02</td></tr>
+              <tr><td class="kw">web.config</td><td>ไฟล์ตั้งค่าระดับโฟลเดอร์ เดินทางไปพร้อมไฟล์เมื่อคัดลอก</td><td class="k">02 · 06</td></tr>
+              <tr><td class="kw">ApplicationPoolIdentity</td><td>บัญชีเสมือนที่ถูกสร้างพร้อม pool ใช้ชื่อรูปแบบ <code>IIS AppPool\ชื่อ pool</code></td><td class="k">05</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>โมดูลและการส่งต่อ</h3>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>คำ</th><th>ความหมาย</th><th>ส่วนที่</th></tr></thead>
+            <tbody>
+              <tr><td class="kw">URL Rewrite</td><td>โมดูลเสริมที่ทำให้เขียนกฎแปลง URL ได้ ต้องติดตั้งก่อน ARR</td><td class="k">04 · 06</td></tr>
+              <tr><td class="kw">ARR</td><td>Application Request Routing — โมดูลที่ทำให้ IIS ส่ง request ต่อไปเซิร์ฟเวอร์อื่นได้</td><td class="k">04</td></tr>
+              <tr><td class="kw">Reverse proxy</td><td>ตัวกลางที่รับ request แทนเซิร์ฟเวอร์จริงแล้วส่งต่อให้เบื้องหลัง ผู้ใช้เห็นแค่ปลายทางเดียว</td><td class="k">03 · 13</td></tr>
+              <tr><td class="kw">Rewrite</td><td>การเขียน URL ใหม่แล้วส่งต่อภายใน ผู้ใช้ไม่เห็นการเปลี่ยนแปลง</td><td class="k">06</td></tr>
+              <tr><td class="kw">Redirect</td><td>การสั่งให้เบราว์เซอร์ไปเรียก URL ใหม่เอง แถบที่อยู่จะเปลี่ยนตาม</td><td class="k">06 · 08</td></tr>
+              <tr><td class="kw">SPA fallback</td><td>กฎที่ส่ง <code>index.html</code> กลับไปเมื่อ path ที่ขอไม่ใช่ไฟล์จริง</td><td class="k">03 · 06</td></tr>
+              <tr><td class="kw">MIME type</td><td>ชนิดของไฟล์ที่ IIS ต้องรู้จักก่อนจึงจะยอมส่งออก มิฉะนั้นได้ <code>404.3</code></td><td class="k">06</td></tr>
+              <tr><td class="kw">X-Forwarded-For</td><td>เฮดเดอร์ที่พา IP เดิมของผู้ใช้ไปให้เซิร์ฟเวอร์ปลายทาง เพราะ IP จริงหายเมื่อผ่าน proxy</td><td class="k">07 · 10</td></tr>
+              <tr><td class="kw">SNI</td><td>ความสามารถที่ทำให้หลาย Site ใช้ใบรับรองต่างกันบนพอร์ต 443 เดียวกันได้</td><td class="k">08</td></tr>
+              <tr><td class="kw">loopback</td><td>ที่อยู่ <code>127.0.0.1</code> ซึ่งวนกลับเข้าเครื่องตัวเอง ไม่ออกสู่เครือข่าย</td><td class="k">03 · 11</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>ฝั่ง Java และ Tomcat</h3>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>คำ</th><th>ความหมาย</th><th>ส่วนที่</th></tr></thead>
+            <tbody>
+              <tr><td class="kw">Servlet</td><td>มาตรฐานของ Java สำหรับเขียนโปรแกรมที่ตอบ request ทาง HTTP</td><td class="k">11</td></tr>
+              <tr><td class="kw">Servlet container</td><td>โปรแกรมที่รัน servlet ให้ — Tomcat คือหนึ่งในนั้น เทียบได้กับบทบาทของ IIS ฝั่ง .NET</td><td class="k">11</td></tr>
+              <tr><td class="kw">Jakarta EE</td><td>ชุดมาตรฐานของ Java ฝั่งเซิร์ฟเวอร์ Tomcat 11 implement เวอร์ชัน 11 ของชุดนี้</td><td class="k">11</td></tr>
+              <tr><td class="kw">WAR</td><td>ไฟล์แอปพลิเคชันของ Java ที่นำไปวางใน servlet container ที่ติดตั้งแยก</td><td class="k">10 · 11</td></tr>
+              <tr><td class="kw">JAR</td><td>ไฟล์ที่มี servlet container ฝังอยู่ในตัวและรันเองได้ — ไม่ใช่รูปแบบที่ใช้ในเอกสารนี้</td><td class="k">10</td></tr>
+              <tr><td class="kw">context path</td><td>พาธนำหน้าที่ Tomcat ใช้แยกแต่ละแอป มาจากชื่อไฟล์ WAR โดยตรง</td><td class="k">11</td></tr>
+              <tr><td class="kw">webapps</td><td>โฟลเดอร์ของ Tomcat ที่ใช้วางไฟล์ WAR</td><td class="k">11</td></tr>
+              <tr><td class="kw">CATALINA_HOME</td><td>รากของการติดตั้ง Tomcat ที่เก็บไฟล์ที่ใช้ร่วมกัน</td><td class="k">11</td></tr>
+              <tr><td class="kw">CATALINA_BASE</td><td>รากของค่าตั้งเฉพาะ instance ใช้เมื่อต้องการหลาย instance บนเครื่องเดียว</td><td class="k">11</td></tr>
+              <tr><td class="kw">Connector</td><td>ส่วนของ Tomcat ที่กำหนดว่าจะรับฟังพอร์ตใดและที่อยู่ใด</td><td class="k">11</td></tr>
+              <tr><td class="kw">catalina.out</td><td>ไฟล์ที่รับทุกอย่างที่โปรแกรมเขียนออกทางหน้าจอ รวมถึง error ที่ไม่ถูกดักจับ</td><td class="k">11</td></tr>
+              <tr><td class="kw">classpath</td><td>รายการตำแหน่งที่ JVM ใช้ค้นหาไฟล์โปรแกรม devtools เฝ้าดูที่นี่เพื่อรีสตาร์ทอัตโนมัติ</td><td class="k">11</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>ฝั่งหน้าบ้านและสถาปัตยกรรม</h3>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>คำ</th><th>ความหมาย</th><th>ส่วนที่</th></tr></thead>
+            <tbody>
+              <tr><td class="kw">SPA</td><td>Single Page Application — เว็บที่โหลด HTML ครั้งเดียวแล้วเปลี่ยนหน้าในเบราว์เซอร์เอง</td><td class="k">03 · 12</td></tr>
+              <tr><td class="kw">CSR</td><td>Client-side rendering — หน้าจอถูกประกอบในเบราว์เซอร์ ไม่ได้ประกอบมาจากเซิร์ฟเวอร์</td><td class="k">13</td></tr>
+              <tr><td class="kw">build</td><td>ขั้นตอนแปลงซอร์สโค้ดเป็นไฟล์ที่นำขึ้นเซิร์ฟเวอร์ได้จริง</td><td class="k">12</td></tr>
+              <tr><td class="kw">static file</td><td>ไฟล์ที่ส่งออกไปตามเนื้อหาเดิมทุกไบต์ ไม่ต้องผ่านการประมวลผล</td><td class="k">03 · 12</td></tr>
+              <tr><td class="kw">hashed assets</td><td>ไฟล์ผลลัพธ์ที่ชื่อผูกกับเนื้อหา จึงเปลี่ยนชื่อทุกครั้งที่ build ใหม่</td><td class="k">12</td></tr>
+              <tr><td class="kw">base path</td><td>พาธนำหน้าที่ฝังอยู่ในลิงก์ของไฟล์ตั้งแต่ตอน build ต้องตรงกับตำแหน่งที่วางจริง</td><td class="k">12</td></tr>
+              <tr><td class="kw">dev server</td><td>เซิร์ฟเวอร์ชั่วคราวบนเครื่องผู้พัฒนา ไม่มีอยู่บนเซิร์ฟเวอร์จริง</td><td class="k">11 · 12</td></tr>
+              <tr><td class="kw">CORS</td><td>กติกาของเบราว์เซอร์ที่จำกัดการเรียกข้ามโดเมน — สถาปัตยกรรมนี้เลี่ยงได้เพราะอยู่โดเมนเดียวกัน</td><td class="k">03 · 13</td></tr>
+              <tr><td class="kw">Same-origin</td><td>สภาพที่ไฟล์หน้าเว็บและ API อยู่ใต้โดเมนเดียวกันในสายตาเบราว์เซอร์</td><td class="k">13</td></tr>
+              <tr><td class="kw">Decoupled architecture</td><td>การแยกหน้าบ้านกับหลังบ้านเป็นคนละโปรเจกต์ที่ build และ deploy แยกกัน</td><td class="k">13</td></tr>
+              <tr><td class="kw">TLS</td><td>การเข้ารหัสระหว่างเบราว์เซอร์กับเซิร์ฟเวอร์ ในระบบนี้สิ้นสุดที่ IIS</td><td class="k">08</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ หน้า 16 ============ -->
+    <section class="pg" id="ref" hidden data-num="—" data-group="อ้างอิง" data-title="แหล่งอ้างอิง" data-full="แหล่งอ้างอิง">
       <div class="col refs">
         <div class="sec-head"><span class="sec-no">—</span><h2>แหล่งอ้างอิง</h2></div>
         <p class="sec-sub">เอกสารทุกรายการด้านล่างถูกเปิดอ่านเนื้อหาเต็มเพื่อตรวจสอบ มิใช่อ้างจากผลการค้นหา</p>
