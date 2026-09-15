@@ -79,12 +79,22 @@
   code, pre, .mono { font-family: "Source Code Pro", ui-monospace, "Cascadia Mono", monospace; font-variant-numeric: tabular-nums; }
 
   /* ---------- โครงร่างสองคอลัมน์ ---------- */
-  .shell { display: grid; grid-template-columns: var(--side) minmax(0, 1fr); align-items: start; }
+  @property --nav-w { syntax: "<length>"; inherits: false; initial-value: 264px; }
+  .shell {
+    --nav-w: var(--side);
+    display: grid; grid-template-columns: var(--nav-w) minmax(0, 1fr); align-items: start;
+    transition: --nav-w .3s ease;
+  }
 
   /* ---------- แถบซ้าย ---------- */
   .sidebar {
-    position: sticky; top: 0; height: 100vh; overflow-y: auto; overscroll-behavior: contain;
+    position: sticky; top: 0; height: 100vh; overflow: hidden;
     background: var(--surface-2); border-right: 1px solid var(--line);
+    transition: border-color .3s ease;
+  }
+  .side-in {
+    position: relative; width: var(--side); height: 100%;
+    overflow-y: auto; overscroll-behavior: contain;
     padding: 22px 0 32px; scrollbar-width: thin;
   }
   .nav-toggle {
@@ -105,14 +115,10 @@
   .nav-show span { font-family: Kanit, Anuphan, sans-serif; }
   .nav-show:hover { color: var(--accent); border-color: var(--accent); }
   .nav-show:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-  .shell.nav-off { grid-template-columns: minmax(0, 1fr); --wide: var(--wide-open); }
-  .shell.nav-off > .sidebar { display: none; }
+  .shell.nav-off { --nav-w: 0px; --wide: var(--wide-open); }
+  .shell.nav-off > .sidebar { border-right-color: transparent; }
   .shell.nav-off .nav-show { display: inline-flex; }
-  .shell.nav-off .menu-btn { display: none; }
-  .shell.nav-off .topbar {
-    display: block; position: sticky; top: 0; z-index: 20;
-    background: var(--paper); border-bottom: 1px solid var(--line);
-  }
+  .shell.nav-off .topbar { max-height: 60px; border-bottom-color: var(--line); }
 
   .mark { font-family: Kanit, Anuphan, sans-serif; font-weight: 600; font-size: 15px; padding-inline: 20px; display: block; }
   .mark span { color: var(--accent); }
@@ -145,13 +151,18 @@
   .pagenav button[aria-current="true"] .num { color: var(--accent); }
 
   /* ---------- แถบบน ---------- */
-  .topbar { display: none; }
+  .topbar {
+    max-height: 0; overflow: hidden;
+    position: sticky; top: 0; z-index: 20;
+    background: var(--paper); border-bottom: 1px solid transparent;
+    transition: max-height .3s ease, border-color .3s ease;
+  }
   .topbar-in {
     display: flex; align-items: center; justify-content: space-between;
     gap: 12px; padding: 10px 28px;
   }
   .menu-btn {
-    display: inline-flex; align-items: center; gap: 8px;
+    display: none; align-items: center; gap: 8px;
     font-family: Anuphan, sans-serif; font-size: 13.5px; color: var(--ink);
     background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
     padding: 7px 13px; cursor: pointer;
@@ -170,22 +181,22 @@
   @media (max-width: 900px) {
     .shell, .shell.nav-off { grid-template-columns: minmax(0, 1fr); }
     .nav-toggle, .nav-show, .shell.nav-off .nav-show { display: none; }
-    .shell.nav-off > .sidebar { display: block; }
-    .shell.nav-off .menu-btn { display: inline-flex; }
+    .menu-btn { display: inline-flex; }
     .sidebar {
       position: fixed; top: 0; bottom: 0; left: 0; width: 272px; height: 100dvh;
       z-index: 40; transform: translateX(-100%); transition: transform .22s ease;
       box-shadow: 0 0 0 100vmax transparent;
     }
+    .shell.nav-off > .sidebar { border-right-color: var(--line); }
+    .side-in { width: 100%; }
     .sidebar.open { transform: translateX(0); }
     .scrim {
       display: block; position: fixed; inset: 0; z-index: 30;
       background: rgba(0,0,0,.4); opacity: 0; pointer-events: none; transition: opacity .22s ease;
     }
     .scrim.show { opacity: 1; pointer-events: auto; }
-    .topbar {
-      display: block; position: sticky; top: 0; z-index: 20;
-      background: var(--paper); border-bottom: 1px solid var(--line);
+    .topbar, .shell.nav-off .topbar {
+      max-height: none; overflow: visible; border-bottom-color: var(--line); transition: none;
     }
     .topbar-in { padding: 10px 20px; }
   }
@@ -483,6 +494,7 @@
 
 <div class="shell">
   <aside class="sidebar" id="sidebar">
+    <div class="side-in">
     <button type="button" class="nav-toggle" id="navHide" aria-controls="sidebar" aria-expanded="true" aria-label="หุบสารบัญ" title="หุบสารบัญ">«</button>
     <span class="mark">เจาะโครงสร้าง <span>IIS</span></span>
     <span class="side-sub">13 ส่วน · 16 แผนภาพ</span>
@@ -496,6 +508,7 @@
         <span class="side-ic" aria-hidden="true">◆</span>
         <span><b>Knowledge Graph</b><i>54 node · 65 relationship</i></span>
       </button>
+    </div>
     </div>
   </aside>
 
