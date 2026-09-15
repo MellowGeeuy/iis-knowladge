@@ -1,4 +1,4 @@
-# GRules — กฎการทำงานของโปรเจกต์ [Project Name]
+# GRules — กฎการทำงานของโปรเจกต์ iis-knowladge
 
 > อ้างอิง: MDN Web Docs · Google JS Style Guide · BEM · SMACSS
 
@@ -9,6 +9,12 @@
 - ชื่อไฟล์: `kebab-case` lowercase เสมอ
 - ห้าม hardcode API keys, tokens, passwords ในโค้ด
 - Update log: สร้าง `Updates/Update v.xxxx.md` ทุก session ที่มีการแก้ไขโค้ด
+
+### Git — อนุมัติล่วงหน้าแล้ว (Guy สั่งไว้ 2026-09-15)
+
+- **แก้เสร็จแล้ว commit และ push ได้เลย ไม่ต้องถามทีละครั้ง** เขียน Update log ก่อน แล้ว commit แล้ว `push origin main`
+- ยังต้องรายงานให้ Guy ทราบว่า commit ไหน แก้อะไร และตรวจอะไรไปแล้ว
+- ข้อยกเว้นที่ยังต้อง confirm กับ Guy ก่อนเสมอ — ลบไฟล์ · `push --force` · แก้ประวัติ git · ลบ branch
 
 ---
 
