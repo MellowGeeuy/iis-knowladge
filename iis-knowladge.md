@@ -33,7 +33,7 @@
 
 - **ขอบเขต** — ชั้น IIS เป็นหลัก
 - **เนื้อหา** — 13 ส่วน · แผนภาพ 16 รูป
-- **อ้างอิง** — 36 รายการ · เปิดอ่านเต็มทุกหน้า
+- **อ้างอิง** — 41 รายการ · เปิดอ่านเต็มทุกหน้า
 
 ### เอกสารนี้ทำไว้เพื่ออะไร
 
@@ -110,6 +110,54 @@ IIS มักถูกเข้าใจว่าเป็นโปรแกร�
 >
 > request บางส่วนถูกปฏิเสธตั้งแต่ชั้น HTTP.sys ซึ่งยังไม่ถึง `w3wp.exe` จึง **ไม่ปรากฏใน log ของ IIS** แต่ถูกบันทึกในไฟล์ `httperr` แทน ข้อเท็จจริงนี้อธิบายอาการที่ผู้ใช้แจ้งว่าเข้าใช้งานไม่ได้ แต่ไม่พบข้อมูลใดใน log รายละเอียดอยู่ในส่วนที่ 09
 
+### ส่ององค์ประกอบทั้งสามบนเครื่องจริง
+
+สามชื่อข้างต้นไม่ใช่แนวคิดนามธรรม ทุกตัวเปิดดูได้บนเครื่องที่ติดตั้ง IIS อยู่แล้ว การเห็นของจริงหนึ่งครั้งช่วยได้มากตอนวิเคราะห์ปัญหา เพราะจะรู้ทันทีว่าอาการที่เจอเกิดก่อนหรือหลังจุดที่ตัวเองกำลังดูอยู่
+
+| ต้องการรู้ว่า | คำสั่ง | สิ่งที่ได้เห็น |
+| --- | --- | --- |
+| HTTP.sys ถือคิวอะไรอยู่บ้าง | `netsh http show servicestate view=requestq` | สถานะของ request queue เอกสารระบุว่าคำสั่งนี้แสดง *“a current snapshot of the HTTP Service”* และมุมมอง `requestq` แสดง *“the state of the request queue”*`[MICROSOFT]` |
+| URL ที่ถูกจองไว้กับ HTTP.sys | `netsh http show urlacl` | รายการ URL ที่จองไว้พร้อมสิทธิ์ ใช้ตรวจเมื่อบริการอื่นแย่ง prefix เดียวกัน |
+| ใบรับรองที่ผูกกับ port 443 | `netsh http show sslcert` | รายการ binding ของใบรับรองระดับ HTTP.sys ซึ่งอยู่ต่ำกว่าที่ IIS Manager แสดง (ส่วนที่ 08) |
+| W3SVC กับ WAS ทำงานอยู่ไหม | `Get-Service W3SVC, WAS` | ทั้งสองต้อง `Running` ถ้า WAS หยุด จะไม่มี worker process ใหม่ถูกสร้างเลย |
+| `w3wp.exe` ตัวไหนเป็นของ pool ไหน | `appcmd list wp` | รายการ worker process ทุกตัวพร้อม PID และชื่อ pool ที่มันทำงานให้ |
+| ตอนนี้มี request ใดค้างอยู่ | `appcmd list requests` | request ที่กำลังประมวลผลอยู่จริงในขณะนั้น ใช้จับ request ที่ค้างนาน |
+
+**ไล่จากชั้นล่างขึ้นชั้นบน · PowerShell (Run as Administrator)**
+
+```powershell
+# ชั้นเคอร์เนล — HTTP.sys ถือคิวของ pool ใดอยู่บ้าง
+netsh http show servicestate view=requestq
+
+# ชั้น service — W3SVC กับ WAS อยู่ใน svchost.exe ตัวเดียวกัน จึงได้ PID เดียวกัน
+Get-CimInstance Win32_Service -Filter "Name='W3SVC' or Name='WAS'" |
+  Select-Object Name, State, ProcessId, StartName
+
+# ชั้น process — appcmd.exe อยู่ที่ %windir%\system32\inetsrv
+$appcmd = "$env:windir\system32\inetsrv\appcmd.exe"
+& $appcmd list wp
+#   WP "6820" (applicationPool:CorpWebPool)      ← PID กับ pool ของมัน
+
+# request ที่กำลังค้างอยู่ตอนนี้ ใช้ตอนระบบช้าแล้วไม่รู้ว่าค้างที่ไหน
+& $appcmd list requests
+```
+
+> **ข้อควรระวัง — W3SVC กับ WAS ไม่ใช่คนละ process**
+>
+> เอกสารของ Microsoft ระบุว่าบริการทั้งสอง *“run as LocalSystem in the same Svchost.exe process, and share the same binaries”*`[MICROSOFT]` การเห็น `ProcessId` เดียวกันจากคำสั่งด้านบนจึงเป็นเรื่องปกติ ไม่ใช่ความผิดพลาด
+>
+> ผลที่ตามมาคือ **การ restart บริการหนึ่งกระทบอีกบริการเสมอ** และหยุด WAS เมื่อใด worker process ใหม่จะไม่ถูกสร้างอีกเลย เพราะเอกสารระบุว่า WAS คือผู้ที่ *“manages application pool configuration and worker processes”* ส่วน W3SVC ทำหน้าที่เป็น listener adapter ที่คอย *“configuring HTTP.sys … and notifying WAS when a request enters the request queue”*
+
+> **หมายเหตุ — ตรวจว่า response มาจาก HTTP.sys หรือมาจาก IIS**
+>
+> เมื่อได้ status code ที่อธิบายไม่ได้ ให้ดู header `Server` ของ response เอกสารของ Microsoft ระบุว่าวิธียืนยันว่า response แบบ 4xx มาจาก HTTP.sys คือการมองหา response header `Microsoft-HttpApi/2.0``[MICROSOFT]`
+>
+> ```
+> curl.exe -s -D - -o NUL https://app.corp.local/
+>   Server: Microsoft-HttpApi/2.0   ← ถูกปฏิเสธที่ชั้นเคอร์เนล ไปดู httperr
+>   Server: Microsoft-IIS/10.0      ← เดินทางถึง w3wp.exe แล้ว ไปดู IIS log
+> ```
+
 ---
 
 ## หน่วยการจัดการทั้งสี่
@@ -124,6 +172,29 @@ IIS มักถูกเข้าใจว่าเป็นโปรแกร�
 > *แผนภาพ* — แผนภาพแสดงว่า Site Application และ Virtual Directory เป็นแกนของ URL ส่วน Application Pool เป็นแกนของ process โดย Application ผูกกับ Pool ด้วยเส้นประ
 
 > **รูปที่ 2 — ความสัมพันธ์ระหว่างสองแกน** · เส้นประแสดงการผูก Application เข้ากับ Pool จะสังเกตได้ว่า Virtual Directory ไม่มีเส้นเชื่อมของตนเอง เนื่องจากทำงานใน process ของ Application ที่ครอบอยู่ ข้อแตกต่างนี้เป็นเกณฑ์ในการตัดสินใจว่าควรสร้างหน่วยใด
+
+### เทียบสี่หน่วยในตารางเดียว
+
+เอกสารของ Microsoft สรุปโครงสร้างไว้ว่า *“a site contains one or more applications, an application contains one or more virtual directories, and a virtual directory maps to a physical directory on a computer”*`[MICROSOFT]` สามหน่วยนี้ซ้อนกันเป็นชั้น ส่วน Application Pool อยู่คนละแกนและตัดขวางเข้ามา
+
+| หน่วย | มี binding | กำหนด pool เองได้ | โผล่ใน URL | ชี้ไปโฟลเดอร์จริง |
+| --- | --- | --- | --- | --- |
+| Site | ได้ · ได้หลายชุด | ไม่ได้โดยตรง | เป็นรากของ URL | ผ่าน root virtual directory |
+| Application | ไม่มี · ใช้ของ Site | ได้ | ได้ เช่น `/reports` | ผ่าน root virtual directory ของตัวเอง |
+| Virtual Directory | ไม่มี | ไม่ได้ · ใช้ของ Application | ได้ เช่น `/reports/files` | ได้ · คนละไดรฟ์หรือคนละเครื่องก็ได้ |
+| Application Pool | ไม่มี | เป็นตัว pool เอง | ไม่โผล่เลย | ไม่เกี่ยว |
+
+ช่องที่เป็นคำตอบว่า **“ไม่ได้”** ของ Virtual Directory คือจุดที่คนพลาดบ่อยที่สุด เอกสารระบุชัดว่า *“An application can have several virtual directories, and each one will be served by the same AppDomain as the application to which they belong”* ฉะนั้นการสร้าง Virtual Directory ไม่ได้ทำให้โค้ดไปแยกรันคนละ process
+
+> **หมายเหตุ — เกณฑ์ตัดสินใจ ถามสามข้อนี้ตามลำดับ**
+>
+> **1 · ต้องการให้เรียกผ่านชื่อโฮสต์หรือ port ที่ต่างออกไปไหม** — ถ้าใช่ ต้องเป็น *Site* ใหม่ เพราะ binding ผูกกับ Site เท่านั้น
+>
+> **2 · ต้องการให้พังแยกจากกันไหม** — ถ้าอยากให้แอปนี้ล่มแล้วอีกแอปไม่กระทบ ต้องเป็น *Application* ที่ผูกกับ *Application Pool* คนละตัว เพราะเอกสารระบุว่า pool *“isolates the application from applications in other application pools on the server”* การแยกแค่โฟลเดอร์ไม่ให้ผลนี้
+>
+> **3 · แค่อยากให้ URL ชี้ไปโฟลเดอร์ที่อยู่คนละที่ใช่ไหม** — ถ้าใช่และไม่ต้องการแยก process ให้ใช้ *Virtual Directory* ซึ่งเบาที่สุด เอกสารยกตัวอย่างกรณีที่ต้องการดึงไฟล์ภาพจากตำแหน่งอื่นเข้ามาโดยไม่ย้ายไฟล์
+>
+> ตอบ “ไม่” ทั้งสามข้อ แปลว่าไม่ต้องสร้างหน่วยใหม่เลย ใช้โฟลเดอร์ย่อยธรรมดาก็พอ
 
 ### Binding — องค์ประกอบสามส่วนที่ต้องไม่ซ้ำกัน
 
@@ -146,6 +217,64 @@ applicationHost.config              ไฟล์หลักของ IIS — WA
 D:\apps\corp-web\web.config         ระดับ site — ตำแหน่งของกฎ rewrite
 D:\apps\corp-web\sub\web.config     ระดับโฟลเดอร์ย่อย
 ```
+
+เอกสารระบุกฎนี้ไว้ตรง ๆ ว่า *“When an attribute is configured at more than one level, the value at the lowest level is used”*`[MICROSOFT]` หากไม่ต้องการให้โฟลเดอร์ย่อยมี `web.config` ของตัวเองได้ ให้ตั้ง `allowSubDirConfig="false"` ที่ virtual directory
+
+### ทั้งสี่หน่วยหน้าตาเป็นอย่างไรในไฟล์จริง
+
+ทุกอย่างที่อธิบายมาอยู่ในส่วน `<sites>` ของ `applicationHost.config` จุดที่ต้องอ่านให้ออกคือเครื่องหมาย `/` เดี่ยว ๆ ในช่อง `path` เอกสารระบุว่า *“When you see a single "/" in a path field, you know that this is a root object”*`[MICROSOFT]` — เป็น root application หรือ root virtual directory ขึ้นกับว่าอยู่ในบล็อกใด
+
+**โครงที่ตรงกับรูปที่ 2 · `%windir%\system32\inetsrv\config\applicationHost.config`**
+
+```xml
+<sites>
+  <site name="corp-web" id="2">
+    <application path="/" applicationPool="CorpWebPool">            <!-- root application -->
+      <virtualDirectory path="/" physicalPath="D:\apps\corp-web" /> <!-- root virtual directory -->
+    </application>
+    <application path="/reports" applicationPool="ReportsPool">     <!-- แยก pool ได้ที่ชั้นนี้เท่านั้น -->
+      <virtualDirectory path="/" physicalPath="D:\apps\corp-reports" />
+      <virtualDirectory path="/files" physicalPath="E:\archive" />  <!-- ยังรันใน ReportsPool -->
+    </application>
+    <bindings>
+      <binding protocol="https" bindingInformation="*:443:app.corp.local" />
+    </bindings>
+  </site>
+</sites>
+```
+
+ทุก Site ต้องมีอย่างน้อยหนึ่ง application และทุก application ต้องมีอย่างน้อยหนึ่ง virtual directory เอกสารระบุว่า *“each site must contain at least one application, which is named the root application. And each application (including the root application) must contain at least one virtual directory, which is named the root virtual directory”* IIS Manager สร้างสองบรรทัดนี้ให้เองตอนสร้าง Site จึงมักไม่ทันสังเกต
+
+### เปิดดูหน่วยทั้งสี่บนเครื่องจริง
+
+ก่อนแก้อะไร ให้ดูของจริงก่อนเสมอว่าตอนนี้มีอะไรอยู่บ้าง และ application ตัวไหนผูกกับ pool ตัวใด สองคำสั่งสุดท้ายตอบคำถามที่ถามบ่อยที่สุดว่า “ทำไมแก้ pool แล้วไม่มีผล”
+
+**ไล่จากหน่วยใหญ่ไปหน่วยเล็ก · PowerShell (Run as Administrator)**
+
+```powershell
+$appcmd = "$env:windir\system32\inetsrv\appcmd.exe"
+
+# แกน URL — ไล่ site แล้วเจาะเข้า application กับ virtual directory
+& $appcmd list site
+& $appcmd list app  /site.name:corp-web
+& $appcmd list vdir /app.name:"corp-web/reports"
+
+# แกน process — pool ทั้งหมดบนเครื่อง
+& $appcmd list apppool
+
+# จุดที่สองแกนมาบรรจบ — application ตัวไหนรันใน pool ตัวใด
+Import-Module WebAdministration
+Get-WebApplication | Select-Object path, applicationPool, PhysicalPath
+
+# virtual directory ไม่มี pool เป็นของตัวเอง จึงไม่มีคอลัมน์ applicationPool ให้ดู
+Get-WebVirtualDirectory -Site corp-web | Select-Object path, PhysicalPath
+```
+
+> **ข้อควรระวัง — แก้ pool แล้วไม่มีผล มักเกิดจากสองกรณีนี้**
+>
+> **แก้ที่ Virtual Directory** — มันไม่มี pool ของตัวเอง ค่าที่ตั้งไปจึงไม่มีที่ลง ต้องเลื่อนขึ้นไปแก้ที่ Application ที่ครอบมันอยู่ (ดูจากคำสั่ง `list vdir` ว่ามันสังกัด app ใด)
+>
+> **แก้ที่ Site แต่ของจริงอยู่ที่ root application** — ค่า pool ผูกกับ `<application path="/">` ไม่ได้ผูกกับ `<site>` ใน IIS Manager คือปุ่ม *Basic Settings* ของ Site ซึ่งแก้ root application ให้จริง ๆ
 
 ---
 
@@ -545,6 +674,68 @@ New-WebBinding -Name "corp-web" -Protocol https -Port 443 `
 > *แผนภาพ* — แผนภาพแสดงว่า request ที่ถูกปฏิเสธที่ HTTP.sys จะถูกบันทึกใน httperr ส่วนที่ถึง w3wp จะอยู่ใน IIS log และที่ส่งต่อออกไปจะอยู่ใน log ของ upstream
 
 > **รูปที่ 4 — ชั้นที่ request สิ้นสุด และ log ที่ควรตรวจสอบ** · หากผู้ใช้แจ้งว่าเข้าใช้งานไม่ได้ แต่ log ของ IIS ไม่มีข้อมูล แสดงว่า request ไม่เคยเดินทางถึง `w3wp.exe` ให้ตรวจสอบไฟล์ `httperr` เป็นลำดับแรก
+
+### log แต่ละชั้นอยู่ที่ไหน
+
+ก่อนวิเคราะห์ ต้องเปิดไฟล์ให้ถูกชั้นก่อน สามแถวแรกคือ log ที่ IIS เขียนเอง ส่วนแถวสุดท้ายเป็นของ upstream ซึ่งอยู่นอกความรับผิดชอบของ IIS
+
+| ไฟล์ | ตำแหน่งเริ่มต้น | บันทึกอะไร |
+| --- | --- | --- |
+| httperr | `%SystemRoot%\System32\LogFiles\HTTPERR` | request ที่ถูกปฏิเสธตั้งแต่ชั้น HTTP.sys จึงไม่มีทางปรากฏใน IIS log · ไฟล์ตั้งชื่อเป็น `httperr1.log` ไล่ลำดับไป |
+| IIS log | `%SystemDrive%\inetpub\logs\LogFiles` | request ที่เดินทางถึง `w3wp.exe` แล้ว · แยกโฟลเดอร์ต่อหนึ่ง site ชื่อ `W3SVC<id>` ไฟล์ตั้งชื่อตามวันที่เป็น `exYYMMDD.log` |
+| FRT | `%SystemDrive%\inetpub\logs\FailedReqLogFiles` | รายละเอียดทีละขั้นของ request ที่เข้าเงื่อนไขกฎที่ตั้งไว้ · เปิดใช้งานเองตามหัวข้อถัดไป |
+| log ของ upstream | `catalina.out` | request ที่ถูกส่งต่อออกไปแล้ว · อยู่นอกขอบเขตของ IIS ดูส่วนที่ 11 |
+
+ตำแหน่งของ `httperr` เปลี่ยนได้ที่ registry ค่า `ErrorLoggingDir` ใต้ `HKLM\System\CurrentControlSet\Services\HTTP\Parameters` เอกสารระบุว่าหากไม่กำหนดไว้ ค่าเริ่มต้นคือ `%SystemRoot%\System32\LogFiles` แล้ว HTTP Server API จะสร้างโฟลเดอร์ย่อยชื่อ `HTTPERR` ให้เอง`[MICROSOFT]` การแก้ค่านี้ต้องรีสตาร์ท driver ด้วย `net stop http` แล้ว `net start http` จึงจะมีผล
+
+### อ่าน field ไหนใน IIS log
+
+รูปแบบ W3C ที่ IIS ใช้เป็นค่าเริ่มต้นเลือกได้ว่าจะบันทึก field ใดบ้าง ห้า field นี้ตอบคำถามได้เกือบทุกกรณีที่เจอในระบบแบบนี้ เวลาในไฟล์เป็น UTC เสมอ
+
+| field | นิยามตามเอกสาร | ใช้ตอบคำถามว่า |
+| --- | --- | --- |
+| `cs-uri-stem` | *“the Universal Resource Identifier, or target, of the action”* | กฎ rewrite ทำงานหรือยัง — ค่าที่เห็นคือ path หลังถูกเขียนใหม่แล้ว |
+| `sc-status` | *“the HTTP or FTP status code”* | ผลลัพธ์หยาบ ๆ ว่าสำเร็จหรือไม่ |
+| `sc-substatus` | *“the HTTP or FTP substatus code”* | **สาเหตุที่แท้จริง** ดูตารางถัดไป |
+| `sc-win32-status` | *“the Windows status code”* | สาเหตุระดับระบบปฏิบัติการ เช่นปัญหาสิทธิ์ไฟล์ |
+| `time-taken` | *“the length of time that the action took in milliseconds”* | ช้าที่ IIS เองหรือช้าเพราะรอ upstream |
+
+**กรอง request ที่ไม่ใช่ 200 ออกมาดูเฉพาะ field ที่ต้องการ · PowerShell**
+
+```powershell
+# หาโฟลเดอร์ log ของ site ที่ต้องการก่อน — ตัวเลขท้ายคือ site id
+Get-Website corp-web | Select-Object Name, Id
+$log = "$env:SystemDrive\inetpub\logs\LogFiles\W3SVC2"
+
+# ไฟล์ล่าสุด แล้วดูเฉพาะบรรทัดที่ไม่ใช่ 200
+$f = Get-ChildItem $log -Filter *.log | Sort-Object LastWriteTime | Select-Object -Last 1
+Get-Content $f.FullName | Select-String -NotMatch ' 200 0 0 ' | Select-Object -Last 20
+
+# request ที่ช้ากว่า 3 วินาที — คอลัมน์สุดท้ายคือ time-taken หน่วยเป็นมิลลิวินาที
+Get-Content $f.FullName |
+  Where-Object { $_ -notmatch '^#' -and [int]($_ -split ' ')[-1] -gt 3000 }
+```
+
+### substatus บอกสาเหตุที่แท้จริง
+
+`404` เฉย ๆ บอกได้แค่ว่าไม่เจอ แต่ `404.3` กับ `404.13` คนละสาเหตุและคนละวิธีแก้โดยสิ้นเชิง ตารางนี้คัดเฉพาะรหัสที่เกิดได้จริงกับสถาปัตยกรรมในเอกสารนี้ นิยามทุกบรรทัดยกมาจากเอกสารของ Microsoft`[MICROSOFT]`
+
+| รหัส | นิยามตามเอกสาร | ในระบบนี้มักเกิดจาก |
+| --- | --- | --- |
+| `401.3` | *“Unauthorized due to ACL on resource”* — ปัญหาสิทธิ์ของ NTFS | บัญชี `IIS AppPool\CorpWebPool` ยังไม่มีสิทธิ์อ่านโฟลเดอร์ (ส่วนที่ 05) |
+| `403.14` | *“Directory listing denied”* — เซิร์ฟเวอร์ไม่ได้ตั้งให้แสดงรายการไฟล์ และไม่มี default document | ลืมวาง `index.html` ไว้ที่รากของ physical path |
+| `404.3` | *“MIME type restriction”* — *“The current MIME mapping for the requested extension type is invalid or isn't configured”* | นามสกุลไฟล์ยังไม่ได้ประกาศใน `staticContent` (ส่วนที่ 06) |
+| `404.4` | *“No handler configured”* — นามสกุลของ URL ที่ขอไม่มี handler รองรับ | กฎ rewrite ไม่จับคู่ แล้ว request ตกไปถึง handler ที่ไม่มีอยู่ |
+| `404.13` | *“Content length too large”* — ค่าใน header `Content-Length` เกินขีดจำกัดของเซิร์ฟเวอร์ | อัปโหลดไฟล์ใหญ่ผ่าน proxy โดยไม่ได้ขยาย `maxAllowedContentLength` |
+| `500.19` | *“Configuration data is invalid”* — ปัญหาใน `applicationHost.config` หรือ `web.config` | XML ของ `web.config` ผิดรูป หรือประกาศ section ที่ module ยังไม่ได้ติดตั้ง |
+| `500.50` | *“A rewrite error occurred during RQ_BEGIN_REQUEST notification handling”* — ผิดที่ configuration หรือที่การทำงานของกฎ inbound | เขียนกฎ rewrite ผิดรูป เช่น pattern หรือ regex ไม่ถูกต้อง (ส่วนที่ 06) |
+| `502.3` | *“Bad Gateway: Forwarder Connection Error (ARR)”* | ต่อไปยัง upstream ไม่ได้ · upstream ไม่ได้รันอยู่ หรือรับฟังคนละ port |
+| `502.4` | *“Bad Gateway: No Server (ARR)”* | ARR หาปลายทางที่จะส่งต่อไม่เจอ · มักเกิดตอนตั้ง server farm ไว้แต่ไม่มีสมาชิกที่ใช้งานได้ |
+| `503.0` | *“Application pool unavailable”* — request ถูกส่งไปยัง pool ที่หยุดหรือถูกปิดใช้งาน | pool ถูกหยุดไป หรือถูกปิดอัตโนมัติจาก rapid fail protection · ดู Event Log ประกอบ |
+
+> **ข้อควรระวัง — 401 ในเบราว์เซอร์กับใน log ไม่เท่ากัน**
+>
+> เอกสารระบุไว้ตรง ๆ ว่ารหัสย่อยของ `401` นั้น *“are displayed in the client browser but aren't displayed in the IIS log”*`[MICROSOFT]` ฉะนั้นถ้าเจอ `401` ใน log แล้วหา substatus ไม่พบ ไม่ใช่ว่า log เสีย ให้ไปเปิด Failed Request Tracing ตามหัวข้อถัดไปแทน
 
 ### อาการที่พบบ่อยและจุดที่ควรตรวจสอบก่อน
 
@@ -1100,6 +1291,10 @@ vite build --base=/my/public/path/
 | 01 | **Introduction to IIS Architectures** `[MICROSOFT]`<br>องค์ประกอบ HTTP.sys, W3SVC และ WAS, คุณประโยชน์สามประการของ HTTP.sys, บทบาทของ application pool และลำดับการประมวลผล request แปดขั้น<br><https://learn.microsoft.com/en-us/iis/get-started/introduction-to-iis/introduction-to-iis-architecture> |
 | 02 | **Application Pool Identities** `[MICROSOFT]`<br>บัญชีเสมือนรูปแบบ `IIS AppPool\<ชื่อ pool>`, ค่าเริ่มต้น ApplicationPoolIdentity และตัวอย่างคำสั่ง `ICACLS`<br><https://learn.microsoft.com/en-us/iis/manage/configuring-security/application-pool-identities> |
 
+| 37 | **Understanding Sites, Applications, and Virtual Directories on IIS** `[MICROSOFT]`<br>ลำดับชั้น site → application → virtual directory, นิยาม root application และ root virtual directory, ข้อความว่า virtual directory ถูกให้บริการโดย AppDomain เดียวกับ application ที่ครอบอยู่ และกฎว่าค่าที่ระดับล่างสุดมีผลเหนือกว่า<br><https://learn.microsoft.com/en-us/iis/get-started/planning-your-iis-architecture/understanding-sites-applications-and-virtual-directories-on-iis> |
+| 38 | **netsh http** `[MICROSOFT]`<br>คำสั่ง `show servicestate` ที่แสดงสถานะของ request queue, `show urlacl` และ `show sslcert`<br><https://learn.microsoft.com/en-us/windows-server/networking/technologies/netsh/netsh-http> |
+| 39 | **Getting Started with AppCmd.exe** `[MICROSOFT]`<br>ตำแหน่ง `%windir%\system32\inetsrv` และคำสั่ง `list wp` ที่จับคู่ PID ของ w3wp.exe กับ application pool รวมถึง `list requests`<br><https://learn.microsoft.com/en-us/iis/get-started/getting-started-with-iis/getting-started-with-appcmdexe> |
+
 ### Reverse proxy และ URL Rewrite
 
 | # | เรื่อง / แหล่ง |
@@ -1120,6 +1315,9 @@ vite build --base=/my/public/path/
 | 11 | **Configure Logging in IIS** `[MICROSOFT]`<br>ตำแหน่งเริ่มต้นของ log IIS คือ `%SystemDrive%\inetpub\logs\LogFiles`<br><https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis> |
 | 12 | **Configuring HTTP Server API Error Logging** `[MICROSOFT]`<br>โฟลเดอร์เริ่มต้น `%SystemRoot%\System32\LogFiles` พร้อมโฟลเดอร์ย่อย `HTTPERR` และ registry ที่ควบคุมการบันทึก<br><https://learn.microsoft.com/en-us/windows/win32/http/configuring-http-server-api-error-logging> |
 | 13 | **Troubleshoot failed requests using tracing in IIS** `[MICROSOFT]`<br>หลักการเก็บ trace ไว้ในบัฟเฟอร์ ตำแหน่ง `FailedReqLogFiles\W3SVC<id>` และโครงสร้าง configuration<br><https://learn.microsoft.com/en-us/previous-versions/troubleshoot/iis/troubleshoot-failed-requests-using-tracing-in-iis-7> |
+
+| 40 | **Configure Logging in IIS** `[MICROSOFT]`<br>ตำแหน่งเริ่มต้น `%SystemDrive%\inetpub\logs\LogFiles` และนิยามของ field `sc-status` `sc-substatus` `sc-win32-status` `time-taken`<br><https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis> |
+| 41 | **Configuring HTTP Server API Error Logging** `[MICROSOFT]`<br>ค่าเริ่มต้น `%SystemRoot%\System32\LogFiles` พร้อมโฟลเดอร์ย่อย `HTTPERR`, รูปแบบชื่อไฟล์ และค่า registry `ErrorLoggingDir`<br><https://learn.microsoft.com/en-us/windows/win32/http/configuring-http-server-api-error-logging> |
 
 ### การยืนยันตัวตนและ cmdlet
 
@@ -1188,9 +1386,9 @@ vite build --base=/my/public/path/
 | --- | --- | --- | --- |
 | 1 | หนึ่งสิ่ง ต้องมี identifier เดียว | *“Use URIs as names for things”* `[W3C]` | `Tomcat 11` ที่พูดถึงในส่วนที่ 11 กับในส่วนที่ 13 เป็น node ตัวเดียวกัน ไม่แตกเป็นสองก้อน |
 | 2 | identifier นั้นต้องเปิดตามไปดูได้ | *“Use HTTP URIs so that people can look up those names.”* `[W3C]` | ทุก node ผูกกับหมายเลขส่วนของเอกสาร กดแล้วรู้ว่าอ่านต่อได้ที่ไหน |
-| 3 | เก็บทุกข้อเท็จจริงเป็น triple | *“The subject and the object represent the two resources being related; the predicate represents the nature of their relationship.”* `[W3C]` | ความสัมพันธ์ทั้ง 65 เส้นเขียนเป็น `subject · predicate · object` ได้ทั้งหมด |
+| 3 | เก็บทุกข้อเท็จจริงเป็น triple | *“The subject and the object represent the two resources being related; the predicate represents the nature of their relationship.”* `[W3C]` | ความสัมพันธ์ทั้ง 76 เส้นเขียนเป็น `subject · predicate · object` ได้ทั้งหมด |
 | 4 | ทุกจุดต้องมีทางเดินออกไปหาจุดอื่น | *“Include links to other URIs. so that they can discover more things.”* `[W3C]` | ไม่มี node ใดในกราฟนี้ที่ไม่มีเส้นเลย จำนวนเส้นน้อยสุดต่อ node คือ 1 |
-| 5 | ตรวจว่าเชื่อมถึงกันจริง ด้วย WCC | Weakly Connected Components *“can be used to determine whether your network is fully connected or not”* `[NEO4J]` | รันแล้วได้ **1 component ขนาด 54 node** แปลว่าเดินจาก node ใดก็ถึงทุก node ที่เหลือ |
+| 5 | ตรวจว่าเชื่อมถึงกันจริง ด้วย WCC | Weakly Connected Components *“can be used to determine whether your network is fully connected or not”* `[NEO4J]` | รันแล้วได้ **1 component ขนาด 60 node** แปลว่าเดินจาก node ใดก็ถึงทุก node ที่เหลือ |
 
 > **หมายเหตุ — กลไกที่ทำให้กราฟต่อกันจริง ๆ**
 >
@@ -1213,21 +1411,21 @@ Tomcat 11      SCANS          webapps
 
 | คำ | นิยามตามเอกสาร | ในกราฟนี้คือ |
 | --- | --- | --- |
-| node | *“Nodes are used to represent entities (discrete objects) of a domain.”* | 54 กล่องในภาพ |
+| node | *“Nodes are used to represent entities (discrete objects) of a domain.”* | 60 กล่องในภาพ |
 | label | *“Nodes can have zero or more labels to define (classify) what kind of nodes they are.”* | หมวดสี่สี IIS · Java · React · สถาปัตยกรรม |
-| relationship | *“A relationship describes how a connection between a source node and a target node are related.”* และ *“A relationship must have exactly one relationship type”* | 65 เส้น แต่ละเส้นมีชื่อเดียว เช่น `PROXIES_TO` |
+| relationship | *“A relationship describes how a connection between a source node and a target node are related.”* และ *“A relationship must have exactly one relationship type”* | 76 เส้น แต่ละเส้นมีชื่อเดียว เช่น `PROXIES_TO` |
 | traversal | *“Traversing a graph means visiting nodes by following relationships according to some rules.”* | การไล่จาก `browser` ไปจนถึง `catalina.out` |
 | path | ผลของการ traverse *“A path containing one relationship has the length of 1”* | `WAR → webapps → Tomcat 11` คือ path ยาว 2 |
 
-ทั้งหมด 54 IIS 24 Java 13 React 9 สถาปัตยกรรม 8
+ทั้งหมด 60 IIS 24 Java 13 React 9 สถาปัตยกรรม 8
 
-> *แผนภาพ* — Knowledge Graph ของเอกสาร ประกอบด้วย 54 node และ 65 เส้นความสัมพันธ์ แบ่งเป็นสี่หมวดคือ IIS, Java, React และสถาปัตยกรรม ตรวจแล้วเชื่อมถึงกันทั้งหมดเป็น component เดียว
+> *แผนภาพ* — Knowledge Graph ของเอกสาร ประกอบด้วย 60 node และ 76 เส้นความสัมพันธ์ แบ่งเป็นสี่หมวดคือ IIS, Java, React และสถาปัตยกรรม ตรวจแล้วเชื่อมถึงกันทั้งหมดเป็น component เดียว
 
-ยังไม่ได้เลือก node ทั้งกราฟ · 54 node · 65 relationship · WCC = 1 component
+คลิกที่กล่องใดก็ได้เพื่อดูว่าสิ่งนั้นคืออะไรและเชื่อมกับอะไรบ้าง · ชี้ที่เส้นเพื่ออ่านชื่อความสัมพันธ์
 
-คลิกที่กล่องใดก็ได้ในภาพ เพื่อดูว่าสิ่งนั้นต่อกับอะไรบ้าง ด้วย relationship ชื่ออะไร และอยู่ในส่วนที่เท่าไรของเอกสาร · ชี้ที่เส้นเพื่ออ่านชื่อ relationship บนภาพ
+ในฉบับเว็บ การคลิกกล่องจะเปิดเป็นหน้าต่างซ้อนขึ้นมาตรงกลางจอ แสดงคำอธิบายว่า node นั้นคืออะไร คุณสมบัติของมัน และความสัมพันธ์ทุกเส้นที่ต่อกับมัน แยกเป็นสองกลุ่มคือสิ่งที่มันทำกับตัวอื่น และสิ่งที่ตัวอื่นทำกับมัน
 
-> **รูปที่ 16 — Knowledge Graph ของเอกสารทั้งฉบับ** · 54 node และ 65 relationship แบ่งด้วยสีตามหมวด ตำแหน่งของกล่องคำนวณด้วย force layout แบบ deterministic นอกเบราว์เซอร์ แล้วตรึงพิกัดไว้ จึงตรวจได้ว่าไม่มีกล่องทับกันและไม่มีเส้นพาดผ่านกล่องใด ชื่อ relationship ไม่ถูกวาดค้างไว้บนภาพด้วยเหตุผลเดียวกัน ให้ชี้ที่เส้นเพื่ออ่านทีละเส้น
+> **รูปที่ 16 — Knowledge Graph ของเอกสารทั้งฉบับ** · 60 node และ 76 relationship แบ่งด้วยสีตามหมวด ตำแหน่งของกล่องคำนวณด้วย force layout แบบ deterministic นอกเบราว์เซอร์ แล้วตรึงพิกัดไว้ จึงตรวจได้ว่าไม่มีกล่องทับกันและไม่มีเส้นพาดผ่านกล่องใด ชื่อ relationship ไม่ถูกวาดค้างไว้บนภาพด้วยเหตุผลเดียวกัน ให้ชี้ที่เส้นเพื่ออ่านทีละเส้น
 
 ### รายการ relationship ทั้งหมด
 
@@ -1300,6 +1498,17 @@ Tomcat 11      SCANS          webapps
 | Decoupled architecture | REQUIRES | Reverse proxy | สถาปัตยกรรม |
 | Same-origin | ELIMINATES | CORS | สถาปัตยกรรม |
 | Vite dev server | WOULD_HIT | CORS | React |
+| IIS log | RECORDS | sc-substatus | IIS |
+| Failed Request Tracing | REVEALS | sc-substatus | IIS |
+| Site | REQUIRES | root application | IIS |
+| root application | IS_A | Application | IIS |
+| root application | HAS | root virtual dir | IIS |
+| root virtual dir | IS_A | Virtual Directory | IIS |
+| appcmd.exe | INSPECTS | w3wp.exe | IIS |
+| appcmd.exe | LISTS | Application Pool | IIS |
+| W3SVC | RUNS_IN | svchost.exe | IIS |
+| WAS | RUNS_IN | svchost.exe | IIS |
+| netsh http | INSPECTS | HTTP.sys | IIS |
 
 ### การตรวจสอบกราฟนี้
 
@@ -1307,16 +1516,16 @@ Tomcat 11      SCANS          webapps
 
 | เกณฑ์ | เหตุผลที่ต้องตรวจ | ผล |
 | --- | --- | --- |
-| id ของ node ไม่ซ้ำ | ถ้าซ้ำ สิ่งเดียวกันจะกลายเป็นสอง node แล้วกราฟขาดตรงนั้น | 54 / 54 ไม่ซ้ำ |
-| ปลายเส้นทุกเส้นชี้ไป id ที่มีอยู่จริง | เส้นที่ชี้ไป id ผิดจะกลายเป็นเส้นลอย | 65 / 65 ถูกต้อง |
+| id ของ node ไม่ซ้ำ | ถ้าซ้ำ สิ่งเดียวกันจะกลายเป็นสอง node แล้วกราฟขาดตรงนั้น | 60 / 60 ไม่ซ้ำ |
+| ปลายเส้นทุกเส้นชี้ไป id ที่มีอยู่จริง | เส้นที่ชี้ไป id ผิดจะกลายเป็นเส้นลอย | 76 / 76 ถูกต้อง |
 | ไม่มี node ที่ไม่มีเส้นเลย | กฎข้อ 4 ของ Linked Data | degree ต่ำสุด = 1 |
-| Weakly Connected Components | เกณฑ์ชี้ขาดว่าข้อมูลถึงกันหมดหรือไม่ | 1 component · ขนาด 54 |
+| Weakly Connected Components | เกณฑ์ชี้ขาดว่าข้อมูลถึงกันหมดหรือไม่ | 1 component · ขนาด 60 |
 | กล่องทับกัน | ข้อกำหนดการแสดงผลของเอกสารนี้ | 0 คู่ |
 | เส้นพาดผ่านกล่องที่ไม่ใช่ปลายทางตัวเอง | ทำให้อ่านผิดว่าเส้นนั้นเชื่อมกับกล่องที่มันพาดผ่าน | 0 จุด |
 
 > **หมายเหตุ — ทำไมไม่เขียนชื่อ relationship ค้างไว้บนภาพ**
 >
-> ลองวางป้ายชื่อทั้ง 65 เส้นแล้วตรวจดู พบว่า **30 จาก 54 กรณีมีป้ายทับกันหรือทับกล่อง** ซึ่งขัดกับข้อกำหนดของเอกสารนี้ จึงเปลี่ยนเป็นคำนวณตำแหน่งที่ว่างของแต่ละเส้นไว้ล่วงหน้า แล้วแสดงทีละเส้นตอนชี้ ส่วนภาพรวมของความสัมพันธ์ทั้งหมดอ่านได้จากตาราง triple ด้านบน
+> ลองวางป้ายชื่อทั้ง 76 เส้นค้างไว้พร้อมกันแล้วตรวจดู พบว่ามีป้ายทับกันเอง ซึ่งขัดกับข้อกำหนดของเอกสารนี้ จึงเปลี่ยนเป็นคำนวณตำแหน่งที่ว่างของแต่ละเส้นไว้ล่วงหน้า แล้วแสดงทีละเส้นตอนชี้ ส่วนภาพรวมของความสัมพันธ์ทั้งหมดอ่านได้จากตาราง triple ด้านบน
 
 ---
 

@@ -317,6 +317,11 @@
   }
   .code-head .where { color: var(--ink-faint); font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
   .code pre { margin: 0; padding: 14px 16px; overflow-x: auto; font-size: 12.5px; line-height: 1.75; color: var(--ink); }
+  pre.mini {
+    margin: 10px 0 0; padding: 11px 13px; overflow-x: auto;
+    background: var(--code-bg); border: 1px solid var(--line); border-radius: var(--radius);
+    font-family: "Source Code Pro", monospace; font-size: 12px; line-height: 1.75; color: var(--ink-soft);
+  }
   .code .c { color: var(--code-com); }
   .code .t { color: var(--code-key); }
   .code .s { color: var(--code-str); }
@@ -427,22 +432,31 @@
   svg .kg-lab { fill: var(--accent); font-family: "Source Code Pro", monospace; font-size: 10px; letter-spacing: .06em; }
 
   .kg-frame { padding: 12px 10px; }
-  .kg-panel {
-    position: sticky; bottom: 0; z-index: 4; margin-top: 12px;
-    border: 1px solid var(--line); border-radius: var(--radius);
-    background: var(--surface); overflow: hidden;
-    box-shadow: 0 -8px 20px -10px rgba(0, 0, 0, .3);
+  .kg-hint { margin: 11px 0 0; font-size: 12.5px; color: var(--ink-faint); line-height: 1.7; }
+
+  .kg-modal {
+    width: min(720px, calc(100vw - 32px)); max-height: min(78vh, 720px);
+    padding: 0; border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--surface); color: var(--ink); overflow: hidden;
   }
-  .kg-p-head {
-    display: flex; flex-wrap: wrap; gap: 3px 14px; align-items: baseline;
-    padding: 11px 15px; border-bottom: 1px solid var(--line-soft); background: var(--surface-2);
+  .kg-modal::backdrop { background: rgba(0, 0, 0, .55); }
+  .kg-m-head {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+    padding: 13px 15px; border-bottom: 1px solid var(--line-soft); background: var(--surface-2);
   }
+  .kg-m-head > span { display: flex; flex-wrap: wrap; gap: 2px 14px; align-items: baseline; }
+  .kg-close {
+    flex: none; width: 28px; height: 28px; display: grid; place-items: center; cursor: pointer;
+    border: 1px solid var(--line); border-radius: 7px; background: var(--surface);
+    color: var(--ink-faint); font-size: 17px; line-height: 1;
+  }
+  .kg-close:hover { color: var(--accent); border-color: var(--accent); }
+  .kg-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
   .kg-p-title { font-weight: 600; font-family: "Source Code Pro", monospace; font-size: 13px; color: var(--ink); }
   .kg-p-meta { font-size: 11.5px; color: var(--ink-faint); font-family: "Source Code Pro", monospace; }
-  .kg-p-body { padding: 13px 15px; max-height: 46vh; overflow-y: auto; }
+  .kg-p-body { padding: 14px 15px; overflow-y: auto; max-height: calc(78vh - 62px); }
   .kg-about { margin: 0 0 11px; font-size: 13px; line-height: 1.75; color: var(--ink-soft); max-width: 96ch; }
   .kg-about b { color: var(--ink); font-weight: 600; }
-  .kg-p-body:empty { display: none; }
   .kg-props { display: flex; flex-wrap: wrap; gap: 6px 8px; margin: 0 0 13px; }
   .kg-props > div {
     display: flex; align-items: baseline; gap: 8px; padding: 4px 11px;
@@ -506,7 +520,7 @@
       </a>
       <button type="button" class="side-btn" id="kgBtn">
         <span class="side-ic" aria-hidden="true">◆</span>
-        <span><b>Knowledge Graph</b><i>54 node · 65 relationship</i></span>
+        <span><b>Knowledge Graph</b><i>60 node · 76 relationship</i></span>
       </button>
     </div>
     </div>
@@ -538,7 +552,7 @@
         <div class="cover-meta">
           <div><b>ขอบเขต</b> ชั้น IIS เป็นหลัก</div>
           <div><b>เนื้อหา</b> 13 ส่วน · แผนภาพ 16 รูป</div>
-          <div><b>อ้างอิง</b> 36 รายการ · เปิดอ่านเต็มทุกหน้า</div>
+          <div><b>อ้างอิง</b> 41 รายการ · เปิดอ่านเต็มทุกหน้า</div>
         </div>
       </div>
 
@@ -769,6 +783,96 @@
             รายละเอียดอยู่ในส่วนที่ 09
           </p>
         </div>
+
+        <h3>ส่ององค์ประกอบทั้งสามบนเครื่องจริง</h3>
+        <p>
+          สามชื่อข้างต้นไม่ใช่แนวคิดนามธรรม ทุกตัวเปิดดูได้บนเครื่องที่ติดตั้ง IIS อยู่แล้ว
+          การเห็นของจริงหนึ่งครั้งช่วยได้มากตอนวิเคราะห์ปัญหา เพราะจะรู้ทันทีว่าอาการที่เจอ
+          เกิดก่อนหรือหลังจุดที่ตัวเองกำลังดูอยู่
+        </p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>ต้องการรู้ว่า</th><th>คำสั่ง</th><th>สิ่งที่ได้เห็น</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>HTTP.sys ถือคิวอะไรอยู่บ้าง</td>
+                <td class="k">netsh http show servicestate view=requestq</td>
+                <td>สถานะของ request queue เอกสารระบุว่าคำสั่งนี้แสดง <em>“a current snapshot of the HTTP Service”</em> และมุมมอง <code>requestq</code> แสดง <em>“the state of the request queue”</em><span class="doc">MICROSOFT</span></td>
+              </tr>
+              <tr>
+                <td>URL ที่ถูกจองไว้กับ HTTP.sys</td>
+                <td class="k">netsh http show urlacl</td>
+                <td>รายการ URL ที่จองไว้พร้อมสิทธิ์ ใช้ตรวจเมื่อบริการอื่นแย่ง prefix เดียวกัน</td>
+              </tr>
+              <tr>
+                <td>ใบรับรองที่ผูกกับ port 443</td>
+                <td class="k">netsh http show sslcert</td>
+                <td>รายการ binding ของใบรับรองระดับ HTTP.sys ซึ่งอยู่ต่ำกว่าที่ IIS Manager แสดง (ส่วนที่ 08)</td>
+              </tr>
+              <tr>
+                <td>W3SVC กับ WAS ทำงานอยู่ไหม</td>
+                <td class="k">Get-Service W3SVC, WAS</td>
+                <td>ทั้งสองต้อง <code>Running</code> ถ้า WAS หยุด จะไม่มี worker process ใหม่ถูกสร้างเลย</td>
+              </tr>
+              <tr>
+                <td><code>w3wp.exe</code> ตัวไหนเป็นของ pool ไหน</td>
+                <td class="k">appcmd list wp</td>
+                <td>รายการ worker process ทุกตัวพร้อม PID และชื่อ pool ที่มันทำงานให้</td>
+              </tr>
+              <tr>
+                <td>ตอนนี้มี request ใดค้างอยู่</td>
+                <td class="k">appcmd list requests</td>
+                <td>request ที่กำลังประมวลผลอยู่จริงในขณะนั้น ใช้จับ request ที่ค้างนาน</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="code">
+          <div class="code-head"><span>ไล่จากชั้นล่างขึ้นชั้นบน</span><span class="where">PowerShell (Run as Administrator)</span></div>
+<pre><span class="c"># ชั้นเคอร์เนล — HTTP.sys ถือคิวของ pool ใดอยู่บ้าง</span>
+<span class="t">netsh http show servicestate view=requestq</span>
+
+<span class="c"># ชั้น service — W3SVC กับ WAS อยู่ใน svchost.exe ตัวเดียวกัน จึงได้ PID เดียวกัน</span>
+<span class="t">Get-CimInstance Win32_Service -Filter "Name='W3SVC' or Name='WAS'" |</span>
+<span class="t">  Select-Object Name, State, ProcessId, StartName</span>
+
+<span class="c"># ชั้น process — appcmd.exe อยู่ที่ %windir%\system32\inetsrv</span>
+<span class="t">$appcmd = "$env:windir\system32\inetsrv\appcmd.exe"</span>
+<span class="t">&amp; $appcmd list wp</span>
+<span class="c">  WP "6820" (applicationPool:CorpWebPool)      ← PID กับ pool ของมัน</span>
+
+<span class="c"># request ที่กำลังค้างอยู่ตอนนี้ ใช้ตอนระบบช้าแล้วไม่รู้ว่าค้างที่ไหน</span>
+<span class="t">&amp; $appcmd list requests</span></pre>
+        </div>
+
+        <div class="callout stop">
+          <span class="ttl">W3SVC กับ WAS ไม่ใช่คนละ process</span>
+          <p>
+            เอกสารของ Microsoft ระบุว่าบริการทั้งสอง <em>“run as LocalSystem in the same Svchost.exe process,
+            and share the same binaries”</em><span class="doc">MICROSOFT</span>
+            การเห็น <code>ProcessId</code> เดียวกันจากคำสั่งด้านบนจึงเป็นเรื่องปกติ ไม่ใช่ความผิดพลาด
+          </p>
+          <p>
+            ผลที่ตามมาคือ <strong>การ restart บริการหนึ่งกระทบอีกบริการเสมอ</strong>
+            และหยุด WAS เมื่อใด worker process ใหม่จะไม่ถูกสร้างอีกเลย เพราะเอกสารระบุว่า WAS
+            คือผู้ที่ <em>“manages application pool configuration and worker processes”</em>
+            ส่วน W3SVC ทำหน้าที่เป็น listener adapter ที่คอย <em>“configuring HTTP.sys … and notifying WAS
+            when a request enters the request queue”</em>
+          </p>
+        </div>
+
+        <div class="callout tip">
+          <span class="ttl">ตรวจว่า response มาจาก HTTP.sys หรือมาจาก IIS</span>
+          <p>
+            เมื่อได้ status code ที่อธิบายไม่ได้ ให้ดู header <code>Server</code> ของ response
+            เอกสารของ Microsoft ระบุว่าวิธียืนยันว่า response แบบ 4xx มาจาก HTTP.sys
+            คือการมองหา response header <code>Microsoft-HttpApi/2.0</code><span class="doc">MICROSOFT</span>
+          </p>
+<pre class="mini">curl.exe -s -D - -o NUL https://app.corp.local/
+  Server: Microsoft-HttpApi/2.0   ← ถูกปฏิเสธที่ชั้นเคอร์เนล ไปดู httperr
+  Server: Microsoft-IIS/10.0      ← เดินทางถึง w3wp.exe แล้ว ไปดู IIS log</pre>
+        </div>
       </div>
     </section>
 
@@ -864,6 +968,55 @@
           </div>
         </dl>
 
+        <h3>เทียบสี่หน่วยในตารางเดียว</h3>
+        <p>
+          เอกสารของ Microsoft สรุปโครงสร้างไว้ว่า <em>“a site contains one or more applications,
+          an application contains one or more virtual directories, and a virtual directory maps to
+          a physical directory on a computer”</em><span class="doc">MICROSOFT</span>
+          สามหน่วยนี้ซ้อนกันเป็นชั้น ส่วน Application Pool อยู่คนละแกนและตัดขวางเข้ามา
+        </p>
+        <div class="tbl">
+          <table>
+            <thead>
+              <tr><th>หน่วย</th><th>มี binding</th><th>กำหนด pool เองได้</th><th>โผล่ใน URL</th><th>ชี้ไปโฟลเดอร์จริง</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="kw">Site</td><td class="k">ได้ · ได้หลายชุด</td><td>ไม่ได้โดยตรง</td><td>เป็นรากของ URL</td><td>ผ่าน root virtual directory</td></tr>
+              <tr><td class="kw">Application</td><td>ไม่มี · ใช้ของ Site</td><td class="k">ได้</td><td class="k">ได้ เช่น <code>/reports</code></td><td>ผ่าน root virtual directory ของตัวเอง</td></tr>
+              <tr><td class="kw">Virtual Directory</td><td>ไม่มี</td><td>ไม่ได้ · ใช้ของ Application</td><td class="k">ได้ เช่น <code>/reports/files</code></td><td class="k">ได้ · คนละไดรฟ์หรือคนละเครื่องก็ได้</td></tr>
+              <tr><td class="kw">Application Pool</td><td>ไม่มี</td><td>เป็นตัว pool เอง</td><td>ไม่โผล่เลย</td><td>ไม่เกี่ยว</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note" style="margin-top:10px">
+          ช่องที่เป็นคำตอบว่า <strong>“ไม่ได้”</strong> ของ Virtual Directory คือจุดที่คนพลาดบ่อยที่สุด
+          เอกสารระบุชัดว่า <em>“An application can have several virtual directories, and each one will be
+          served by the same AppDomain as the application to which they belong”</em>
+          ฉะนั้นการสร้าง Virtual Directory ไม่ได้ทำให้โค้ดไปแยกรันคนละ process
+        </p>
+
+        <div class="callout tip">
+          <span class="ttl">เกณฑ์ตัดสินใจ — ถามสามข้อนี้ตามลำดับ</span>
+          <p>
+            <strong>1 · ต้องการให้เรียกผ่านชื่อโฮสต์หรือ port ที่ต่างออกไปไหม</strong> —
+            ถ้าใช่ ต้องเป็น <em>Site</em> ใหม่ เพราะ binding ผูกกับ Site เท่านั้น
+          </p>
+          <p>
+            <strong>2 · ต้องการให้พังแยกจากกันไหม</strong> — ถ้าอยากให้แอปนี้ล่มแล้วอีกแอปไม่กระทบ
+            ต้องเป็น <em>Application</em> ที่ผูกกับ <em>Application Pool</em> คนละตัว
+            เพราะเอกสารระบุว่า pool <em>“isolates the application from applications in other application
+            pools on the server”</em> การแยกแค่โฟลเดอร์ไม่ให้ผลนี้
+          </p>
+          <p>
+            <strong>3 · แค่อยากให้ URL ชี้ไปโฟลเดอร์ที่อยู่คนละที่ใช่ไหม</strong> —
+            ถ้าใช่และไม่ต้องการแยก process ให้ใช้ <em>Virtual Directory</em> ซึ่งเบาที่สุด
+            เอกสารยกตัวอย่างกรณีที่ต้องการดึงไฟล์ภาพจากตำแหน่งอื่นเข้ามาโดยไม่ย้ายไฟล์
+          </p>
+          <p>
+            ตอบ “ไม่” ทั้งสามข้อ แปลว่าไม่ต้องสร้างหน่วยใหม่เลย ใช้โฟลเดอร์ย่อยธรรมดาก็พอ
+          </p>
+        </div>
+
         <h3>Binding — องค์ประกอบสามส่วนที่ต้องไม่ซ้ำกัน</h3>
         <p>
           Binding กำหนดว่า request ลักษณะใดจะเข้าสู่ site นี้ ประกอบด้วย <strong>IP : port : ชื่อโฮสต์</strong>
@@ -893,6 +1046,83 @@
 <span class="c">  %windir%\system32\inetsrv\config\</span>
 <span class="t">D:\apps\corp-web\web.config         ระดับ site — ตำแหน่งของกฎ rewrite</span>
 <span class="t">D:\apps\corp-web\sub\web.config     ระดับโฟลเดอร์ย่อย</span></pre>
+        </div>
+        <p class="note" style="margin-top:10px">
+          เอกสารระบุกฎนี้ไว้ตรง ๆ ว่า <em>“When an attribute is configured at more than one level,
+          the value at the lowest level is used”</em><span class="doc">MICROSOFT</span>
+          หากไม่ต้องการให้โฟลเดอร์ย่อยมี <code>web.config</code> ของตัวเองได้
+          ให้ตั้ง <code>allowSubDirConfig="false"</code> ที่ virtual directory
+        </p>
+
+        <h3>ทั้งสี่หน่วยหน้าตาเป็นอย่างไรในไฟล์จริง</h3>
+        <p>
+          ทุกอย่างที่อธิบายมาอยู่ในส่วน <code>&lt;sites&gt;</code> ของ <code>applicationHost.config</code>
+          จุดที่ต้องอ่านให้ออกคือเครื่องหมาย <code>/</code> เดี่ยว ๆ ในช่อง <code>path</code>
+          เอกสารระบุว่า <em>“When you see a single &quot;/&quot; in a path field, you know that this is a
+          root object”</em><span class="doc">MICROSOFT</span> — เป็น root application หรือ
+          root virtual directory ขึ้นกับว่าอยู่ในบล็อกใด
+        </p>
+        <div class="code">
+          <div class="code-head"><span>โครงที่ตรงกับรูปที่ 2</span><span class="where">%windir%\system32\inetsrv\config\applicationHost.config</span></div>
+<pre><span class="t">&lt;sites&gt;</span>
+<span class="t">  &lt;site name="corp-web" id="2"&gt;</span>
+<span class="t">    &lt;application path="/" applicationPool="CorpWebPool"&gt;</span>            <span class="c">← root application</span>
+<span class="t">      &lt;virtualDirectory path="/" physicalPath="D:\apps\corp-web" /&gt;</span>  <span class="c">← root virtual directory</span>
+<span class="t">    &lt;/application&gt;</span>
+<span class="t">    &lt;application path="/reports" applicationPool="ReportsPool"&gt;</span>      <span class="c">← แยก pool ได้ที่ชั้นนี้เท่านั้น</span>
+<span class="t">      &lt;virtualDirectory path="/" physicalPath="D:\apps\corp-reports" /&gt;</span>
+<span class="t">      &lt;virtualDirectory path="/files" physicalPath="E:\archive" /&gt;</span>    <span class="c">← ยังรันใน ReportsPool</span>
+<span class="t">    &lt;/application&gt;</span>
+<span class="t">    &lt;bindings&gt;</span>
+<span class="t">      &lt;binding protocol="https" bindingInformation="*:443:app.corp.local" /&gt;</span>
+<span class="t">    &lt;/bindings&gt;</span>
+<span class="t">  &lt;/site&gt;</span>
+<span class="t">&lt;/sites&gt;</span></pre>
+        </div>
+        <p class="note" style="margin-top:10px">
+          ทุก Site ต้องมีอย่างน้อยหนึ่ง application และทุก application ต้องมีอย่างน้อยหนึ่ง virtual directory
+          เอกสารระบุว่า <em>“each site must contain at least one application, which is named the root
+          application. And each application (including the root application) must contain at least one
+          virtual directory, which is named the root virtual directory”</em>
+          IIS Manager สร้างสองบรรทัดนี้ให้เองตอนสร้าง Site จึงมักไม่ทันสังเกต
+        </p>
+
+        <h3>เปิดดูหน่วยทั้งสี่บนเครื่องจริง</h3>
+        <p>
+          ก่อนแก้อะไร ให้ดูของจริงก่อนเสมอว่าตอนนี้มีอะไรอยู่บ้าง และ application ตัวไหนผูกกับ pool ตัวใด
+          สองคำสั่งสุดท้ายตอบคำถามที่ถามบ่อยที่สุดว่า “ทำไมแก้ pool แล้วไม่มีผล”
+        </p>
+        <div class="code">
+          <div class="code-head"><span>ไล่จากหน่วยใหญ่ไปหน่วยเล็ก</span><span class="where">PowerShell (Run as Administrator)</span></div>
+<pre><span class="t">$appcmd = "$env:windir\system32\inetsrv\appcmd.exe"</span>
+
+<span class="c"># แกน URL — ไล่ site แล้วเจาะเข้า application กับ virtual directory</span>
+<span class="t">&amp; $appcmd list site</span>
+<span class="t">&amp; $appcmd list app  /site.name:corp-web</span>
+<span class="t">&amp; $appcmd list vdir /app.name:"corp-web/reports"</span>
+
+<span class="c"># แกน process — pool ทั้งหมดบนเครื่อง</span>
+<span class="t">&amp; $appcmd list apppool</span>
+
+<span class="c"># จุดที่สองแกนมาบรรจบ — application ตัวไหนรันใน pool ตัวใด</span>
+<span class="t">Import-Module WebAdministration</span>
+<span class="t">Get-WebApplication | Select-Object path, applicationPool, PhysicalPath</span>
+
+<span class="c"># virtual directory ไม่มี pool เป็นของตัวเอง จึงไม่มีคอลัมน์ applicationPool ให้ดู</span>
+<span class="t">Get-WebVirtualDirectory -Site corp-web | Select-Object path, PhysicalPath</span></pre>
+        </div>
+
+        <div class="callout stop">
+          <span class="ttl">แก้ pool แล้วไม่มีผล มักเกิดจากสองกรณีนี้</span>
+          <p>
+            <strong>แก้ที่ Virtual Directory</strong> — มันไม่มี pool ของตัวเอง ค่าที่ตั้งไปจึงไม่มีที่ลง
+            ต้องเลื่อนขึ้นไปแก้ที่ Application ที่ครอบมันอยู่ (ดูจากคำสั่ง <code>list vdir</code> ว่ามันสังกัด app ใด)
+          </p>
+          <p>
+            <strong>แก้ที่ Site แต่ของจริงอยู่ที่ root application</strong> — ค่า pool ผูกกับ
+            <code>&lt;application path="/"&gt;</code> ไม่ได้ผูกกับ <code>&lt;site&gt;</code>
+            ใน IIS Manager คือปุ่ม <em>Basic Settings</em> ของ Site ซึ่งแก้ root application ให้จริง ๆ
+          </p>
         </div>
       </div>
     </section>
@@ -1884,6 +2114,113 @@ New-WebBinding -Name <span class="s">"corp-web"</span> -Protocol https -Port 443
       </div>
 
       <div class="col">
+        <h3>log แต่ละชั้นอยู่ที่ไหน</h3>
+        <p>
+          ก่อนวิเคราะห์ ต้องเปิดไฟล์ให้ถูกชั้นก่อน สามแถวแรกคือ log ที่ IIS เขียนเอง
+          ส่วนแถวสุดท้ายเป็นของ upstream ซึ่งอยู่นอกความรับผิดชอบของ IIS
+        </p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>ไฟล์</th><th>ตำแหน่งเริ่มต้น</th><th>บันทึกอะไร</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="kw">httperr</td>
+                <td class="k">%SystemRoot%\System32\LogFiles\HTTPERR</td>
+                <td>request ที่ถูกปฏิเสธตั้งแต่ชั้น HTTP.sys จึงไม่มีทางปรากฏใน IIS log · ไฟล์ตั้งชื่อเป็น <code>httperr1.log</code> ไล่ลำดับไป</td>
+              </tr>
+              <tr>
+                <td class="kw">IIS log</td>
+                <td class="k">%SystemDrive%\inetpub\logs\LogFiles</td>
+                <td>request ที่เดินทางถึง <code>w3wp.exe</code> แล้ว · แยกโฟลเดอร์ต่อหนึ่ง site ชื่อ <code>W3SVC&lt;id&gt;</code> ไฟล์ตั้งชื่อตามวันที่เป็น <code>exYYMMDD.log</code></td>
+              </tr>
+              <tr>
+                <td class="kw">FRT</td>
+                <td class="k">%SystemDrive%\inetpub\logs\FailedReqLogFiles</td>
+                <td>รายละเอียดทีละขั้นของ request ที่เข้าเงื่อนไขกฎที่ตั้งไว้ · เปิดใช้งานเองตามหัวข้อถัดไป</td>
+              </tr>
+              <tr>
+                <td class="kw">log ของ upstream</td>
+                <td class="k">catalina.out</td>
+                <td>request ที่ถูกส่งต่อออกไปแล้ว · อยู่นอกขอบเขตของ IIS ดูส่วนที่ 11</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note" style="margin-top:10px">
+          ตำแหน่งของ <code>httperr</code> เปลี่ยนได้ที่ registry ค่า <code>ErrorLoggingDir</code>
+          ใต้ <code>HKLM\System\CurrentControlSet\Services\HTTP\Parameters</code>
+          เอกสารระบุว่าหากไม่กำหนดไว้ ค่าเริ่มต้นคือ <code>%SystemRoot%\System32\LogFiles</code>
+          แล้ว HTTP Server API จะสร้างโฟลเดอร์ย่อยชื่อ <code>HTTPERR</code> ให้เอง<span class="doc">MICROSOFT</span>
+          การแก้ค่านี้ต้องรีสตาร์ท driver ด้วย <code>net stop http</code> แล้ว <code>net start http</code>
+          จึงจะมีผล
+        </p>
+
+        <h3>อ่าน field ไหนใน IIS log</h3>
+        <p>
+          รูปแบบ W3C ที่ IIS ใช้เป็นค่าเริ่มต้นเลือกได้ว่าจะบันทึก field ใดบ้าง
+          ห้า field นี้ตอบคำถามได้เกือบทุกกรณีที่เจอในระบบแบบนี้ เวลาในไฟล์เป็น UTC เสมอ
+        </p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>field</th><th>นิยามตามเอกสาร</th><th>ใช้ตอบคำถามว่า</th></tr></thead>
+            <tbody>
+              <tr><td class="k">cs-uri-stem</td><td><em>“the Universal Resource Identifier, or target, of the action”</em></td><td>กฎ rewrite ทำงานหรือยัง — ค่าที่เห็นคือ path หลังถูกเขียนใหม่แล้ว</td></tr>
+              <tr><td class="k">sc-status</td><td><em>“the HTTP or FTP status code”</em></td><td>ผลลัพธ์หยาบ ๆ ว่าสำเร็จหรือไม่</td></tr>
+              <tr><td class="k">sc-substatus</td><td><em>“the HTTP or FTP substatus code”</em></td><td><strong>สาเหตุที่แท้จริง</strong> ดูตารางถัดไป</td></tr>
+              <tr><td class="k">sc-win32-status</td><td><em>“the Windows status code”</em></td><td>สาเหตุระดับระบบปฏิบัติการ เช่นปัญหาสิทธิ์ไฟล์</td></tr>
+              <tr><td class="k">time-taken</td><td><em>“the length of time that the action took in milliseconds”</em></td><td>ช้าที่ IIS เองหรือช้าเพราะรอ upstream</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="code">
+          <div class="code-head"><span>กรอง request ที่ไม่ใช่ 200 ออกมาดูเฉพาะ field ที่ต้องการ</span><span class="where">PowerShell</span></div>
+<pre><span class="c"># หาโฟลเดอร์ log ของ site ที่ต้องการก่อน — ตัวเลขท้ายคือ site id</span>
+<span class="t">Get-Website corp-web | Select-Object Name, Id</span>
+<span class="t">$log = "$env:SystemDrive\inetpub\logs\LogFiles\W3SVC2"</span>
+
+<span class="c"># ไฟล์ล่าสุด แล้วดูเฉพาะบรรทัดที่ไม่ใช่ 200</span>
+<span class="t">$f = Get-ChildItem $log -Filter *.log | Sort-Object LastWriteTime | Select-Object -Last 1</span>
+<span class="t">Get-Content $f.FullName | Select-String -NotMatch ' 200 0 0 ' | Select-Object -Last 20</span>
+
+<span class="c"># request ที่ช้ากว่า 3 วินาที — คอลัมน์สุดท้ายคือ time-taken หน่วยเป็นมิลลิวินาที</span>
+<span class="t">Get-Content $f.FullName |</span>
+<span class="t">  Where-Object { $_ -notmatch '^#' -and [int]($_ -split ' ')[-1] -gt 3000 }</span></pre>
+        </div>
+
+        <h3>substatus บอกสาเหตุที่แท้จริง</h3>
+        <p>
+          <code>404</code> เฉย ๆ บอกได้แค่ว่าไม่เจอ แต่ <code>404.3</code> กับ <code>404.13</code>
+          คนละสาเหตุและคนละวิธีแก้โดยสิ้นเชิง ตารางนี้คัดเฉพาะรหัสที่เกิดได้จริงกับสถาปัตยกรรมในเอกสารนี้
+          นิยามทุกบรรทัดยกมาจากเอกสารของ Microsoft<span class="doc">MICROSOFT</span>
+        </p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>รหัส</th><th>นิยามตามเอกสาร</th><th>ในระบบนี้มักเกิดจาก</th></tr></thead>
+            <tbody>
+              <tr><td class="k">401.3</td><td><em>“Unauthorized due to ACL on resource”</em> — ปัญหาสิทธิ์ของ NTFS</td><td>บัญชี <code>IIS AppPool\CorpWebPool</code> ยังไม่มีสิทธิ์อ่านโฟลเดอร์ (ส่วนที่ 05)</td></tr>
+              <tr><td class="k">403.14</td><td><em>“Directory listing denied”</em> — เซิร์ฟเวอร์ไม่ได้ตั้งให้แสดงรายการไฟล์ และไม่มี default document</td><td>ลืมวาง <code>index.html</code> ไว้ที่รากของ physical path</td></tr>
+              <tr><td class="k">404.3</td><td><em>“MIME type restriction”</em> — <em>“The current MIME mapping for the requested extension type is invalid or isn't configured”</em></td><td>นามสกุลไฟล์ยังไม่ได้ประกาศใน <code>staticContent</code> (ส่วนที่ 06)</td></tr>
+              <tr><td class="k">404.4</td><td><em>“No handler configured”</em> — นามสกุลของ URL ที่ขอไม่มี handler รองรับ</td><td>กฎ rewrite ไม่จับคู่ แล้ว request ตกไปถึง handler ที่ไม่มีอยู่</td></tr>
+              <tr><td class="k">404.13</td><td><em>“Content length too large”</em> — ค่าใน header <code>Content-Length</code> เกินขีดจำกัดของเซิร์ฟเวอร์</td><td>อัปโหลดไฟล์ใหญ่ผ่าน proxy โดยไม่ได้ขยาย <code>maxAllowedContentLength</code></td></tr>
+              <tr><td class="k">500.19</td><td><em>“Configuration data is invalid”</em> — ปัญหาใน <code>applicationHost.config</code> หรือ <code>web.config</code></td><td>XML ของ <code>web.config</code> ผิดรูป หรือประกาศ section ที่ module ยังไม่ได้ติดตั้ง</td></tr>
+              <tr><td class="k">500.50</td><td><em>“A rewrite error occurred during RQ_BEGIN_REQUEST notification handling”</em> — ผิดที่ configuration หรือที่การทำงานของกฎ inbound</td><td>เขียนกฎ rewrite ผิดรูป เช่น pattern หรือ regex ไม่ถูกต้อง (ส่วนที่ 06)</td></tr>
+              <tr><td class="k">502.3</td><td><em>“Bad Gateway: Forwarder Connection Error (ARR)”</em></td><td>ต่อไปยัง upstream ไม่ได้ · upstream ไม่ได้รันอยู่ หรือรับฟังคนละ port</td></tr>
+              <tr><td class="k">502.4</td><td><em>“Bad Gateway: No Server (ARR)”</em></td><td>ARR หาปลายทางที่จะส่งต่อไม่เจอ · มักเกิดตอนตั้ง server farm ไว้แต่ไม่มีสมาชิกที่ใช้งานได้</td></tr>
+              <tr><td class="k">503.0</td><td><em>“Application pool unavailable”</em> — request ถูกส่งไปยัง pool ที่หยุดหรือถูกปิดใช้งาน</td><td>pool ถูกหยุดไป หรือถูกปิดอัตโนมัติจาก rapid fail protection · ดู Event Log ประกอบ</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout stop">
+          <span class="ttl">401 ในเบราว์เซอร์กับใน log ไม่เท่ากัน</span>
+          <p>
+            เอกสารระบุไว้ตรง ๆ ว่ารหัสย่อยของ <code>401</code> นั้น
+            <em>“are displayed in the client browser but aren't displayed in the IIS log”</em><span class="doc">MICROSOFT</span>
+            ฉะนั้นถ้าเจอ <code>401</code> ใน log แล้วหา substatus ไม่พบ ไม่ใช่ว่า log เสีย
+            ให้ไปเปิด Failed Request Tracing ตามหัวข้อถัดไปแทน
+          </p>
+        </div>
+
         <h3>อาการที่พบบ่อยและจุดที่ควรตรวจสอบก่อน</h3>
         <div class="tbl">
           <table>
@@ -3368,6 +3705,38 @@ service.bat install MyService</pre>
           </table>
         </div>
 
+        <div class="tbl">
+          <table class="reftbl">
+            <thead><tr><th>#</th><th>เรื่อง / แหล่ง</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="k">37</td>
+                <td>
+                  <span class="ref-t">Understanding Sites, Applications, and Virtual Directories on IIS</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">ลำดับชั้น site &rarr; application &rarr; virtual directory, นิยาม root application และ root virtual directory, ข้อความว่า virtual directory ถูกให้บริการโดย AppDomain เดียวกับ application ที่ครอบอยู่ และกฎว่าค่าที่ระดับล่างสุดมีผลเหนือกว่า</span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/iis/get-started/planning-your-iis-architecture/understanding-sites-applications-and-virtual-directories-on-iis" target="_blank" rel="noopener">learn.microsoft.com/en-us/iis/get-started/planning-your-iis-architecture/understanding-sites-applications-and-virtual-directories-on-iis</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">38</td>
+                <td>
+                  <span class="ref-t">netsh http (Windows Server)</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">คำสั่ง <code>show servicestate</code> ที่แสดงสถานะของ request queue, <code>show urlacl</code> และ <code>show sslcert</code></span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/windows-server/networking/technologies/netsh/netsh-http" target="_blank" rel="noopener">learn.microsoft.com/en-us/windows-server/networking/technologies/netsh/netsh-http</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">39</td>
+                <td>
+                  <span class="ref-t">Getting Started with AppCmd.exe</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">ตำแหน่ง <code>%windir%\system32\inetsrv</code> และคำสั่ง <code>list wp</code> ที่จับคู่ PID ของ w3wp.exe กับ application pool รวมถึง <code>list requests</code></span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/iis/get-started/getting-started-with-iis/getting-started-with-appcmdexe" target="_blank" rel="noopener">learn.microsoft.com/en-us/iis/get-started/getting-started-with-iis/getting-started-with-appcmdexe</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
         <h3>Reverse proxy และ URL Rewrite</h3>
         <div class="tbl">
           <table class="reftbl">
@@ -3468,6 +3837,30 @@ service.bat install MyService</pre>
                   <span class="ref-t">Troubleshoot failed requests using tracing in IIS</span><span class="doc">MICROSOFT</span>
                   <span class="ref-d">หลักการเก็บ trace ไว้ในบัฟเฟอร์ ตำแหน่ง <code>FailedReqLogFiles\W3SVC&lt;id&gt;</code> และโครงสร้าง configuration</span>
                   <a class="ref-l" href="https://learn.microsoft.com/en-us/previous-versions/troubleshoot/iis/troubleshoot-failed-requests-using-tracing-in-iis-7" target="_blank" rel="noopener">learn.microsoft.com/en-us/previous-versions/troubleshoot/iis/troubleshoot-failed-requests-using-tracing-in-iis-7</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="tbl">
+          <table class="reftbl">
+            <thead><tr><th>#</th><th>เรื่อง / แหล่ง</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="k">40</td>
+                <td>
+                  <span class="ref-t">Configure Logging in IIS</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">ตำแหน่งเริ่มต้น <code>%SystemDrive%\inetpub\logs\LogFiles</code> และนิยามของ field <code>sc-status</code> <code>sc-substatus</code> <code>sc-win32-status</code> <code>time-taken</code></span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis" target="_blank" rel="noopener">learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="k">41</td>
+                <td>
+                  <span class="ref-t">Configuring HTTP Server API Error Logging</span><span class="doc">MICROSOFT</span>
+                  <span class="ref-d">ค่าเริ่มต้น <code>%SystemRoot%\System32\LogFiles</code> พร้อมโฟลเดอร์ย่อย <code>HTTPERR</code>, รูปแบบชื่อไฟล์ และค่า registry <code>ErrorLoggingDir</code></span>
+                  <a class="ref-l" href="https://learn.microsoft.com/en-us/windows/win32/http/configuring-http-server-api-error-logging" target="_blank" rel="noopener">learn.microsoft.com/en-us/windows/win32/http/configuring-http-server-api-error-logging</a>
                 </td>
               </tr>
             </tbody>
@@ -3721,7 +4114,7 @@ service.bat install MyService</pre>
       <div class="breakout">
         <figure>
           <div class="fig-frame kg-frame" id="kgFrame">
-            <svg viewBox="0 0 1040 980" role="img" aria-label="Knowledge Graph ของเอกสาร ประกอบด้วย 54 node และ 65 เส้นความสัมพันธ์ แบ่งเป็นสี่หมวดคือ IIS, Java, React และสถาปัตยกรรม ตรวจแล้วเชื่อมถึงกันทั้งหมดเป็น component เดียว">
+            <svg viewBox="0 0 1414 1333" role="img" aria-label="Knowledge Graph ของเอกสาร ประกอบด้วย 60 node และ 76 เส้นความสัมพันธ์ แบ่งเป็นสี่หมวดคือ IIS, Java, React และสถาปัตยกรรม ตรวจแล้วเชื่อมถึงกันทั้งหมดเป็น component เดียว">
               <defs>
                 <marker id="kgh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" class="hd"/>
@@ -3731,300 +4124,339 @@ service.bat install MyService</pre>
                 </marker>
               </defs>
               <g id="kgEdges">
-                <line class="kg-e flow-rel" data-s="winserver" data-o="iis" data-p="SHIPS_WITH" data-lx="876" data-ly="64" x1="901" y1="41" x2="913" y2="43" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="iis" data-o="site" data-p="HOSTS" data-lx="766" data-ly="62" x1="915" y1="51" x2="619" y2="74" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="iis" data-o="revproxy" data-p="ACTS_AS" data-lx="927" data-ly="163" x1="947" y1="69" x2="905" y2="264" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="iis" data-o="sameorigin" data-p="PROVIDES" data-lx="889" data-ly="117" x1="933" y1="69" x2="846" y2="163" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="browser" data-o="httpsys" data-p="REQUESTS" data-lx="426" data-ly="372" x1="485" y1="410" x2="370" y2="336" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="browser" data-o="dist" data-p="LOADS" data-lx="421" data-ly="541" x1="499" y1="452" x2="345" y2="628" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="httpsys" data-o="w3wp" data-p="QUEUES_TO" data-lx="282" data-ly="384" x1="319" y1="334" x2="248" y2="432" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="httpsys" data-o="httperr" data-p="LOGS_TO" data-lx="195" data-ly="426" x1="308" y1="334" x2="85" y2="517" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="w3svc" data-o="apphost" data-p="READS" data-lx="171" data-ly="314" x1="172" y1="508" x2="170" y2="123" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="w3svc" data-o="was" data-p="NOTIFIES" data-lx="297" data-ly="564" x1="210" y1="539" x2="382" y2="589" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="was" data-o="w3wp" data-p="SPAWNS" data-lx="326" data-ly="528" x1="393" y1="579" x2="261" y2="478" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="w3wp" data-o="apppool" data-p="BELONGS_TO" data-lx="161" data-ly="326" x1="219" y1="434" x2="104" y2="220" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="w3wp" data-o="urlrewrite" data-p="LOADS" data-lx="369" data-ly="370" x1="265" y1="434" x2="470" y2="309" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="w3wp" data-o="staticfile" data-p="LOADS" data-lx="161" data-ly="411" x1="197" y1="434" x2="128" y2="391" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="w3wp" data-o="iislog" data-p="WRITES" data-lx="233" data-ly="323" x1="231" y1="434" x2="236" y2="214" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="apppool" data-o="poolid" data-p="RUNS_AS" data-lx="205" data-ly="228" x1="172" y1="209" x2="232" y2="218" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="apphost" data-o="site" data-p="DEFINES" data-lx="375" data-ly="88" x1="274" y1="94" x2="541" y2="79" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="site" data-o="binding" data-p="HAS" data-lx="457" data-ly="64" x1="543" y1="73" x2="382" y2="56" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="site" data-o="application" data-p="CONTAINS" data-lx="469" data-ly="98" x1="543" y1="84" x2="421" y2="107" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="application" data-o="vdir" data-p="CONTAINS" data-lx="256" data-ly="62" x1="320" y1="98" x2="244" y2="55" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="application" data-o="apppool" data-p="ASSIGNED_TO" data-lx="225" data-ly="158" x1="297" y1="137" x2="170" y2="174" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="webconfig" data-o="site" data-p="CONFIGURES" data-lx="505" data-ly="67" x1="536" y1="54" x2="541" y2="56" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="webconfig" data-o="rule" data-p="CONTAINS" data-lx="459" data-ly="205" x1="491" y1="54" x2="410" y2="426" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="urlrewrite" data-o="rule" data-p="EVALUATES" data-lx="456" data-ly="367" x1="494" y1="307" x2="419" y2="426" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="arr" data-o="urlrewrite" data-p="REQUIRES" data-lx="559" data-ly="404" x1="602" y1="501" x2="517" y2="309" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="arr" data-o="tomcat" data-p="PROXIES_TO" data-lx="715" data-ly="584" x1="646" y1="543" x2="780" y2="623" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="spafallback" data-o="rule" data-p="IS_A" data-lx="241" data-ly="538" x1="116" y1="605" x2="362" y2="472" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="staticfile" data-o="dist" data-p="SERVES" data-lx="200" data-ly="499" x1="109" y1="389" x2="306" y2="628" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="staticfile" data-o="mimemap" data-p="CHECKS" data-lx="126" data-ly="412" x1="77" y1="389" x2="73" y2="394" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="binding" data-o="tls" data-p="TERMINATES" data-lx="458" data-ly="111" x1="377" y1="72" x2="513" y2="138" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="tls" data-o="sni" data-p="SELECTED_BY" data-lx="611" data-ly="105" x1="576" y1="136" x2="668" y2="55" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="revproxy" data-o="xff" data-p="ADDS" data-lx="805" data-ly="261" x1="832" y1="268" x2="788" y2="257" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="revproxy" data-o="loopback" data-p="TARGETS" data-lx="938" data-ly="239" x1="917" y1="266" x2="958" y2="214" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="xff" data-o="fwdheaders" data-p="READ_BY" data-lx="788" data-ly="334" x1="726" y1="256" x2="848" y2="409" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="frt" data-o="w3wp" data-p="TRACES" data-lx="206" data-ly="563" x1="187" y1="650" x2="226" y2="478" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="springboot" data-o="war" data-p="PACKAGED_AS" data-lx="716" data-ly="744" x1="706" y1="688" x2="725" y2="797" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="springboot" data-o="initializer" data-p="EXTENDS" data-lx="795" data-ly="847" x1="713" y1="688" x2="836" y2="925" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="fwdheaders" data-o="springboot" data-p="CONFIGURES" data-lx="784" data-ly="550" x1="852" y1="453" x2="718" y2="644" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="devtools" data-o="springboot" data-p="RESTARTS" data-lx="688" data-ly="793" x1="672" y1="927" x2="699" y2="690" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="war" data-o="webapps" data-p="DEPLOYED_TO" data-lx="844" data-ly="697" x1="749" y1="799" x2="938" y2="596" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="war" data-o="ctxpath" data-p="DERIVES" data-lx="637" data-ly="732" x1="707" y1="799" x2="570" y2="667" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="tomcat" data-o="webapps" data-p="SCANS" data-lx="889" data-ly="610" x1="859" y1="625" x2="915" y2="596" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="tomcat" data-o="autodeploy" data-p="ENABLES" data-lx="826" data-ly="718" x1="820" y1="667" x2="831" y2="766" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="tomcat" data-o="connector" data-p="LISTENS_ON" data-lx="911" data-ly="546" x1="838" y1="625" x2="955" y2="499" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="tomcat" data-o="jvm" data-p="RUNS_ON" data-lx="918" data-ly="807" x1="831" y1="667" x2="965" y2="881" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="tomcat" data-o="servlet" data-p="IMPLEMENTS" data-lx="911" data-ly="722" x1="844" y1="667" x2="939" y2="745" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="tomcat" data-o="catalina" data-p="WRITES" data-lx="874" data-ly="679" x1="871" y1="663" x2="897" y2="672" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="autodeploy" data-o="webapps" data-p="WATCHES" data-lx="905" data-ly="666" x1="845" y1="768" x2="946" y2="596" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="connector" data-o="loopback" data-p="BINDS" data-lx="976" data-ly="334" x1="976" y1="455" x2="976" y2="214" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="ctxpath" data-o="rule" data-p="MATCHED_BY" data-lx="475" data-ly="547" x1="530" y1="623" x2="422" y2="472" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="react" data-o="vite" data-p="BUILT_BY" data-lx="441" data-ly="867" x1="378" y1="808" x2="503" y2="923" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="react" data-o="router" data-p="ROUTED_BY" data-lx="216" data-ly="868" x1="319" y1="808" x2="116" y2="925" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="react" data-o="csr" data-p="RENDERS_VIA" data-lx="270" data-ly="868" x1="333" y1="808" x2="209" y2="925" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="vite" data-o="dist" data-p="OUTPUTS" data-lx="426" data-ly="798" x1="513" y1="925" x2="341" y2="674" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="vite" data-o="basepath" data-p="APPLIES" data-lx="468" data-ly="907" x1="491" y1="947" x2="465" y2="947" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="vite" data-o="devserver" data-p="SERVES_DEV" data-lx="529" data-ly="867" x1="528" y1="925" x2="530" y2="812" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="dist" data-o="hashed" data-p="CONTAINS" data-lx="235" data-ly="741" x1="304" y1="672" x2="168" y2="809" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="serverproxy" data-o="devserver" data-p="CONFIGURES" data-lx="410" data-ly="868" x1="322" y1="927" x2="496" y2="812" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="devserver" data-o="springboot" data-p="FORWARDS_TO" data-lx="616" data-ly="728" x1="560" y1="768" x2="669" y2="690" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="router" data-o="spafallback" data-p="NEEDS" data-lx="76" data-ly="787" x1="76" y1="927" x2="77" y2="649" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="decoupled" data-o="react" data-p="COMBINES" data-lx="508" data-ly="578" x1="645" y1="389" x2="372" y2="764" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="decoupled" data-o="springboot" data-p="COMBINES" data-lx="681" data-ly="517" x1="663" y1="389" x2="699" y2="644" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="decoupled" data-o="revproxy" data-p="REQUIRES" data-lx="780" data-ly="327" x1="722" y1="347" x2="832" y2="310" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="sameorigin" data-o="cors" data-p="ELIMINATES" data-lx="779" data-ly="334" x1="819" y1="207" x2="739" y2="459" marker-end="url(#kgh)"/>
-                <line class="kg-e flow-rel" data-s="devserver" data-o="cors" data-p="WOULD_HIT" data-lx="646" data-ly="614" x1="545" y1="768" x2="717" y2="505" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="winserver" data-o="iis" data-p="SHIPS_WITH" data-lx="1223" data-ly="102" x1="1194" y1="52" x2="1263" y2="61" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="iis" data-o="site" data-p="HOSTS" data-lx="1042" data-ly="85" x1="1263" y1="68" x2="821" y2="102" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="iis" data-o="revproxy" data-p="ACTS_AS" data-lx="1260" data-ly="228" x1="1292" y1="81" x2="1228" y2="374" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="iis" data-o="sameorigin" data-p="PROVIDES" data-lx="1208" data-ly="159" x1="1280" y1="81" x2="1137" y2="237" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="browser" data-o="httpsys" data-p="REQUESTS" data-lx="579" data-ly="506" x1="679" y1="570" x2="479" y2="442" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="browser" data-o="dist" data-p="LOADS" data-lx="574" data-ly="736" x1="690" y1="602" x2="457" y2="869" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="httpsys" data-o="w3wp" data-p="QUEUES_TO" data-lx="384" data-ly="522" x1="442" y1="442" x2="326" y2="603" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="httpsys" data-o="httperr" data-p="LOGS_TO" data-lx="266" data-ly="580" x1="434" y1="442" x2="97" y2="718" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="w3svc" data-o="apphost" data-p="READS" data-lx="233" data-ly="428" x1="235" y1="703" x2="231" y2="152" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="w3svc" data-o="was" data-p="NOTIFIES" data-lx="404" data-ly="768" x1="268" y1="728" x2="541" y2="807" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="was" data-o="w3wp" data-p="SPAWNS" data-lx="444" data-ly="718" x1="552" y1="800" x2="335" y2="635" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="w3wp" data-o="apppool" data-p="BELONGS_TO" data-lx="219" data-ly="444" x1="305" y1="603" x2="133" y2="284" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="w3wp" data-o="urlrewrite" data-p="LOADS" data-lx="502" data-ly="504" x1="340" y1="603" x2="664" y2="405" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="w3wp" data-o="staticfile" data-p="LOADS" data-lx="219" data-ly="560" x1="288" y1="603" x2="150" y2="516" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="w3wp" data-o="iislog" data-p="WRITES" data-lx="318" data-ly="440" x1="314" y1="603" x2="322" y2="276" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="apppool" data-o="poolid" data-p="RUNS_AS" data-lx="280" data-ly="292" x1="200" y1="280" x2="362" y2="304" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="apphost" data-o="site" data-p="DEFINES" data-lx="544" data-ly="119" x1="330" y1="130" x2="757" y2="107" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="site" data-o="binding" data-p="HAS" data-lx="626" data-ly="87" x1="757" y1="102" x2="496" y2="73" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="site" data-o="application" data-p="CONTAINS" data-lx="650" data-ly="131" x1="757" y1="111" x2="543" y2="151" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="application" data-o="vdir" data-p="CONTAINS" data-lx="381" data-ly="103" x1="458" y1="146" x2="304" y2="60" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="application" data-o="apppool" data-p="ASSIGNED_TO" data-lx="306" data-ly="215" x1="432" y1="178" x2="179" y2="252" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="webconfig" data-o="site" data-p="CONFIGURES" data-lx="732" data-ly="75" x1="705" y1="61" x2="759" y2="89" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="webconfig" data-o="rule" data-p="CONTAINS" data-lx="613" data-ly="328" x1="671" y1="61" x2="555" y2="595" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="urlrewrite" data-o="rule" data-p="EVALUATES" data-lx="620" data-ly="500" x1="680" y1="405" x2="561" y2="595" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="arr" data-o="urlrewrite" data-p="REQUIRES" data-lx="760" data-ly="550" x1="824" y1="694" x2="697" y2="405" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="arr" data-o="tomcat" data-p="PROXIES_TO" data-lx="972" data-ly="794" x1="858" y1="726" x2="1085" y2="863" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="spafallback" data-o="rule" data-p="IS_A" data-lx="328" data-ly="731" x1="135" y1="835" x2="521" y2="627" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="staticfile" data-o="dist" data-p="SERVES" data-lx="293" data-ly="685" x1="137" y1="516" x2="430" y2="869" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="staticfile" data-o="mimemap" data-p="CHECKS" data-lx="100" data-ly="534" x1="113" y1="516" x2="88" y2="551" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="binding" data-o="tls" data-p="TERMINATES" data-lx="603" data-ly="142" x1="488" y1="85" x2="719" y2="198" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="tls" data-o="sni" data-p="SELECTED_BY" data-lx="856" data-ly="138" x1="769" y1="198" x2="927" y2="60" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="revproxy" data-o="xff" data-p="ADDS" data-lx="1095" data-ly="355" x1="1166" y1="374" x2="1024" y2="336" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="revproxy" data-o="loopback" data-p="TARGETS" data-lx="1276" data-ly="325" x1="1238" y1="374" x2="1314" y2="276" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="xff" data-o="fwdheaders" data-p="READ_BY" data-lx="1072" data-ly="454" x1="978" y1="336" x2="1165" y2="572" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="frt" data-o="w3wp" data-p="TRACES" data-lx="281" data-ly="766" x1="252" y1="897" x2="310" y2="635" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="springboot" data-o="war" data-p="PACKAGED_AS" data-lx="973" data-ly="1011" x1="958" y1="923" x2="988" y2="1099" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="springboot" data-o="initializer" data-p="EXTENDS" data-lx="1043" data-ly="1077" x1="963" y1="923" x2="1145" y2="1273" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="fwdheaders" data-o="springboot" data-p="CONFIGURES" data-lx="1066" data-ly="748" x1="1167" y1="604" x2="966" y2="891" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="devtools" data-o="springboot" data-p="RESTARTS" data-lx="921" data-ly="1097" x1="913" y1="1273" x2="953" y2="923" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="war" data-o="webapps" data-p="DEPLOYED_TO" data-lx="1148" data-ly="947" x1="1006" y1="1099" x2="1290" y2="795" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="war" data-o="ctxpath" data-p="DERIVES" data-lx="867" data-ly="996" x1="974" y1="1099" x2="760" y2="892" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="tomcat" data-o="webapps" data-p="SCANS" data-lx="1208" data-ly="829" x1="1143" y1="863" x2="1274" y2="795" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="tomcat" data-o="autodeploy" data-p="ENABLES" data-lx="1122" data-ly="976" x1="1114" y1="895" x2="1131" y2="1057" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="tomcat" data-o="connector" data-p="LISTENS_ON" data-lx="1220" data-ly="763" x1="1127" y1="863" x2="1312" y2="663" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="tomcat" data-o="jvm" data-p="RUNS_ON" data-lx="1222" data-ly="1054" x1="1122" y1="895" x2="1321" y2="1213" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="tomcat" data-o="servlet" data-p="IMPLEMENTS" data-lx="1206" data-ly="971" x1="1132" y1="895" x2="1295" y2="1028" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="tomcat" data-o="catalina" data-p="WRITES" data-lx="1211" data-ly="911" x1="1160" y1="895" x2="1262" y2="928" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="autodeploy" data-o="webapps" data-p="WATCHES" data-lx="1209" data-ly="920" x1="1142" y1="1057" x2="1296" y2="795" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="connector" data-o="loopback" data-p="BINDS" data-lx="1327" data-ly="454" x1="1327" y1="631" x2="1327" y2="276" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="ctxpath" data-o="rule" data-p="MATCHED_BY" data-lx="647" data-ly="744" x1="731" y1="860" x2="563" y2="627" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="react" data-o="vite" data-p="BUILT_BY" data-lx="600" data-ly="1178" x1="500" y1="1086" x2="701" y2="1271" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="react" data-o="router" data-p="ROUTED_BY" data-lx="293" data-ly="1180" x1="455" y1="1086" x2="131" y2="1273" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="react" data-o="csr" data-p="RENDERS_VIA" data-lx="368" data-ly="1180" x1="466" y1="1086" x2="269" y2="1273" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="vite" data-o="dist" data-p="OUTPUTS" data-lx="580" data-ly="1086" x1="707" y1="1271" x2="454" y2="901" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="vite" data-o="basepath" data-p="APPLIES" data-lx="646" data-ly="1288" x1="686" y1="1287" x2="606" y2="1288" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="vite" data-o="devserver" data-p="SERVES_DEV" data-lx="720" data-ly="1180" x1="718" y1="1271" x2="721" y2="1089" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="dist" data-o="hashed" data-p="CONTAINS" data-lx="320" data-ly="1008" x1="427" y1="901" x2="213" y2="1116" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="serverproxy" data-o="devserver" data-p="CONFIGURES" data-lx="558" data-ly="1181" x1="418" y1="1273" x2="697" y2="1089" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="devserver" data-o="springboot" data-p="FORWARDS_TO" data-lx="838" data-ly="990" x1="744" y1="1057" x2="932" y2="923" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="router" data-o="spafallback" data-p="NEEDS" data-lx="104" data-ly="1070" x1="103" y1="1273" x2="105" y2="867" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="decoupled" data-o="react" data-p="COMBINES" data-lx="690" data-ly="785" x1="886" y1="516" x2="495" y2="1054" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="decoupled" data-o="springboot" data-p="COMBINES" data-lx="926" data-ly="704" x1="900" y1="516" x2="953" y2="891" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="decoupled" data-o="revproxy" data-p="REQUIRES" data-lx="1062" data-ly="445" x1="946" y1="484" x2="1177" y2="406" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="sameorigin" data-o="cors" data-p="ELIMINATES" data-lx="1059" data-ly="454" x1="1117" y1="269" x2="1001" y2="640" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="devserver" data-o="cors" data-p="WOULD_HIT" data-lx="858" data-ly="864" x1="732" y1="1057" x2="985" y2="672" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="iislog" data-o="substatus" data-p="RECORDS" data-lx="398" data-ly="634" x1="324" y1="276" x2="416" y2="1000" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="frt" data-o="substatus" data-p="REVEALS" data-lx="333" data-ly="964" x1="274" y1="929" x2="392" y2="1000" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="site" data-o="rootapp" data-p="REQUIRES" data-lx="670" data-ly="158" x1="757" y1="119" x2="583" y2="196" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="rootapp" data-o="application" data-p="IS_A" data-lx="558" data-ly="133" x1="528" y1="196" x2="506" y2="178" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="rootapp" data-o="rootvdir" data-p="HAS" data-lx="559" data-ly="289" x1="527" y1="228" x2="507" y2="244" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="rootvdir" data-o="vdir" data-p="IS_A" data-lx="381" data-ly="152" x1="471" y1="244" x2="291" y2="60" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="appcmd" data-o="w3wp" data-p="INSPECTS" data-lx="356" data-ly="496" x1="393" y1="390" x2="319" y2="603" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="appcmd" data-o="apppool" data-p="LISTS" data-lx="261" data-ly="321" x1="357" y1="358" x2="165" y2="284" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="w3svc" data-o="svchost" data-p="RUNS_IN" data-lx="390" data-ly="792" x1="268" y1="734" x2="512" y2="850" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="was" data-o="svchost" data-p="RUNS_IN" data-lx="500" data-ly="809" x1="564" y1="832" x2="555" y2="850" marker-end="url(#kgh)"/>
+                <line class="kg-e flow-rel" data-s="nethttp" data-o="httpsys" data-p="INSPECTS" data-lx="526" data-ly="455" x1="498" y1="390" x2="474" y2="410" marker-end="url(#kgh)"/>
               </g>
               <g id="kgNodes">
                 <g class="kg-node" data-id="httpsys" data-g="iis" data-label="HTTP.sys" data-secs="01" tabindex="0" role="button" aria-label="HTTP.sys · ส่วนที่ 01">
-                  <rect class="kg-n kg-iis" x="290" y="297" width="88" height="32" rx="7"/>
-                  <text class="kg-t" x="334" y="318" text-anchor="middle">HTTP.sys</text>
+                  <rect class="kg-n kg-iis" x="410" y="410" width="88" height="32" rx="7"/>
+                  <text class="kg-t" x="454" y="431" text-anchor="middle">HTTP.sys</text>
                 </g>
                 <g class="kg-node" data-id="w3svc" data-g="iis" data-label="W3SVC" data-secs="01" tabindex="0" role="button" aria-label="W3SVC · ส่วนที่ 01">
-                  <rect class="kg-n kg-iis" x="140" y="513" width="65" height="32" rx="7"/>
-                  <text class="kg-t" x="172" y="533" text-anchor="middle">W3SVC</text>
+                  <rect class="kg-n kg-iis" x="202" y="703" width="65" height="32" rx="7"/>
+                  <text class="kg-t" x="235" y="724" text-anchor="middle">W3SVC</text>
                 </g>
                 <g class="kg-node" data-id="was" data-g="iis" data-label="WAS" data-secs="01" tabindex="0" role="button" aria-label="WAS · ส่วนที่ 01">
-                  <rect class="kg-n kg-iis" x="389" y="584" width="64" height="32" rx="7"/>
-                  <text class="kg-t" x="421" y="605" text-anchor="middle">WAS</text>
+                  <rect class="kg-n kg-iis" x="541" y="800" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="573" y="821" text-anchor="middle">WAS</text>
                 </g>
                 <g class="kg-node" data-id="w3wp" data-g="iis" data-label="w3wp.exe" data-secs="01 · 02" tabindex="0" role="button" aria-label="w3wp.exe · ส่วนที่ 01 · 02">
-                  <rect class="kg-n kg-iis" x="187" y="439" width="88" height="32" rx="7"/>
-                  <text class="kg-t" x="231" y="459" text-anchor="middle">w3wp.exe</text>
+                  <rect class="kg-n kg-iis" x="270" y="603" width="88" height="32" rx="7"/>
+                  <text class="kg-t" x="314" y="624" text-anchor="middle">w3wp.exe</text>
                 </g>
                 <g class="kg-node" data-id="apppool" data-g="iis" data-label="Application Pool" data-secs="02 · 05" tabindex="0" role="button" aria-label="Application Pool · ส่วนที่ 02 · 05">
-                  <rect class="kg-n kg-iis" x="16" y="181" width="151" height="32" rx="7"/>
-                  <text class="kg-t" x="92" y="201" text-anchor="middle">Application Pool</text>
+                  <rect class="kg-n kg-iis" x="48" y="252" width="151" height="32" rx="7"/>
+                  <text class="kg-t" x="124" y="273" text-anchor="middle">Application Pool</text>
                 </g>
                 <g class="kg-node" data-id="site" data-g="iis" data-label="Site" data-secs="02 · 05" tabindex="0" role="button" aria-label="Site · ส่วนที่ 02 · 05">
-                  <rect class="kg-n kg-iis" x="548" y="61" width="64" height="32" rx="7"/>
-                  <text class="kg-t" x="580" y="81" text-anchor="middle">Site</text>
+                  <rect class="kg-n kg-iis" x="757" y="89" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="789" y="110" text-anchor="middle">Site</text>
                 </g>
                 <g class="kg-node" data-id="application" data-g="iis" data-label="Application" data-secs="02" tabindex="0" role="button" aria-label="Application · ส่วนที่ 02">
-                  <rect class="kg-n kg-iis" x="302" y="103" width="112" height="32" rx="7"/>
-                  <text class="kg-t" x="358" y="123" text-anchor="middle">Application</text>
+                  <rect class="kg-n kg-iis" x="431" y="146" width="112" height="32" rx="7"/>
+                  <text class="kg-t" x="487" y="167" text-anchor="middle">Application</text>
                 </g>
                 <g class="kg-node" data-id="vdir" data-g="iis" data-label="Virtual Directory" data-secs="02" tabindex="0" role="button" aria-label="Virtual Directory · ส่วนที่ 02">
-                  <rect class="kg-n kg-iis" x="123" y="16" width="159" height="32" rx="7"/>
-                  <text class="kg-t" x="202" y="37" text-anchor="middle">Virtual Directory</text>
+                  <rect class="kg-n kg-iis" x="196" y="28" width="159" height="32" rx="7"/>
+                  <text class="kg-t" x="275" y="49" text-anchor="middle">Virtual Directory</text>
                 </g>
                 <g class="kg-node" data-id="binding" data-g="iis" data-label="Binding" data-secs="02 · 08" tabindex="0" role="button" aria-label="Binding · ส่วนที่ 02 · 08">
-                  <rect class="kg-n kg-iis" x="294" y="35" width="81" height="32" rx="7"/>
-                  <text class="kg-t" x="334" y="55" text-anchor="middle">Binding</text>
+                  <rect class="kg-n kg-iis" x="414" y="53" width="81" height="32" rx="7"/>
+                  <text class="kg-t" x="455" y="74" text-anchor="middle">Binding</text>
                 </g>
                 <g class="kg-node" data-id="apphost" data-g="iis" data-label="applicationHost.config" data-secs="02" tabindex="0" role="button" aria-label="applicationHost.config · ส่วนที่ 02">
-                  <rect class="kg-n kg-iis" x="71" y="84" width="198" height="32" rx="7"/>
-                  <text class="kg-t" x="170" y="104" text-anchor="middle">applicationHost.config</text>
+                  <rect class="kg-n kg-iis" x="132" y="120" width="198" height="32" rx="7"/>
+                  <text class="kg-t" x="231" y="141" text-anchor="middle">applicationHost.config</text>
                 </g>
                 <g class="kg-node" data-id="webconfig" data-g="iis" data-label="web.config" data-secs="02 · 06" tabindex="0" role="button" aria-label="web.config · ส่วนที่ 02 · 06">
-                  <rect class="kg-n kg-iis" x="444" y="17" width="104" height="32" rx="7"/>
-                  <text class="kg-t" x="496" y="37" text-anchor="middle">web.config</text>
+                  <rect class="kg-n kg-iis" x="623" y="29" width="104" height="32" rx="7"/>
+                  <text class="kg-t" x="675" y="50" text-anchor="middle">web.config</text>
                 </g>
                 <g class="kg-node" data-id="urlrewrite" data-g="iis" data-label="URL Rewrite" data-secs="04 · 06" tabindex="0" role="button" aria-label="URL Rewrite · ส่วนที่ 04 · 06">
-                  <rect class="kg-n kg-iis" x="451" y="270" width="112" height="32" rx="7"/>
-                  <text class="kg-t" x="507" y="290" text-anchor="middle">URL Rewrite</text>
+                  <rect class="kg-n kg-iis" x="634" y="373" width="112" height="32" rx="7"/>
+                  <text class="kg-t" x="690" y="394" text-anchor="middle">URL Rewrite</text>
                 </g>
                 <g class="kg-node" data-id="arr" data-g="iis" data-label="ARR" data-secs="04" tabindex="0" role="button" aria-label="ARR · ส่วนที่ 04">
-                  <rect class="kg-n kg-iis" x="579" y="506" width="64" height="32" rx="7"/>
-                  <text class="kg-t" x="611" y="526" text-anchor="middle">ARR</text>
+                  <rect class="kg-n kg-iis" x="799" y="694" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="831" y="715" text-anchor="middle">ARR</text>
                 </g>
                 <g class="kg-node" data-id="rule" data-g="iis" data-label="rewrite rule" data-secs="06" tabindex="0" role="button" aria-label="rewrite rule · ส่วนที่ 06">
-                  <rect class="kg-n kg-iis" x="345" y="433" width="120" height="32" rx="7"/>
-                  <text class="kg-t" x="405" y="454" text-anchor="middle">rewrite rule</text>
+                  <rect class="kg-n kg-iis" x="491" y="595" width="120" height="32" rx="7"/>
+                  <text class="kg-t" x="551" y="616" text-anchor="middle">rewrite rule</text>
                 </g>
                 <g class="kg-node" data-id="spafallback" data-g="iis" data-label="SPA fallback" data-secs="03 · 06" tabindex="0" role="button" aria-label="SPA fallback · ส่วนที่ 03 · 06">
-                  <rect class="kg-n kg-iis" x="17" y="610" width="120" height="32" rx="7"/>
-                  <text class="kg-t" x="77" y="631" text-anchor="middle">SPA fallback</text>
+                  <rect class="kg-n kg-iis" x="45" y="835" width="120" height="32" rx="7"/>
+                  <text class="kg-t" x="105" y="856" text-anchor="middle">SPA fallback</text>
                 </g>
                 <g class="kg-node" data-id="staticfile" data-g="iis" data-label="StaticFileModule" data-secs="03" tabindex="0" role="button" aria-label="StaticFileModule · ส่วนที่ 03">
-                  <rect class="kg-n kg-iis" x="16" y="352" width="151" height="32" rx="7"/>
-                  <text class="kg-t" x="92" y="372" text-anchor="middle">StaticFileModule</text>
+                  <rect class="kg-n kg-iis" x="48" y="484" width="151" height="32" rx="7"/>
+                  <text class="kg-t" x="124" y="505" text-anchor="middle">StaticFileModule</text>
                 </g>
                 <g class="kg-node" data-id="mimemap" data-g="iis" data-label="mimeMap" data-secs="03" tabindex="0" role="button" aria-label="mimeMap · ส่วนที่ 03">
-                  <rect class="kg-n kg-iis" x="16" y="401" width="81" height="32" rx="7"/>
-                  <text class="kg-t" x="57" y="421" text-anchor="middle">mimeMap</text>
+                  <rect class="kg-n kg-iis" x="36" y="551" width="81" height="32" rx="7"/>
+                  <text class="kg-t" x="77" y="572" text-anchor="middle">mimeMap</text>
                 </g>
                 <g class="kg-node" data-id="xff" data-g="iis" data-label="X-Forwarded-For" data-secs="07" tabindex="0" role="button" aria-label="X-Forwarded-For · ส่วนที่ 07">
-                  <rect class="kg-n kg-iis" x="638" y="219" width="143" height="32" rx="7"/>
-                  <text class="kg-t" x="710" y="240" text-anchor="middle">X-Forwarded-For</text>
+                  <rect class="kg-n kg-iis" x="894" y="304" width="143" height="32" rx="7"/>
+                  <text class="kg-t" x="965" y="325" text-anchor="middle">X-Forwarded-For</text>
                 </g>
                 <g class="kg-node" data-id="tls" data-g="iis" data-label="TLS" data-secs="08" tabindex="0" role="button" aria-label="TLS · ส่วนที่ 08">
-                  <rect class="kg-n kg-iis" x="520" y="141" width="64" height="32" rx="7"/>
-                  <text class="kg-t" x="552" y="162" text-anchor="middle">TLS</text>
+                  <rect class="kg-n kg-iis" x="719" y="198" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="751" y="219" text-anchor="middle">TLS</text>
                 </g>
                 <g class="kg-node" data-id="sni" data-g="iis" data-label="SNI" data-secs="08" tabindex="0" role="button" aria-label="SNI · ส่วนที่ 08">
-                  <rect class="kg-n kg-iis" x="663" y="16" width="64" height="32" rx="7"/>
-                  <text class="kg-t" x="695" y="37" text-anchor="middle">SNI</text>
+                  <rect class="kg-n kg-iis" x="913" y="28" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="945" y="49" text-anchor="middle">SNI</text>
                 </g>
                 <g class="kg-node" data-id="iislog" data-g="iis" data-label="IIS log" data-secs="09" tabindex="0" role="button" aria-label="IIS log · ส่วนที่ 09">
-                  <rect class="kg-n kg-iis" x="196" y="175" width="81" height="32" rx="7"/>
-                  <text class="kg-t" x="236" y="196" text-anchor="middle">IIS log</text>
+                  <rect class="kg-n kg-iis" x="282" y="244" width="81" height="32" rx="7"/>
+                  <text class="kg-t" x="322" y="265" text-anchor="middle">IIS log</text>
                 </g>
                 <g class="kg-node" data-id="httperr" data-g="iis" data-label="httperr" data-secs="09" tabindex="0" role="button" aria-label="httperr · ส่วนที่ 09">
-                  <rect class="kg-n kg-iis" x="16" y="524" width="81" height="32" rx="7"/>
-                  <text class="kg-t" x="57" y="544" text-anchor="middle">httperr</text>
+                  <rect class="kg-n kg-iis" x="36" y="718" width="81" height="32" rx="7"/>
+                  <text class="kg-t" x="77" y="739" text-anchor="middle">httperr</text>
                 </g>
                 <g class="kg-node" data-id="frt" data-g="iis" data-label="Failed Request Tracing" data-secs="09" tabindex="0" role="button" aria-label="Failed Request Tracing · ส่วนที่ 09">
-                  <rect class="kg-n kg-iis" x="83" y="655" width="198" height="32" rx="7"/>
-                  <text class="kg-t" x="182" y="675" text-anchor="middle">Failed Request Tracing</text>
+                  <rect class="kg-n kg-iis" x="149" y="897" width="198" height="32" rx="7"/>
+                  <text class="kg-t" x="248" y="918" text-anchor="middle">Failed Request Tracing</text>
                 </g>
                 <g class="kg-node" data-id="poolid" data-g="iis" data-label="ApplicationPoolIdentity" data-secs="05" tabindex="0" role="button" aria-label="ApplicationPoolIdentity · ส่วนที่ 05">
-                  <rect class="kg-n kg-iis" x="239" y="219" width="205" height="32" rx="7"/>
-                  <text class="kg-t" x="341" y="240" text-anchor="middle">ApplicationPoolIdentity</text>
+                  <rect class="kg-n kg-iis" x="362" y="304" width="205" height="32" rx="7"/>
+                  <text class="kg-t" x="464" y="325" text-anchor="middle">ApplicationPoolIdentity</text>
                 </g>
                 <g class="kg-node" data-id="springboot" data-g="java" data-label="Spring Boot" data-secs="10" tabindex="0" role="button" aria-label="Spring Boot · ส่วนที่ 10">
-                  <rect class="kg-n kg-java" x="646" y="651" width="112" height="32" rx="7"/>
-                  <text class="kg-t" x="702" y="672" text-anchor="middle">Spring Boot</text>
+                  <rect class="kg-n kg-java" x="899" y="891" width="112" height="32" rx="7"/>
+                  <text class="kg-t" x="955" y="912" text-anchor="middle">Spring Boot</text>
                 </g>
                 <g class="kg-node" data-id="initializer" data-g="java" data-label="SpringBootServletInitializer" data-secs="10" tabindex="0" role="button" aria-label="SpringBootServletInitializer · ส่วนที่ 10">
-                  <rect class="kg-n kg-java" x="726" y="932" width="244" height="32" rx="7"/>
-                  <text class="kg-t" x="848" y="953" text-anchor="middle">SpringBootServletInitializer</text>
+                  <rect class="kg-n kg-java" x="1031" y="1273" width="244" height="32" rx="7"/>
+                  <text class="kg-t" x="1153" y="1294" text-anchor="middle">SpringBootServletInitializer</text>
                 </g>
                 <g class="kg-node" data-id="war" data-g="java" data-label="WAR" data-secs="10 · 11" tabindex="0" role="button" aria-label="WAR · ส่วนที่ 10 · 11">
-                  <rect class="kg-n kg-java" x="697" y="804" width="64" height="32" rx="7"/>
-                  <text class="kg-t" x="729" y="824" text-anchor="middle">WAR</text>
+                  <rect class="kg-n kg-java" x="959" y="1099" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="991" y="1120" text-anchor="middle">WAR</text>
                 </g>
                 <g class="kg-node" data-id="fwdheaders" data-g="java" data-label="forward-headers-strategy" data-secs="10" tabindex="0" role="button" aria-label="forward-headers-strategy · ส่วนที่ 10">
-                  <rect class="kg-n kg-java" x="760" y="416" width="213" height="32" rx="7"/>
-                  <text class="kg-t" x="866" y="436" text-anchor="middle">forward-headers-strategy</text>
+                  <rect class="kg-n kg-java" x="1072" y="572" width="213" height="32" rx="7"/>
+                  <text class="kg-t" x="1178" y="593" text-anchor="middle">forward-headers-strategy</text>
                 </g>
                 <g class="kg-node" data-id="tomcat" data-g="java" data-label="Tomcat 11" data-secs="11" tabindex="0" role="button" aria-label="Tomcat 11 · ส่วนที่ 11">
-                  <rect class="kg-n kg-java" x="770" y="630" width="96" height="32" rx="7"/>
-                  <text class="kg-t" x="818" y="650" text-anchor="middle">Tomcat 11</text>
+                  <rect class="kg-n kg-java" x="1064" y="863" width="96" height="32" rx="7"/>
+                  <text class="kg-t" x="1112" y="884" text-anchor="middle">Tomcat 11</text>
                 </g>
                 <g class="kg-node" data-id="connector" data-g="java" data-label="Connector" data-secs="11" tabindex="0" role="button" aria-label="Connector · ส่วนที่ 11">
-                  <rect class="kg-n kg-java" x="928" y="460" width="96" height="32" rx="7"/>
-                  <text class="kg-t" x="976" y="480" text-anchor="middle">Connector</text>
+                  <rect class="kg-n kg-java" x="1279" y="631" width="96" height="32" rx="7"/>
+                  <text class="kg-t" x="1327" y="652" text-anchor="middle">Connector</text>
                 </g>
                 <g class="kg-node" data-id="webapps" data-g="java" data-label="webapps" data-secs="11" tabindex="0" role="button" aria-label="webapps · ส่วนที่ 11">
-                  <rect class="kg-n kg-java" x="919" y="557" width="81" height="32" rx="7"/>
-                  <text class="kg-t" x="959" y="578" text-anchor="middle">webapps</text>
+                  <rect class="kg-n kg-java" x="1264" y="763" width="81" height="32" rx="7"/>
+                  <text class="kg-t" x="1305" y="784" text-anchor="middle">webapps</text>
                 </g>
                 <g class="kg-node" data-id="autodeploy" data-g="java" data-label="autoDeploy" data-secs="11" tabindex="0" role="button" aria-label="autoDeploy · ส่วนที่ 11">
-                  <rect class="kg-n kg-java" x="781" y="773" width="104" height="32" rx="7"/>
-                  <text class="kg-t" x="833" y="794" text-anchor="middle">autoDeploy</text>
+                  <rect class="kg-n kg-java" x="1081" y="1057" width="104" height="32" rx="7"/>
+                  <text class="kg-t" x="1133" y="1078" text-anchor="middle">autoDeploy</text>
                 </g>
                 <g class="kg-node" data-id="ctxpath" data-g="java" data-label="context path" data-secs="11" tabindex="0" role="button" aria-label="context path · ส่วนที่ 11">
-                  <rect class="kg-n kg-java" x="486" y="628" width="120" height="32" rx="7"/>
-                  <text class="kg-t" x="546" y="649" text-anchor="middle">context path</text>
+                  <rect class="kg-n kg-java" x="683" y="860" width="120" height="32" rx="7"/>
+                  <text class="kg-t" x="743" y="881" text-anchor="middle">context path</text>
                 </g>
                 <g class="kg-node" data-id="catalina" data-g="java" data-label="catalina.out" data-secs="11" tabindex="0" role="button" aria-label="catalina.out · ส่วนที่ 11">
-                  <rect class="kg-n kg-java" x="904" y="678" width="120" height="32" rx="7"/>
-                  <text class="kg-t" x="964" y="699" text-anchor="middle">catalina.out</text>
+                  <rect class="kg-n kg-java" x="1251" y="928" width="120" height="32" rx="7"/>
+                  <text class="kg-t" x="1311" y="949" text-anchor="middle">catalina.out</text>
                 </g>
                 <g class="kg-node" data-id="jvm" data-g="java" data-label="JVM" data-secs="11" tabindex="0" role="button" aria-label="JVM · ส่วนที่ 11">
-                  <rect class="kg-n kg-java" x="947" y="888" width="64" height="32" rx="7"/>
-                  <text class="kg-t" x="979" y="909" text-anchor="middle">JVM</text>
+                  <rect class="kg-n kg-java" x="1299" y="1213" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="1331" y="1234" text-anchor="middle">JVM</text>
                 </g>
                 <g class="kg-node" data-id="servlet" data-g="java" data-label="Servlet 6.1" data-secs="11" tabindex="0" role="button" aria-label="Servlet 6.1 · ส่วนที่ 11">
-                  <rect class="kg-n kg-java" x="911" y="752" width="112" height="32" rx="7"/>
-                  <text class="kg-t" x="967" y="773" text-anchor="middle">Servlet 6.1</text>
+                  <rect class="kg-n kg-java" x="1259" y="1028" width="112" height="32" rx="7"/>
+                  <text class="kg-t" x="1315" y="1049" text-anchor="middle">Servlet 6.1</text>
                 </g>
                 <g class="kg-node" data-id="devtools" data-g="java" data-label="DevTools" data-secs="11" tabindex="0" role="button" aria-label="DevTools · ส่วนที่ 11">
-                  <rect class="kg-n kg-java" x="626" y="932" width="88" height="32" rx="7"/>
-                  <text class="kg-t" x="670" y="952" text-anchor="middle">DevTools</text>
+                  <rect class="kg-n kg-java" x="867" y="1273" width="88" height="32" rx="7"/>
+                  <text class="kg-t" x="911" y="1294" text-anchor="middle">DevTools</text>
                 </g>
                 <g class="kg-node" data-id="react" data-g="react" data-label="React" data-secs="12" tabindex="0" role="button" aria-label="React · ส่วนที่ 12">
-                  <rect class="kg-n kg-react" x="323" y="771" width="65" height="32" rx="7"/>
-                  <text class="kg-t" x="355" y="792" text-anchor="middle">React</text>
+                  <rect class="kg-n kg-react" x="450" y="1054" width="65" height="32" rx="7"/>
+                  <text class="kg-t" x="483" y="1075" text-anchor="middle">React</text>
                 </g>
                 <g class="kg-node" data-id="vite" data-g="react" data-label="Vite" data-secs="12" tabindex="0" role="button" aria-label="Vite · ส่วนที่ 12">
-                  <rect class="kg-n kg-react" x="496" y="930" width="64" height="32" rx="7"/>
-                  <text class="kg-t" x="528" y="951" text-anchor="middle">Vite</text>
+                  <rect class="kg-n kg-react" x="686" y="1271" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="718" y="1292" text-anchor="middle">Vite</text>
                 </g>
                 <g class="kg-node" data-id="dist" data-g="react" data-label="dist" data-secs="12" tabindex="0" role="button" aria-label="dist · ส่วนที่ 12">
-                  <rect class="kg-n kg-react" x="293" y="635" width="64" height="32" rx="7"/>
-                  <text class="kg-t" x="325" y="655" text-anchor="middle">dist</text>
+                  <rect class="kg-n kg-react" x="411" y="869" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="443" y="890" text-anchor="middle">dist</text>
                 </g>
                 <g class="kg-node" data-id="basepath" data-g="react" data-label="base path" data-secs="12" tabindex="0" role="button" aria-label="base path · ส่วนที่ 12">
-                  <rect class="kg-n kg-react" x="362" y="932" width="96" height="32" rx="7"/>
-                  <text class="kg-t" x="410" y="953" text-anchor="middle">base path</text>
+                  <rect class="kg-n kg-react" x="510" y="1273" width="96" height="32" rx="7"/>
+                  <text class="kg-t" x="558" y="1294" text-anchor="middle">base path</text>
                 </g>
                 <g class="kg-node" data-id="hashed" data-g="react" data-label="hashed assets" data-secs="12" tabindex="0" role="button" aria-label="hashed assets · ส่วนที่ 12">
-                  <rect class="kg-n kg-react" x="81" y="816" width="127" height="32" rx="7"/>
-                  <text class="kg-t" x="145" y="837" text-anchor="middle">hashed assets</text>
+                  <rect class="kg-n kg-react" x="134" y="1116" width="127" height="32" rx="7"/>
+                  <text class="kg-t" x="197" y="1137" text-anchor="middle">hashed assets</text>
                 </g>
                 <g class="kg-node" data-id="devserver" data-g="react" data-label="Vite dev server" data-secs="12" tabindex="0" role="button" aria-label="Vite dev server · ส่วนที่ 12">
-                  <rect class="kg-n kg-react" x="459" y="773" width="143" height="32" rx="7"/>
-                  <text class="kg-t" x="531" y="793" text-anchor="middle">Vite dev server</text>
+                  <rect class="kg-n kg-react" x="650" y="1057" width="143" height="32" rx="7"/>
+                  <text class="kg-t" x="721" y="1078" text-anchor="middle">Vite dev server</text>
                 </g>
                 <g class="kg-node" data-id="serverproxy" data-g="react" data-label="server.proxy" data-secs="12" tabindex="0" role="button" aria-label="server.proxy · ส่วนที่ 12">
-                  <rect class="kg-n kg-react" x="230" y="932" width="120" height="32" rx="7"/>
-                  <text class="kg-t" x="290" y="953" text-anchor="middle">server.proxy</text>
+                  <rect class="kg-n kg-react" x="334" y="1273" width="120" height="32" rx="7"/>
+                  <text class="kg-t" x="394" y="1294" text-anchor="middle">server.proxy</text>
                 </g>
                 <g class="kg-node" data-id="router" data-g="react" data-label="React Router" data-secs="12" tabindex="0" role="button" aria-label="React Router · ส่วนที่ 12">
-                  <rect class="kg-n kg-react" x="16" y="932" width="120" height="32" rx="7"/>
-                  <text class="kg-t" x="76" y="953" text-anchor="middle">React Router</text>
+                  <rect class="kg-n kg-react" x="43" y="1273" width="120" height="32" rx="7"/>
+                  <text class="kg-t" x="103" y="1294" text-anchor="middle">React Router</text>
                 </g>
                 <g class="kg-node" data-id="csr" data-g="react" data-label="CSR" data-secs="12" tabindex="0" role="button" aria-label="CSR · ส่วนที่ 12">
-                  <rect class="kg-n kg-react" x="153" y="932" width="64" height="32" rx="7"/>
-                  <text class="kg-t" x="185" y="953" text-anchor="middle">CSR</text>
+                  <rect class="kg-n kg-react" x="220" y="1273" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="252" y="1294" text-anchor="middle">CSR</text>
                 </g>
                 <g class="kg-node" data-id="winserver" data-g="arch" data-label="Windows Server" data-secs="13" tabindex="0" role="button" aria-label="Windows Server · ส่วนที่ 13">
-                  <rect class="kg-n kg-arch" x="761" y="16" width="135" height="32" rx="7"/>
-                  <text class="kg-t" x="829" y="37" text-anchor="middle">Windows Server</text>
+                  <rect class="kg-n kg-arch" x="1060" y="28" width="135" height="32" rx="7"/>
+                  <text class="kg-t" x="1127" y="49" text-anchor="middle">Windows Server</text>
                 </g>
                 <g class="kg-node" data-id="iis" data-g="arch" data-label="IIS" data-secs="01 · 13" tabindex="0" role="button" aria-label="IIS · ส่วนที่ 01 · 13">
-                  <rect class="kg-n kg-arch" x="920" y="32" width="64" height="32" rx="7"/>
-                  <text class="kg-t" x="952" y="52" text-anchor="middle">IIS</text>
+                  <rect class="kg-n kg-arch" x="1263" y="49" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="1295" y="70" text-anchor="middle">IIS</text>
                 </g>
                 <g class="kg-node" data-id="revproxy" data-g="arch" data-label="Reverse proxy" data-secs="03 · 13" tabindex="0" role="button" aria-label="Reverse proxy · ส่วนที่ 03 · 13">
-                  <rect class="kg-n kg-arch" x="837" y="271" width="127" height="32" rx="7"/>
-                  <text class="kg-t" x="900" y="291" text-anchor="middle">Reverse proxy</text>
+                  <rect class="kg-n kg-arch" x="1162" y="374" width="127" height="32" rx="7"/>
+                  <text class="kg-t" x="1225" y="395" text-anchor="middle">Reverse proxy</text>
                 </g>
                 <g class="kg-node" data-id="decoupled" data-g="arch" data-label="Decoupled architecture" data-secs="13" tabindex="0" role="button" aria-label="Decoupled architecture · ส่วนที่ 13">
-                  <rect class="kg-n kg-arch" x="561" y="352" width="198" height="32" rx="7"/>
-                  <text class="kg-t" x="660" y="372" text-anchor="middle">Decoupled architecture</text>
+                  <rect class="kg-n kg-arch" x="799" y="484" width="198" height="32" rx="7"/>
+                  <text class="kg-t" x="898" y="505" text-anchor="middle">Decoupled architecture</text>
                 </g>
                 <g class="kg-node" data-id="sameorigin" data-g="arch" data-label="Same-origin" data-secs="13" tabindex="0" role="button" aria-label="Same-origin · ส่วนที่ 13">
-                  <rect class="kg-n kg-arch" x="769" y="170" width="112" height="32" rx="7"/>
-                  <text class="kg-t" x="825" y="191" text-anchor="middle">Same-origin</text>
+                  <rect class="kg-n kg-arch" x="1066" y="237" width="112" height="32" rx="7"/>
+                  <text class="kg-t" x="1122" y="258" text-anchor="middle">Same-origin</text>
                 </g>
                 <g class="kg-node" data-id="cors" data-g="arch" data-label="CORS" data-secs="12 · 13" tabindex="0" role="button" aria-label="CORS · ส่วนที่ 12 · 13">
-                  <rect class="kg-n kg-arch" x="700" y="466" width="64" height="32" rx="7"/>
-                  <text class="kg-t" x="732" y="487" text-anchor="middle">CORS</text>
+                  <rect class="kg-n kg-arch" x="964" y="640" width="64" height="32" rx="7"/>
+                  <text class="kg-t" x="996" y="661" text-anchor="middle">CORS</text>
                 </g>
                 <g class="kg-node" data-id="browser" data-g="arch" data-label="browser" data-secs="03 · 13" tabindex="0" role="button" aria-label="browser · ส่วนที่ 03 · 13">
-                  <rect class="kg-n kg-arch" x="477" y="415" width="81" height="32" rx="7"/>
-                  <text class="kg-t" x="518" y="436" text-anchor="middle">browser</text>
+                  <rect class="kg-n kg-arch" x="664" y="570" width="81" height="32" rx="7"/>
+                  <text class="kg-t" x="704" y="591" text-anchor="middle">browser</text>
                 </g>
                 <g class="kg-node" data-id="loopback" data-g="arch" data-label="127.0.0.1" data-secs="03 · 07" tabindex="0" role="button" aria-label="127.0.0.1 · ส่วนที่ 03 · 07">
-                  <rect class="kg-n kg-arch" x="928" y="175" width="96" height="32" rx="7"/>
-                  <text class="kg-t" x="976" y="196" text-anchor="middle">127.0.0.1</text>
+                  <rect class="kg-n kg-arch" x="1279" y="244" width="96" height="32" rx="7"/>
+                  <text class="kg-t" x="1327" y="265" text-anchor="middle">127.0.0.1</text>
+                </g>
+                <g class="kg-node" data-id="substatus" data-g="iis" data-label="sc-substatus" data-secs="09" tabindex="0" role="button" aria-label="sc-substatus · ส่วนที่ 09">
+                  <rect class="kg-n kg-iis" x="358" y="1000" width="119" height="32" rx="7"/>
+                  <text class="kg-t" x="418" y="1021" text-anchor="middle">sc-substatus</text>
+                </g>
+                <g class="kg-node" data-id="rootapp" data-g="iis" data-label="root application" data-secs="02" tabindex="0" role="button" aria-label="root application · ส่วนที่ 02">
+                  <rect class="kg-n kg-iis" x="472" y="196" width="150" height="32" rx="7"/>
+                  <text class="kg-t" x="547" y="217" text-anchor="middle">root application</text>
+                </g>
+                <g class="kg-node" data-id="rootvdir" data-g="iis" data-label="root virtual dir" data-secs="02" tabindex="0" role="button" aria-label="root virtual dir · ส่วนที่ 02">
+                  <rect class="kg-n kg-iis" x="412" y="244" width="150" height="32" rx="7"/>
+                  <text class="kg-t" x="487" y="265" text-anchor="middle">root virtual dir</text>
+                </g>
+                <g class="kg-node" data-id="appcmd" data-g="iis" data-label="appcmd.exe" data-secs="01 · 02" tabindex="0" role="button" aria-label="appcmd.exe · ส่วนที่ 01 · 02">
+                  <rect class="kg-n kg-iis" x="346" y="358" width="104" height="32" rx="7"/>
+                  <text class="kg-t" x="398" y="379" text-anchor="middle">appcmd.exe</text>
+                </g>
+                <g class="kg-node" data-id="svchost" data-g="iis" data-label="svchost.exe" data-secs="01" tabindex="0" role="button" aria-label="svchost.exe · ส่วนที่ 01">
+                  <rect class="kg-n kg-iis" x="490" y="850" width="112" height="32" rx="7"/>
+                  <text class="kg-t" x="546" y="871" text-anchor="middle">svchost.exe</text>
+                </g>
+                <g class="kg-node" data-id="nethttp" data-g="iis" data-label="netsh http" data-secs="01" tabindex="0" role="button" aria-label="netsh http · ส่วนที่ 01">
+                  <rect class="kg-n kg-iis" x="466" y="358" width="104" height="32" rx="7"/>
+                  <text class="kg-t" x="518" y="379" text-anchor="middle">netsh http</text>
                 </g>
               </g>
               <g id="kgLab" aria-hidden="true"></g>
             </svg>
           </div>
-          <div class="kg-panel">
-            <div class="kg-p-head">
-              <span class="kg-p-title" id="kgTitle">ยังไม่ได้เลือก node</span>
-              <span class="kg-p-meta" id="kgMeta">54 node · 65 relationship</span>
+          <p class="kg-hint" id="kgHint">คลิกที่กล่องใดก็ได้เพื่อดูว่าสิ่งนั้นคืออะไรและเชื่อมกับอะไรบ้าง · ชี้ที่เส้นเพื่ออ่านชื่อความสัมพันธ์</p>
+          <dialog class="kg-modal" id="kgModal" aria-labelledby="kgTitle">
+            <div class="kg-m-head">
+              <span>
+                <b class="kg-p-title" id="kgTitle"></b>
+                <span class="kg-p-meta" id="kgMeta"></span>
+              </span>
+              <button type="button" class="kg-close" id="kgClose" aria-label="ปิด">&#215;</button>
             </div>
             <div class="kg-p-body" id="kgBody"></div>
-          </div>
+          </dialog>
         </figure>
       </div>
     </section>
@@ -4192,6 +4624,7 @@ service.bat install MyService</pre>
   var elTitle = document.getElementById('kgTitle');
   var elMeta = document.getElementById('kgMeta');
   var elBody = document.getElementById('kgBody');
+  var modal = document.getElementById('kgModal');
 
   var byId = {};
   nodes.forEach(function (n) { byId[n.dataset.id] = n; });
@@ -4253,7 +4686,13 @@ service.bat install MyService</pre>
     sameorigin: 'สภาพที่ไฟล์หน้าเว็บและ API อยู่ใต้โดเมนเดียวกันในสายตาเบราว์เซอร์',
     cors: 'กติกาของเบราว์เซอร์ที่จำกัดการเรียกข้ามโดเมน สถาปัตยกรรมนี้เลี่ยงได้เพราะอยู่โดเมนเดียวกัน',
     browser: 'ฝั่งผู้ใช้ เป็นจุดเริ่มของทุก request ในกราฟนี้',
-    loopback: 'ที่อยู่ 127.0.0.1 ซึ่งวนกลับเข้าเครื่องตัวเอง ไม่ออกสู่เครือข่าย'
+    loopback: 'ที่อยู่ 127.0.0.1 ซึ่งวนกลับเข้าเครื่องตัวเอง ไม่ออกสู่เครือข่าย',
+    svchost: 'process ของ Windows ที่ทั้ง W3SVC และ WAS อาศัยอยู่ร่วมกันภายใต้บัญชี LocalSystem',
+    nethttp: 'ชุดคำสั่งที่เปิดดูชั้น HTTP.sys ได้โดยตรง ทั้งคิว request ใบรับรอง และ URL ที่จองไว้',
+    appcmd: 'เครื่องมือบรรทัดคำสั่งของ IIS อยู่ที่ %windir%\\system32\\inetsrv ใช้ดูและแก้ทุกหน่วยของ IIS ได้',
+    rootapp: 'application ตัวแรกของ Site ที่ path เป็น / ทุก Site ต้องมีเสมอ และเป็นที่ที่ค่า pool ของ Site ผูกอยู่จริง',
+    rootvdir: 'virtual directory ตัวแรกของ application ที่ path เป็น / เป็นตัวชี้ว่า application นั้นอยู่ที่โฟลเดอร์ใด',
+    substatus: 'รหัสย่อยที่ต่อท้าย status code เช่น 404.3 เป็นตัวที่บอกสาเหตุจริง ส่วน 404 เฉย ๆ บอกได้แค่ว่าไม่เจอ'
   };
 
   /* คำกริยาไทยของแต่ละ predicate อ่านจากฝั่ง subject ไปหาฝั่ง object */
@@ -4312,7 +4751,12 @@ service.bat install MyService</pre>
     TRACES: 'เก็บ trace ของ',
     WATCHES: 'เฝ้าดูความเปลี่ยนแปลงใน',
     WOULD_HIT: 'จะไปชนปัญหา',
-    WRITES: 'เขียนข้อมูลลง'
+    WRITES: 'เขียนข้อมูลลง',
+    RUNS_IN: 'ทำงานอยู่ภายใน',
+    INSPECTS: 'ใช้เปิดดูสถานะของ',
+    LISTS: 'ใช้ไล่ดูรายการของ',
+    RECORDS: 'บันทึกค่าของ',
+    REVEALS: 'เปิดให้เห็นค่าของ'
   };
 
   /* เส้นนี้เกี่ยวกันอย่างไร คีย์คือ subject>object */
@@ -4381,7 +4825,18 @@ service.bat install MyService</pre>
     'decoupled>springboot': 'backend เป็นคนละโปรเจกต์ build และ deploy แยกจาก frontend',
     'decoupled>revproxy': 'เมื่อแยกสองฝั่งออกจากกัน ต้องมีตัวกลางรวมให้อยู่โดเมนเดียว มิฉะนั้นเบราว์เซอร์จะมองเป็นคนละต้นทาง',
     'sameorigin>cors': 'อยู่โดเมนเดียวกันแล้วจึงไม่ต้องตั้งค่า CORS เลย และ cookie ของการเข้าสู่ระบบทำงานได้ตามปกติ',
-    'devserver>cors': 'ตอนพัฒนา ถ้าเรียก backend ข้าม port ตรง ๆ จะติด CORS จึงต้องให้ server.proxy ส่งต่อให้แทน'
+    'devserver>cors': 'ตอนพัฒนา ถ้าเรียก backend ข้าม port ตรง ๆ จะติด CORS จึงต้องให้ server.proxy ส่งต่อให้แทน',
+    'w3svc>svchost': 'W3SVC ไม่ได้เป็น process ของตัวเอง แต่อยู่ใน svchost.exe ร่วมกับ WAS การ restart ตัวหนึ่งจึงกระทบอีกตัวเสมอ',
+    'was>svchost': 'WAS อยู่ใน svchost.exe ตัวเดียวกับ W3SVC และใช้ binary ชุดเดียวกัน จึงเห็น PID ตรงกัน',
+    'nethttp>httpsys': 'HTTP.sys เป็น driver ระดับเคอร์เนล เปิดดูผ่าน IIS Manager ไม่ได้ ต้องใช้คำสั่งนี้เท่านั้น',
+    'appcmd>w3wp': 'คำสั่ง list wp บอกว่า w3wp.exe แต่ละตัวมี PID อะไรและทำงานให้ pool ไหน',
+    'appcmd>apppool': 'คำสั่ง list apppool ไล่ดู pool ทั้งหมดบนเครื่องได้ในบรรทัดเดียว',
+    'site>rootapp': 'ทุก Site ต้องมี application ที่ path เป็น / อย่างน้อยหนึ่งตัว IIS Manager สร้างให้เองตอนสร้าง Site',
+    'rootapp>application': 'root application ก็คือ application ธรรมดาตัวหนึ่ง ต่างแค่ path เป็น / จึงกำหนด pool ของตัวเองได้เหมือนกัน',
+    'rootapp>rootvdir': 'ทุก application ต้องมี virtual directory ที่ path เป็น / เป็นตัวชี้ physical path ของ application นั้น',
+    'rootvdir>vdir': 'root virtual directory เป็น virtual directory ตัวหนึ่ง ต่างแค่ path เป็น / และถูกสร้างให้อัตโนมัติ',
+    'iislog>substatus': 'field sc-substatus ใน IIS log คือตัวที่บอกสาเหตุจริง เช่น 404.3 คือ MIME type ไม่ได้ประกาศ',
+    'frt>substatus': 'รหัสย่อยของ 401 ไม่ถูกเขียนลง IIS log ต้องเปิด Failed Request Tracing จึงจะเห็น'
   };
 
   var sel = null;
@@ -4400,12 +4855,7 @@ service.bat install MyService</pre>
   function prop(k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; }
 
   function panel() {
-    if (!sel) {
-      elTitle.textContent = 'ยังไม่ได้เลือก node';
-      elMeta.textContent = nodes.length + ' สิ่ง · ' + edges.length + ' ความสัมพันธ์';
-      elBody.innerHTML = '';
-      return;
-    }
+    if (!sel) { return; }
 
     var n = byId[sel];
     var rs = relsOf(sel);
@@ -4463,12 +4913,26 @@ service.bat install MyService</pre>
     panel();
   }
 
-  function pick(id) { sel = (sel === id) ? null : id; render(); }
+  /* เปิดเป็น modal เพื่อให้อ่านได้ตรงที่ยืนอยู่ ไม่ต้องเลื่อนตามลงไปใต้ภาพ */
+  function open(id) {
+    sel = id;
+    render();
+    if (!modal.open) {
+      if (modal.showModal) { modal.showModal(); } else { modal.setAttribute('open', ''); }
+    }
+  }
+
+  document.getElementById('kgClose').addEventListener('click', function () { modal.close(); });
+
+  /* คลิกพื้นหลังนอกกล่อง modal ให้ปิด */
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) { modal.close(); }
+  });
 
   nodes.forEach(function (n) {
-    n.addEventListener('click', function (e) { e.stopPropagation(); pick(n.dataset.id); });
+    n.addEventListener('click', function (e) { e.stopPropagation(); open(n.dataset.id); });
     n.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(n.dataset.id); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(n.dataset.id); }
     });
   });
 
@@ -4512,7 +4976,7 @@ service.bat install MyService</pre>
     frame.addEventListener('click', function () { if (sel) { sel = null; render(); } });
   }
   window.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && sel) { sel = null; render(); }
+    if (e.key === 'Escape' && sel && !modal.open) { sel = null; render(); }
   });
 
   render();
