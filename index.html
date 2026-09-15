@@ -5068,8 +5068,6 @@ service.bat install MyService</pre>
 
   nodes.forEach(function (n) {
     n.addEventListener('click', function (e) { e.stopPropagation(); open(n.dataset.id); });
-    /* วงที่ใหญ่ที่สุดควรอยู่บนสุดตอนถูกชี้ ไม่งั้นวงรัศมีจะถูกวงอื่นทับ */
-    n.addEventListener('mouseenter', function () { gNodes.appendChild(n); });
     n.addEventListener('mouseenter', function () { hov = n.dataset.id; render(); });
     n.addEventListener('mouseleave', function () { hov = null; render(); });
     n.addEventListener('focus', function () { hov = n.dataset.id; render(); });
