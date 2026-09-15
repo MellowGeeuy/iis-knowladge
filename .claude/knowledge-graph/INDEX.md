@@ -11,3 +11,4 @@
 ---
 
 - [iis-log-layers-and-substatus](entities/iis-log-layers-and-substatus.md) — log ของ IIS อยู่คนละที่ตามชั้นที่ request ตาย · httperr กับ IIS log คนละไฟล์ และ substatus คือรหัสที่บอกสาเหตุจริง (by friday, 2026-09-15)
+- [kg-circle-nodes-over-boxes](entities/kg-circle-nodes-over-boxes.md) — เปลี่ยน node ของ KG จากกล่องเป็นวงกลมขนาดตาม degree ตามแนว Obsidian · ปลดล็อกปัญหาผังที่จัดให้เป็นระเบียบไม่ได้ (by friday, 2026-09-15)
