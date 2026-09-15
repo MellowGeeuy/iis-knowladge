@@ -31,7 +31,7 @@
     --stop:#9A5A4A; --stop-bg:#EEE1DC;
     --code-bg:#E4E0DA; --code-com:#8A9287; --code-key:#5B7856; --code-str:#607D7E;
     --radius:7px;
-    --text:760px; --wide:1000px; --side:264px;
+    --text:760px; --wide:1000px; --wide-open:1264px; --side:264px;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -87,6 +87,33 @@
     background: var(--surface-2); border-right: 1px solid var(--line);
     padding: 22px 0 32px; scrollbar-width: thin;
   }
+  .nav-toggle {
+    position: absolute; top: 17px; right: 13px; width: 27px; height: 27px;
+    display: grid; place-items: center; cursor: pointer;
+    border: 1px solid var(--line); border-radius: 7px;
+    background: var(--surface); color: var(--ink-faint); font-size: 13px; line-height: 1;
+  }
+  .nav-toggle:hover { color: var(--accent); border-color: var(--accent); }
+  .nav-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .nav-show {
+    display: none; gap: 7px; align-items: center; padding: 7px 13px 7px 10px; cursor: pointer;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--surface); color: var(--ink-soft);
+    font-family: "Source Code Pro", monospace; font-size: 12px;
+  }
+  .nav-show span { font-family: Kanit, Anuphan, sans-serif; }
+  .nav-show:hover { color: var(--accent); border-color: var(--accent); }
+  .nav-show:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .shell.nav-off { grid-template-columns: minmax(0, 1fr); --wide: var(--wide-open); }
+  .shell.nav-off > .sidebar { display: none; }
+  .shell.nav-off .nav-show { display: inline-flex; }
+  .shell.nav-off .menu-btn { display: none; }
+  .shell.nav-off .topbar {
+    display: block; position: sticky; top: 0; z-index: 20;
+    background: var(--paper); border-bottom: 1px solid var(--line);
+  }
+
   .mark { font-family: Kanit, Anuphan, sans-serif; font-weight: 600; font-size: 15px; padding-inline: 20px; display: block; }
   .mark span { color: var(--accent); }
   .side-sub {
@@ -117,8 +144,12 @@
   }
   .pagenav button[aria-current="true"] .num { color: var(--accent); }
 
-  /* ---------- แถบบนสำหรับจอแคบ ---------- */
+  /* ---------- แถบบน ---------- */
   .topbar { display: none; }
+  .topbar-in {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 10px 28px;
+  }
   .menu-btn {
     display: inline-flex; align-items: center; gap: 8px;
     font-family: Anuphan, sans-serif; font-size: 13.5px; color: var(--ink);
@@ -137,7 +168,10 @@
   .scrim { display: none; }
 
   @media (max-width: 900px) {
-    .shell { grid-template-columns: minmax(0, 1fr); }
+    .shell, .shell.nav-off { grid-template-columns: minmax(0, 1fr); }
+    .nav-toggle, .nav-show, .shell.nav-off .nav-show { display: none; }
+    .shell.nav-off > .sidebar { display: block; }
+    .shell.nav-off .menu-btn { display: inline-flex; }
     .sidebar {
       position: fixed; top: 0; bottom: 0; left: 0; width: 272px; height: 100dvh;
       z-index: 40; transform: translateX(-100%); transition: transform .22s ease;
@@ -153,10 +187,7 @@
       display: block; position: sticky; top: 0; z-index: 20;
       background: var(--paper); border-bottom: 1px solid var(--line);
     }
-    .topbar-in {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 12px; padding: 10px 20px;
-    }
+    .topbar-in { padding: 10px 20px; }
   }
 
   /* ---------- โครงหน้า ---------- */
@@ -397,7 +428,9 @@
   }
   .kg-p-title { font-weight: 600; font-family: "Source Code Pro", monospace; font-size: 13px; color: var(--ink); }
   .kg-p-meta { font-size: 11.5px; color: var(--ink-faint); font-family: "Source Code Pro", monospace; }
-  .kg-p-body { padding: 13px 15px; max-height: 42vh; overflow-y: auto; }
+  .kg-p-body { padding: 13px 15px; max-height: 46vh; overflow-y: auto; }
+  .kg-about { margin: 0 0 11px; font-size: 13px; line-height: 1.75; color: var(--ink-soft); max-width: 96ch; }
+  .kg-about b { color: var(--ink); font-weight: 600; }
   .kg-p-body:empty { display: none; }
   .kg-props { display: flex; flex-wrap: wrap; gap: 6px 8px; margin: 0 0 13px; }
   .kg-props > div {
@@ -410,14 +443,25 @@
   }
   .kg-props dd { margin: 0; font-size: 12.5px; font-weight: 600; color: var(--ink); }
 
-  .kg-rel { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 11px 24px; }
-  .kg-rel li { display: grid; grid-template-columns: 15px 1fr; gap: 3px 9px; align-items: baseline; }
-  .kg-dir { font-family: "Source Code Pro", monospace; font-size: 12.5px; color: var(--accent); }
-  .kg-trip { font-size: 12.5px; line-height: 1.55; }
-  .kg-pred { font-family: "Source Code Pro", monospace; color: var(--accent); }
-  .kg-a { color: var(--ink-faint); }
-  .kg-b { color: var(--ink); font-weight: 600; }
-  .kg-gloss { grid-column: 2; font-size: 11.5px; line-height: 1.5; color: var(--ink-soft); }
+  .kg-grp {
+    display: flex; align-items: center; gap: 8px; margin: 15px 0 9px;
+    font-size: 12px; font-weight: 600; color: var(--ink);
+  }
+  .kg-grp::after { content: ""; flex: 1; height: 1px; background: var(--line-soft); }
+  .kg-grp span {
+    font-family: "Source Code Pro", monospace; font-size: 10.5px; font-weight: 400;
+    color: var(--ink-faint); border: 1px solid var(--line); border-radius: 999px; padding: 1px 7px;
+  }
+  .kg-rel { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px 26px; }
+  .kg-rel li { align-self: start; }
+  .kg-line { margin: 0; font-size: 12.5px; line-height: 1.55; }
+  .kg-line b { color: var(--ink); font-weight: 600; }
+  .kg-vb { color: var(--accent); }
+  .kg-pred {
+    font-family: "Source Code Pro", monospace; font-size: 10px; letter-spacing: .04em;
+    color: var(--ink-faint); border: 1px solid var(--line-soft); border-radius: 4px; padding: 1px 5px;
+  }
+  .kg-gloss { margin: 3px 0 0; font-size: 11.5px; line-height: 1.6; color: var(--ink-soft); }
 
   .side-foot { margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--line); display: grid; gap: 7px; }
   .side-btn {
@@ -439,6 +483,7 @@
 
 <div class="shell">
   <aside class="sidebar" id="sidebar">
+    <button type="button" class="nav-toggle" id="navHide" aria-controls="sidebar" aria-expanded="true" aria-label="หุบสารบัญ" title="หุบสารบัญ">«</button>
     <span class="mark">เจาะโครงสร้าง <span>IIS</span></span>
     <span class="side-sub">13 ส่วน · 16 แผนภาพ</span>
     <nav class="pagenav" id="pagenav" aria-label="สารบัญ"></nav>
@@ -460,6 +505,7 @@
         <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="sidebar">
           <span class="bars" aria-hidden="true"><i></i></span> สารบัญ
         </button>
+        <button type="button" class="nav-show" id="navShow" aria-controls="sidebar" aria-expanded="false" title="เปิดสารบัญ">» <span>สารบัญ</span></button>
         <span class="counter" id="counter">หน้า 1 จาก 13</span>
       </div>
     </div>
@@ -4041,6 +4087,18 @@ service.bat install MyService</pre>
   scrim.addEventListener('click', closeMenu);
   window.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeMenu(); } });
 
+  var shell = document.querySelector('.shell');
+  var navHide = document.getElementById('navHide');
+  var navShow = document.getElementById('navShow');
+  function setNav(off) {
+    shell.classList.toggle('nav-off', off);
+    navHide.setAttribute('aria-expanded', String(!off));
+    navShow.setAttribute('aria-expanded', String(!off));
+    (off ? navShow : navHide).focus();
+  }
+  navHide.addEventListener('click', function () { setNav(true); });
+  navShow.addEventListener('click', function () { setNav(false); });
+
   function show(i, scroll) {
     if (i < 0 || i >= pages.length) return;
     current = i;
@@ -4127,8 +4185,66 @@ service.bat install MyService</pre>
 
   var GROUP = { iis: 'IIS', java: 'Java', react: 'React', arch: 'สถาปัตยกรรม' };
 
-  /* คำอ่านของ predicate อ่านจากฝั่ง subject ไปหาฝั่ง object */
-  var MEANS = {
+  /* คำอธิบายของแต่ละ node ถอดจาก iis-knowladge.md */
+  var ABOUT = {
+    httpsys: 'ตัวรับฟัง port 80 และ 443 จริง ทำงานอยู่ในเคอร์เนลของ Windows ไม่ใช่โปรแกรมที่เปิดปิดเองได้',
+    w3svc: 'บริการที่คอยตั้งค่าให้ HTTP.sys และแจ้ง WAS เมื่อมี request เข้าคิว',
+    was: 'บริการที่อ่านไฟล์ตั้งค่าแล้วสร้างหรือรีไซเคิล worker process',
+    w3wp: 'process ที่ประมวลผล request จริง หนึ่งตัวต่อหนึ่ง Application Pool',
+    apppool: 'ขอบเขตเชิง process แอปคนละ pool แยกหน่วยความจำและสิทธิ์ออกจากกัน',
+    site: 'หน่วยใหญ่สุดของ IIS มี binding และโฟลเดอร์รากเป็นของตัวเอง',
+    application: 'ขอบเขตภายใน Site ที่กำหนด Application Pool ของตัวเองได้',
+    vdir: 'การแมป URL ไปยังโฟลเดอร์ที่อยู่คนละที่ ใช้ pool ของ Application ที่ครอบอยู่',
+    binding: 'ชุด IP · port · ชื่อโฮสต์ ที่กำหนดว่า request แบบไหนเข้ามาที่ Site นี้ ทั้งสามค่ารวมกันต้องไม่ซ้ำกับ Site อื่น',
+    apphost: 'ไฟล์ตั้งค่าหลักของ IIS ทั้งเครื่อง Site ทุกตัวถูกประกาศไว้ที่นี่',
+    webconfig: 'ไฟล์ตั้งค่าระดับโฟลเดอร์ เดินทางไปพร้อมไฟล์เมื่อคัดลอก',
+    urlrewrite: 'module เสริมที่ทำให้เขียนกฎแปลง URL ได้ ต้องติดตั้งก่อน ARR',
+    arr: 'Application Request Routing — module ที่ทำให้ IIS ส่ง request ต่อไปเซิร์ฟเวอร์อื่นได้',
+    rule: 'กฎใน web.config ที่ตัดสินว่า request นั้นจะถูกตอบด้วยไฟล์จากดิสก์ หรือถูกส่งต่อไป upstream',
+    spafallback: 'กฎที่ส่ง index.html กลับไปเมื่อ path ที่ขอไม่ใช่ไฟล์จริง',
+    staticfile: 'module ที่อ่านไฟล์จากดิสก์แล้วส่งกลับไปตามเนื้อหาเดิมทุกไบต์ ไม่ผ่านการประมวลผล',
+    mimemap: 'รายการชนิดไฟล์ที่ IIS ยอมส่งออก นามสกุลที่ไม่ได้ประกาศไว้จะได้ 404.3',
+    xff: 'header ที่พา IP เดิมของผู้ใช้ไปให้ upstream เพราะ IP จริงหายเมื่อผ่าน proxy',
+    tls: 'การเข้ารหัสระหว่างเบราว์เซอร์กับเซิร์ฟเวอร์ ในระบบนี้สิ้นสุดที่ IIS',
+    sni: 'ความสามารถที่ทำให้หลาย Site ใช้ใบรับรองต่างกันบน port 443 เดียวกันได้',
+    iislog: 'log ของ request ที่เดินทางมาถึง w3wp.exe แล้วเท่านั้น',
+    httperr: 'ไฟล์ที่บันทึก request ซึ่งถูกปฏิเสธตั้งแต่ชั้น HTTP.sys จึงไม่ปรากฏใน IIS log',
+    frt: 'เครื่องมือของ IIS ที่เก็บรายละเอียดทีละขั้นของ request ที่ล้มเหลว ตาม status code ที่ตั้งกฎไว้',
+    poolid: 'บัญชีเสมือนที่ถูกสร้างพร้อม pool ใช้ชื่อรูปแบบ IIS AppPool\\ชื่อ pool',
+    springboot: 'framework ฝั่ง Java ที่เป็น backend ของระบบนี้ IIS ไม่รู้จักมันเลย เห็นเพียงปลายทาง HTTP ธรรมดา',
+    initializer: 'คลาสที่ต้องให้คลาสหลักสืบทอด เพื่อให้ WAR ถูกเรียกใช้งานได้ใน servlet container ที่ติดตั้งแยก',
+    war: 'ไฟล์แอปพลิเคชันของ Java ที่นำไปวางใน servlet container ที่ติดตั้งแยก',
+    fwdheaders: 'property ของ Spring Boot ที่สั่งให้นำ header ซึ่ง IIS ส่งมาใช้จริง ถ้าไม่ตั้งค่า header จะถูกละเลย',
+    tomcat: 'servlet container ที่ทำหน้าที่แบบเดียวกับ IIS แต่สำหรับโค้ด Java implement เทคโนโลยี Jakarta EE บางส่วน',
+    connector: 'ส่วนของ Tomcat ที่กำหนดว่าจะรับฟัง port ใดและที่อยู่ใด',
+    webapps: 'โฟลเดอร์ของ Tomcat ที่ใช้วางไฟล์ WAR',
+    autodeploy: 'แอตทริบิวต์ของ Host ที่เป็น true อยู่แล้วโดยค่าเริ่มต้น ทำให้ Tomcat deploy ไฟล์ WAR ใหม่ให้เองแบบพลวัต',
+    ctxpath: 'path นำหน้าที่ Tomcat ใช้แยกแต่ละแอป มาจากชื่อไฟล์ WAR โดยตรง',
+    catalina: 'ไฟล์ที่รับทุกอย่างที่โปรแกรมเขียนออกทางหน้าจอ รวมถึง error ที่ไม่ถูกดักจับ',
+    jvm: 'runtime ของ Java ที่ Tomcat รันอยู่บน Tomcat 11 ต้องใช้ Java 17 ขึ้นไป',
+    servlet: 'มาตรฐานของ Java สำหรับเขียนโปรแกรมที่ตอบ request ทาง HTTP Tomcat 11 implement เวอร์ชัน 6.1',
+    devtools: 'เครื่องมือตอนพัฒนาที่เฝ้าดู classpath แล้วรีสตาร์ท Spring Boot ให้เองเมื่อโค้ดเปลี่ยน',
+    react: 'library ฝั่ง frontend ที่เป็นหน้าเว็บของระบบนี้ ผลลัพธ์สุดท้ายเป็นไฟล์ static ล้วน',
+    vite: 'เครื่องมือ build ที่แปลงซอร์สโค้ด React เป็นไฟล์ที่นำขึ้นเซิร์ฟเวอร์ได้จริง',
+    dist: 'โฟลเดอร์ผลลัพธ์ของการ build ที่นำไป deploy บนแพลตฟอร์มใดก็ได้',
+    basepath: 'path นำหน้าที่ฝังอยู่ในลิงก์ของไฟล์ตั้งแต่ตอน build ต้องตรงกับตำแหน่งที่วางจริง',
+    hashed: 'ไฟล์ผลลัพธ์ที่ชื่อผูกกับเนื้อหา จึงเปลี่ยนชื่อทุกครั้งที่ build ใหม่',
+    devserver: 'เซิร์ฟเวอร์ชั่วคราวบนเครื่องผู้พัฒนา ไม่มีอยู่บนเซิร์ฟเวอร์จริง',
+    serverproxy: 'ค่าที่ใช้กำหนดกฎ proxy ให้ dev server ทำหน้าที่ส่งต่อ /api แทน IIS ตอนพัฒนา',
+    router: 'ตัวจัดการ client-side routing ของ React เปลี่ยนหน้าในเบราว์เซอร์เองโดยไม่โหลดใหม่',
+    csr: 'Client-side rendering — หน้าจอถูกประกอบในเบราว์เซอร์ ไม่ได้ประกอบมาจากเซิร์ฟเวอร์',
+    winserver: 'ระบบปฏิบัติการที่ IIS ติดตั้งอยู่ ไม่ต้องดาวน์โหลด IIS เพิ่มเพราะมากับตัวระบบ',
+    iis: 'web server ของ Windows ในระบบนี้ทำสองหน้าที่ คือส่งไฟล์จากดิสก์ และส่งต่อ request ไปยัง upstream',
+    revproxy: 'ตัวกลางที่รับ request แทนเซิร์ฟเวอร์จริงแล้วส่งต่อให้เบื้องหลัง ผู้ใช้เห็นแค่ปลายทางเดียว',
+    decoupled: 'การแยก frontend กับ backend เป็นคนละโปรเจกต์ที่ build และ deploy แยกกัน',
+    sameorigin: 'สภาพที่ไฟล์หน้าเว็บและ API อยู่ใต้โดเมนเดียวกันในสายตาเบราว์เซอร์',
+    cors: 'กติกาของเบราว์เซอร์ที่จำกัดการเรียกข้ามโดเมน สถาปัตยกรรมนี้เลี่ยงได้เพราะอยู่โดเมนเดียวกัน',
+    browser: 'ฝั่งผู้ใช้ เป็นจุดเริ่มของทุก request ในกราฟนี้',
+    loopback: 'ที่อยู่ 127.0.0.1 ซึ่งวนกลับเข้าเครื่องตัวเอง ไม่ออกสู่เครือข่าย'
+  };
+
+  /* คำกริยาไทยของแต่ละ predicate อ่านจากฝั่ง subject ไปหาฝั่ง object */
+  var VERB = {
     ACTS_AS: 'ทำหน้าที่เป็น',
     ADDS: 'เติม header ให้',
     APPLIES: 'ใส่ค่าให้',
@@ -4179,11 +4295,80 @@ service.bat install MyService</pre>
     SHIPS_WITH: 'มาพร้อมกับ',
     SPAWNS: 'สร้าง process ของ',
     TARGETS: 'ชี้ปลายทางไปที่',
-    TERMINATES: 'จบการเข้ารหัส',
+    TERMINATES: 'จบการเข้ารหัสที่',
     TRACES: 'เก็บ trace ของ',
     WATCHES: 'เฝ้าดูความเปลี่ยนแปลงใน',
     WOULD_HIT: 'จะไปชนปัญหา',
     WRITES: 'เขียนข้อมูลลง'
+  };
+
+  /* เส้นนี้เกี่ยวกันอย่างไร คีย์คือ subject>object */
+  var WHY = {
+    'winserver>iis': 'IIS เป็น role ที่มากับ Windows Server อยู่แล้ว ติดตั้งผ่าน Server Manager หรือ PowerShell ไม่ต้องดาวน์โหลดเพิ่ม',
+    'iis>site': 'Site คือหน่วยที่ IIS ใช้แยกเว็บแต่ละตัวออกจากกัน หนึ่งเครื่องมีได้หลาย Site',
+    'iis>revproxy': 'เมื่อกฎ rewrite สั่งให้ส่งต่อ IIS จะเปลี่ยนจากผู้ส่งไฟล์เป็นตัวกลางที่ยิง request ไปให้ upstream แล้วนำผลกลับมา',
+    'iis>sameorigin': 'เพราะทั้งไฟล์หน้าเว็บและ /api ออกมาจาก IIS ตัวเดียวกัน เบราว์เซอร์จึงเห็นเป็นโดเมนเดียว',
+    'browser>httpsys': 'request ทุกตัวเข้าที่ HTTP.sys ก่อนเสมอ เพราะมันคือตัวที่ถือ port 80 และ 443 อยู่จริง',
+    'browser>dist': 'ไฟล์ HTML · JS · CSS ที่เบราว์เซอร์โหลดไปแสดงผล คือไฟล์ที่วางอยู่ในโฟลเดอร์ dist บนดิสก์ของเซิร์ฟเวอร์',
+    'httpsys>w3wp': 'HTTP.sys ไม่ประมวลผลเอง แต่วาง request ลงคิวของ Application Pool ให้ w3wp.exe มารับไปทำต่อ',
+    'httpsys>httperr': 'request ที่ถูกปฏิเสธตั้งแต่ชั้นนี้ยังไม่ถึง w3wp.exe จึงไม่มีใน IIS log แต่ไปอยู่ใน httperr แทน',
+    'w3svc>apphost': 'W3SVC อ่านค่า site และ binding ทั้งหมดจากไฟล์นี้ แล้วนำไปตั้งค่าให้ HTTP.sys ว่าต้องรับฟัง port ใดบ้าง',
+    'w3svc>was': 'เมื่อมี request เข้าคิวแต่ยังไม่มี worker process รองรับ W3SVC จะแจ้ง WAS ให้จัดการ',
+    'was>w3wp': 'WAS เป็นผู้สร้างและรีไซเคิล worker process ตามค่าที่อ่านมาจากไฟล์ตั้งค่า',
+    'w3wp>apppool': 'หนึ่ง w3wp.exe ทำงานให้หนึ่ง Application Pool เท่านั้น การแยก pool จึงเท่ากับแยก process ออกจากกัน',
+    'w3wp>urlrewrite': 'กฎ rewrite ถูกประเมินภายใน w3wp.exe เพราะ module ถูกโหลดเข้าไปอยู่ในนั้น',
+    'w3wp>staticfile': 'module ที่ทำหน้าที่อ่านไฟล์จากดิสก์ ก็ถูกโหลดอยู่ใน w3wp.exe เช่นกัน',
+    'w3wp>iislog': 'เฉพาะ request ที่เดินทางมาถึง w3wp.exe เท่านั้นที่ถูกบันทึกลง IIS log',
+    'apppool>poolid': 'pool รันด้วยบัญชีเสมือนนี้ การให้สิทธิ์โฟลเดอร์จึงต้องให้กับ IIS AppPool\\ชื่อ pool ไม่ใช่ผู้ใช้ทั่วไป',
+    'apphost>site': 'Site ทุกตัวบนเครื่องถูกประกาศไว้ในไฟล์นี้ไฟล์เดียว',
+    'site>binding': 'binding คือสิ่งที่บอกว่า request แบบไหนควรเข้ามาที่ Site นี้ ถ้าไม่มี binding ก็ไม่มีทางเข้าถึงได้',
+    'site>application': 'Application คือขอบเขตย่อยใน Site ที่แยก Application Pool ของตัวเองได้',
+    'application>vdir': 'Virtual Directory ใช้ pool ของ Application ที่ครอบมันอยู่ ไม่มี pool เป็นของตัวเอง',
+    'application>apppool': 'จุดนี้คือที่ที่ตัดสินว่าโค้ดของ Application นี้จะไปรันอยู่ใน process ตัวไหน',
+    'webconfig>site': 'web.config วางอยู่ในโฟลเดอร์รากของ Site และเดินทางไปพร้อมไฟล์เมื่อคัดลอก การตั้งค่าจึงตามไปด้วย',
+    'webconfig>rule': 'กฎ rewrite ทั้งหมดเขียนอยู่ในไฟล์นี้ ทั้งกฎส่งต่อ /api และกฎ SPA fallback',
+    'urlrewrite>rule': 'module เป็นผู้ไล่ตรวจกฎทีละข้อตามลำดับ แล้วตัดสินว่า request นี้เข้าเงื่อนไขข้อใด',
+    'arr>urlrewrite': 'ต้องติดตั้ง URL Rewrite ก่อน ARR เสมอ เพราะ ARR ทำงานผ่านกฎของ URL Rewrite',
+    'arr>tomcat': 'ARR คือตัวที่ยิง request ออกไปที่ 127.0.0.1:8080 จริง ๆ ส่วน IIS ไม่รู้ว่าปลายทางเป็น Tomcat',
+    'spafallback>rule': 'SPA fallback เป็นกฎ rewrite ข้อหนึ่ง ไม่ใช่กลไกแยกต่างหาก',
+    'staticfile>dist': 'ไฟล์ที่ module นี้ส่งออกไป คือไฟล์ที่ Vite build ไว้ในโฟลเดอร์ dist',
+    'staticfile>mimemap': 'ก่อนส่งไฟล์ออก IIS ตรวจนามสกุลกับรายการนี้เสมอ นามสกุลที่ไม่ได้ประกาศไว้จะได้ 404.3',
+    'binding>tls': 'binding แบบ https คือจุดที่ผูกใบรับรอง การเข้ารหัสจึงสิ้นสุดที่ IIS ไม่ต่อไปถึง upstream',
+    'tls>sni': 'SNI ทำให้หลาย Site ใช้ใบรับรองคนละใบบน port 443 เดียวกันได้ เพราะเลือกใบตามชื่อโฮสต์ที่ขอเข้ามา',
+    'revproxy>xff': 'เมื่อผ่าน proxy แล้ว IP จริงของผู้ใช้จะหายไป proxy จึงต้องเติม header นี้เพื่อพาค่าเดิมไปด้วย',
+    'revproxy>loopback': 'ปลายทางที่ส่งต่อคือ 127.0.0.1 ไม่ใช่ IP ของเครือข่าย เพื่อไม่ให้ใครเรียก upstream ได้โดยตรง',
+    'xff>fwdheaders': 'ฝั่ง Spring Boot ต้องตั้งค่านี้ก่อน header ที่ IIS ส่งมาจึงจะถูกนำมาใช้ ถ้าไม่ตั้งจะถูกละเลยทั้งหมด',
+    'frt>w3wp': 'เครื่องมือนี้เก็บรายละเอียดทีละขั้นของ request ที่ผ่านเข้า w3wp.exe แล้วล้มเหลว',
+    'springboot>war': 'ต้องส่งมอบเป็น WAR ไม่ใช่ JAR เพราะจะนำไปวางใน Tomcat ที่ติดตั้งแยกไว้อยู่แล้ว',
+    'springboot>initializer': 'ให้คลาสหลักสืบทอดคลาสนี้ WAR จึงจะถูก servlet container ภายนอกเรียกใช้งานได้',
+    'fwdheaders>springboot': 'property นี้บอก Spring Boot ว่าให้เชื่อ header ที่ proxy ส่งมา เช่น IP เดิมและ scheme เดิมของผู้ใช้',
+    'devtools>springboot': 'ตอนพัฒนา DevTools เฝ้าดู classpath แล้วรีสตาร์ทแอปให้เองเมื่อโค้ดเปลี่ยน',
+    'war>webapps': 'การ deploy คือการคัดลอกไฟล์ WAR ไปวางในโฟลเดอร์นี้ ไม่มีขั้นตอนอื่น',
+    'war>ctxpath': 'ชื่อไฟล์ WAR กลายเป็น context path โดยตรง เปลี่ยนชื่อไฟล์เท่ากับเปลี่ยน URL',
+    'tomcat>webapps': 'Tomcat มองหาแอปที่ต้อง deploy จากโฟลเดอร์นี้',
+    'tomcat>autodeploy': 'ค่านี้เป็น true อยู่แล้วโดยค่าเริ่มต้น Tomcat จึง deploy ไฟล์ WAR ใหม่ให้เองโดยไม่ต้องสั่ง',
+    'tomcat>connector': 'Connector คือส่วนที่กำหนดว่า Tomcat จะรับฟัง port ใดและที่อยู่ใด',
+    'tomcat>jvm': 'Tomcat 11 ต้องการ Java 17 ขึ้นไป เป็นข้อจำกัดแบบตายตัวที่ข้ามไม่ได้',
+    'tomcat>servlet': 'Tomcat 11 implement Servlet 6.1 ตามชุดที่แพลตฟอร์ม Jakarta EE 11 กำหนด',
+    'tomcat>catalina': 'ทุกอย่างที่แอปเขียนออกทางหน้าจอ รวมถึง error ที่ไม่ถูกดักจับ ไปรวมอยู่ในไฟล์นี้',
+    'autodeploy>webapps': 'กลไกนี้เฝ้าดูโฟลเดอร์ webapps ถ้ามีไฟล์ WAR ใหม่วางลงไปก็ deploy ให้ทันที',
+    'connector>loopback': 'ผูกไว้ที่ 127.0.0.1 แทน 0.0.0.0 เพื่อไม่ให้ใครเรียก Tomcat ตรงจากเครือข่ายได้ ทุก request ต้องผ่าน IIS',
+    'ctxpath>rule': 'กฎ rewrite ฝั่ง IIS ต้องชี้ไปที่ context path เดียวกันนี้ ถ้าไม่ตรงจะได้ 404 กลับมาจาก Tomcat',
+    'react>vite': 'ซอร์สโค้ด React ต้องผ่าน build ก่อน จึงจะได้ไฟล์ที่ IIS ส่งออกได้',
+    'react>router': 'React Router เป็นตัวเปลี่ยนหน้าในเบราว์เซอร์เอง โดยไม่โหลดหน้าใหม่จากเซิร์ฟเวอร์',
+    'react>csr': 'หน้าจอถูกประกอบในเบราว์เซอร์ ไม่ได้ประกอบมาจากเซิร์ฟเวอร์ IIS จึงส่งเพียงไฟล์ static',
+    'vite>dist': 'สั่ง build แล้วผลลัพธ์ไปอยู่ที่โฟลเดอร์ dist ตามค่าเริ่มต้น',
+    'vite>basepath': 'ค่า base ถูกฝังลงในลิงก์ของไฟล์ตั้งแต่ตอน build ถ้าไม่ตรงกับตำแหน่งที่วางจริง ไฟล์จะโหลดไม่ขึ้น',
+    'vite>devserver': 'ตอนพัฒนา Vite เปิด dev server ของตัวเองขึ้นมา แทนการสั่ง build ใหม่ทุกครั้ง',
+    'dist>hashed': 'ชื่อไฟล์ในนี้ผูกกับเนื้อหา จึงเปลี่ยนทุกครั้งที่ build ใหม่ การคัดลอกขึ้นเซิร์ฟเวอร์ต้องล้างของเก่าออกด้วย',
+    'serverproxy>devserver': 'ค่านี้กำหนดกฎ proxy ให้ dev server ส่งต่อ /api ไปหา backend แทนที่จะตอบเอง',
+    'devserver>springboot': 'ตอนพัฒนาไม่มี IIS คอยส่งต่อ dev server จึงรับหน้าที่ส่ง /api ไปหา Spring Boot แทน',
+    'router>spafallback': 'ถ้าไม่มีกฎนี้ การ refresh ที่ /orders/1024 จะได้ 404 เพราะไม่มีไฟล์นั้นอยู่บนดิสก์จริง',
+    'decoupled>react': 'frontend เป็นคนละโปรเจกต์ build และ deploy แยกจาก backend',
+    'decoupled>springboot': 'backend เป็นคนละโปรเจกต์ build และ deploy แยกจาก frontend',
+    'decoupled>revproxy': 'เมื่อแยกสองฝั่งออกจากกัน ต้องมีตัวกลางรวมให้อยู่โดเมนเดียว มิฉะนั้นเบราว์เซอร์จะมองเป็นคนละต้นทาง',
+    'sameorigin>cors': 'อยู่โดเมนเดียวกันแล้วจึงไม่ต้องตั้งค่า CORS เลย และ cookie ของการเข้าสู่ระบบทำงานได้ตามปกติ',
+    'devserver>cors': 'ตอนพัฒนา ถ้าเรียก backend ข้าม port ตรง ๆ จะติด CORS จึงต้องให้ server.proxy ส่งต่อให้แทน'
   };
 
   var sel = null;
@@ -4204,38 +4389,45 @@ service.bat install MyService</pre>
   function panel() {
     if (!sel) {
       elTitle.textContent = 'ยังไม่ได้เลือก node';
-      elMeta.textContent = nodes.length + ' node · ' + edges.length + ' relationship';
+      elMeta.textContent = nodes.length + ' สิ่ง · ' + edges.length + ' ความสัมพันธ์';
       elBody.innerHTML = '';
       return;
     }
 
     var n = byId[sel];
     var rs = relsOf(sel);
-    var out = rs.filter(function (r) { return r.dir === 'out'; }).length;
 
     elTitle.textContent = n.dataset.label;
-    elMeta.textContent = rs.length + ' relationship · ออก ' + out + ' · เข้า ' + (rs.length - out);
+    elMeta.textContent = 'หมวด ' + GROUP[n.dataset.g] + ' · ส่วนที่ ' + n.dataset.secs;
 
-    var html = '<dl class="kg-props">'
-      + prop('id', n.dataset.id)
-      + prop('label', GROUP[n.dataset.g])
-      + prop('ส่วนที่', n.dataset.secs)
-      + prop('degree', rs.length)
-      + '</dl><ul class="kg-rel">';
+    function line(r) {
+      var other = label(r.other);
+      var head = r.dir === 'out'
+        ? '<span class="kg-vb">' + (VERB[r.p] || r.p) + '</span> <b>' + other + '</b>'
+        : '<b>' + other + '</b> <span class="kg-vb">' + (VERB[r.p] || r.p) + ' ' + n.dataset.label + '</span>';
+      var key = r.dir === 'out' ? sel + '>' + r.other : r.other + '>' + sel;
+      return '<li><p class="kg-line">' + head + ' <code class="kg-pred">' + r.p + '</code></p>'
+           + '<p class="kg-gloss">' + (WHY[key] || '') + '</p></li>';
+    }
 
-    rs.forEach(function (r) {
-      var isOut = r.dir === 'out';
-      var subj = isOut ? n.dataset.label : label(r.other);
-      var obj = isOut ? label(r.other) : n.dataset.label;
-      html += '<li><span class="kg-dir">' + (isOut ? '→' : '←') + '</span>'
-           + '<span class="kg-trip">'
-           + '<span class="' + (isOut ? 'kg-a' : 'kg-b') + '">' + subj + '</span> '
-           + '<span class="kg-pred">' + r.p + '</span> '
-           + '<span class="' + (isOut ? 'kg-b' : 'kg-a') + '">' + obj + '</span></span>'
-           + '<span class="kg-gloss">' + (MEANS[r.p] || r.p) + '</span></li>';
-    });
+    function group(title, list) {
+      if (!list.length) { return ''; }
+      return '<p class="kg-grp">' + title + ' <span>' + list.length + '</span></p>'
+           + '<ul class="kg-rel">' + list.map(line).join('') + '</ul>';
+    }
 
-    elBody.innerHTML = html + '</ul>';
+    var outs = rs.filter(function (r) { return r.dir === 'out'; });
+    var ins = rs.filter(function (r) { return r.dir === 'in'; });
+
+    elBody.innerHTML =
+        '<p class="kg-about"><b>' + n.dataset.label + '</b> คือ ' + (ABOUT[sel] || '') + '</p>'
+      + '<dl class="kg-props">'
+      + prop('หมวด', GROUP[n.dataset.g])
+      + prop('อยู่ในส่วนที่', n.dataset.secs)
+      + prop('เชื่อมกับ', rs.length + ' สิ่ง')
+      + '</dl>'
+      + group(n.dataset.label + ' ทำอะไรกับสิ่งอื่น', outs)
+      + group('สิ่งอื่นทำอะไรกับ ' + n.dataset.label, ins);
   }
 
   function render() {
