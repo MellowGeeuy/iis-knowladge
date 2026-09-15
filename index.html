@@ -384,34 +384,40 @@
   svg .kg-lab-bg { fill: var(--surface); stroke: var(--accent); stroke-width: 1; }
   svg .kg-lab { fill: var(--accent); font-family: "Source Code Pro", monospace; font-size: 10px; letter-spacing: .06em; }
 
-  .kg-ctl { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-  .kg-chip {
-    font: inherit; font-size: 12.5px; cursor: pointer; background: var(--surface); color: var(--ink-soft);
-    border: 1px solid var(--line); border-radius: 999px; padding: 5px 13px;
-    display: inline-flex; align-items: center; gap: 7px;
-  }
-  .kg-chip span { font-family: "Source Code Pro", monospace; font-size: 10.5px; color: var(--ink-faint); }
-  .kg-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-  .kg-chip[aria-pressed="true"] span { color: var(--on-accent); }
-  .kg-c-java[aria-pressed="true"]  { background: var(--app);    border-color: var(--app); }
-  .kg-c-react[aria-pressed="true"] { background: var(--client); border-color: var(--client); }
-  .kg-c-arch[aria-pressed="true"]  { background: var(--warn);   border-color: var(--warn); }
   .kg-frame { padding: 12px 10px; }
-  .kg-panel { margin-top: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+  .kg-panel {
+    position: sticky; bottom: 0; z-index: 4; margin-top: 12px;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--surface); overflow: hidden;
+    box-shadow: 0 -8px 20px -10px rgba(0, 0, 0, .3);
+  }
   .kg-p-head {
     display: flex; flex-wrap: wrap; gap: 3px 14px; align-items: baseline;
     padding: 11px 15px; border-bottom: 1px solid var(--line-soft); background: var(--surface-2);
   }
   .kg-p-title { font-weight: 600; font-family: "Source Code Pro", monospace; font-size: 13px; color: var(--ink); }
   .kg-p-meta { font-size: 11.5px; color: var(--ink-faint); font-family: "Source Code Pro", monospace; }
-  .kg-p-body { padding: 13px 15px; }
-  .kg-hint { margin: 0; font-size: 13px; color: var(--ink-soft); line-height: 1.7; }
-  .kg-rel { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
-  .kg-rel li { display: grid; grid-template-columns: 16px minmax(0,auto) 1fr; gap: 10px; align-items: baseline; font-size: 12.5px; }
-  .kg-dir { font-family: "Source Code Pro", monospace; color: var(--ink-faint); }
-  .kg-pred { font-family: "Source Code Pro", monospace; color: var(--accent); word-break: break-all; }
-  .kg-other { color: var(--ink); }
-  .kg-sub { margin: 11px 0 0; font-size: 12px; color: var(--ink-faint); }
+  .kg-p-body { padding: 13px 15px; max-height: 42vh; overflow-y: auto; }
+  .kg-p-body:empty { display: none; }
+  .kg-props { display: flex; flex-wrap: wrap; gap: 6px 8px; margin: 0 0 13px; }
+  .kg-props > div {
+    display: flex; align-items: baseline; gap: 8px; padding: 4px 11px;
+    border: 1px solid var(--line-soft); border-radius: 999px; background: var(--surface-2);
+  }
+  .kg-props dt {
+    font-family: "Source Code Pro", monospace; font-size: 10px;
+    letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint);
+  }
+  .kg-props dd { margin: 0; font-size: 12.5px; font-weight: 600; color: var(--ink); }
+
+  .kg-rel { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 11px 24px; }
+  .kg-rel li { display: grid; grid-template-columns: 15px 1fr; gap: 3px 9px; align-items: baseline; }
+  .kg-dir { font-family: "Source Code Pro", monospace; font-size: 12.5px; color: var(--accent); }
+  .kg-trip { font-size: 12.5px; line-height: 1.55; }
+  .kg-pred { font-family: "Source Code Pro", monospace; color: var(--accent); }
+  .kg-a { color: var(--ink-faint); }
+  .kg-b { color: var(--ink); font-weight: 600; }
+  .kg-gloss { grid-column: 2; font-size: 11.5px; line-height: 1.5; color: var(--ink-soft); }
 
   .side-foot { margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--line); display: grid; gap: 7px; }
   .side-btn {
@@ -3651,106 +3657,10 @@ service.bat install MyService</pre>
     <section class="pg" id="kg" hidden data-num="◆" data-group="Knowledge Graph" data-title="Knowledge Graph" data-full="Knowledge Graph ของเอกสารทั้งฉบับ" data-nav="skip">
       <div class="col">
         <div class="sec-head"><span class="sec-no">◆</span><h2>Knowledge Graph</h2></div>
-        <p class="sec-sub">ทุกสิ่งที่เอกสารนี้พูดถึง วางเป็น node เดียวกันทั้งฉบับ แล้วโยงด้วยความสัมพันธ์ที่มีชื่อ</p>
-
-        <p>
-          เอกสารแบ่งเป็น 13 ส่วน แต่ละส่วนอธิบายคนละเรื่อง ผลข้างเคียงคือผู้อ่านเห็นทีละส่วน
-          แล้วไม่เห็นว่า <code>context path</code> ในส่วนที่ 11 เป็นค่าเดียวกับที่กฎ rewrite
-          ในส่วนที่ 06 ต้องชี้ไปหา หน้านี้จึงถอดเนื้อหาทั้งฉบับออกมาเป็นกราฟ
-          <strong>node คือสิ่งที่เอกสารพูดถึง เส้นคือความสัมพันธ์ที่มีชื่อกำกับ</strong>
-        </p>
-
-        <h3>วิธีที่ทำให้ข้อมูลถึงกันหมด</h3>
-        <p>
-          คำถามว่า “ทำอย่างไรให้ข้อมูลถึงกันหมด” มีคำตอบเป็นกฎที่เขียนไว้ในมาตรฐานจริง
-          ไม่ใช่การลากเส้นให้มากที่สุด ห้าข้อด้านล่างคือกฎที่กราฟนี้ยึดและตรวจตามได้
-        </p>
-        <div class="tbl">
-          <table>
-            <thead><tr><th>#</th><th>หลักการ</th><th>ข้อความจากเอกสารต้นทาง</th><th>ผลกับกราฟนี้</th></tr></thead>
-            <tbody>
-              <tr>
-                <td class="n">1</td>
-                <td>หนึ่งสิ่ง ต้องมี identifier เดียว</td>
-                <td><em>“Use URIs as names for things”</em><span class="doc">W3C</span></td>
-                <td><code>Tomcat 11</code> ที่พูดถึงในส่วนที่ 11 กับในส่วนที่ 13 เป็น node ตัวเดียวกัน ไม่แตกเป็นสองก้อน</td>
-              </tr>
-              <tr>
-                <td class="n">2</td>
-                <td>identifier นั้นต้องเปิดตามไปดูได้</td>
-                <td><em>“Use HTTP URIs so that people can look up those names.”</em><span class="doc">W3C</span></td>
-                <td>ทุก node ผูกกับหมายเลขส่วนของเอกสาร กดแล้วรู้ว่าอ่านต่อได้ที่ไหน</td>
-              </tr>
-              <tr>
-                <td class="n">3</td>
-                <td>เก็บทุกข้อเท็จจริงเป็น triple</td>
-                <td><em>“The subject and the object represent the two resources being related; the predicate represents the nature of their relationship.”</em><span class="doc">W3C</span></td>
-                <td>ความสัมพันธ์ทั้ง 65 เส้นเขียนเป็น <code>subject · predicate · object</code> ได้ทั้งหมด</td>
-              </tr>
-              <tr>
-                <td class="n">4</td>
-                <td>ทุกจุดต้องมีทางเดินออกไปหาจุดอื่น</td>
-                <td><em>“Include links to other URIs. so that they can discover more things.”</em><span class="doc">W3C</span></td>
-                <td>ไม่มี node ใดในกราฟนี้ที่ไม่มีเส้นเลย จำนวนเส้นน้อยสุดต่อ node คือ 1</td>
-              </tr>
-              <tr>
-                <td class="n">5</td>
-                <td>ตรวจว่าเชื่อมถึงกันจริง ด้วย WCC</td>
-                <td>Weakly Connected Components <em>“can be used to determine whether your network is fully connected or not”</em><span class="doc">NEO4J</span></td>
-                <td>รันแล้วได้ <strong>1 component ขนาด 54 node</strong> แปลว่าเดินจาก node ใดก็ถึงทุก node ที่เหลือ</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="callout tip">
-          <span class="ttl">กลไกที่ทำให้กราฟต่อกันจริง ๆ</span>
-          <p>
-            ไม่ใช่การลากเส้นตรงระหว่างสองสิ่ง แต่คือการที่ <strong>สิ่งเดียวกันไปปรากฏทั้งฝั่ง subject
-            ของ triple หนึ่ง และฝั่ง object ของอีก triple หนึ่ง</strong> เอกสารของ W3C เขียนไว้ว่า
-            <em>“this ability to have the same resource be in the subject position of one triple
-            and the object position of another makes it possible to find connections between triples”</em>
-          </p>
-        </div>
-
-        <div class="code">
-          <div class="code-head"><span>WAR กับ Tomcat ไม่มีเส้นตรงถึงกัน แต่ถึงกันผ่าน webapps</span><span class="where">triple</span></div>
-<pre><span class="c">subject        predicate      object</span>
-<span class="t">WAR            DEPLOYED_TO    webapps</span>
-<span class="t">Tomcat 11      SCANS          webapps</span>
-<span class="c">                              ^^^^^^^ resource เดียวกัน</span>
-
-<span class="c">เดินกราฟ : WAR → webapps → Tomcat 11    path length = 2</span></pre>
-        </div>
-
-        <h3>node กับ relationship ต่างกันอย่างไร</h3>
-        <p>
-          นิยามที่ใช้ในหน้านี้มาจากเอกสาร property graph ของ Neo4j ซึ่งเป็นรูปแบบเดียวกับที่
-          graph database ใช้จริง
-        </p>
-        <div class="tbl">
-          <table>
-            <thead><tr><th>คำ</th><th>นิยามตามเอกสาร</th><th>ในกราฟนี้คือ</th></tr></thead>
-            <tbody>
-              <tr><td class="kw">node</td><td><em>“Nodes are used to represent entities (discrete objects) of a domain.”</em></td><td>54 กล่องในภาพ</td></tr>
-              <tr><td class="kw">label</td><td><em>“Nodes can have zero or more labels to define (classify) what kind of nodes they are.”</em></td><td>หมวดสี่สี IIS · Java · React · สถาปัตยกรรม</td></tr>
-              <tr><td class="kw">relationship</td><td><em>“A relationship describes how a connection between a source node and a target node are related.”</em> และ <em>“A relationship must have exactly one relationship type”</em></td><td>65 เส้น แต่ละเส้นมีชื่อเดียว เช่น <code>PROXIES_TO</code></td></tr>
-              <tr><td class="kw">traversal</td><td><em>“Traversing a graph means visiting nodes by following relationships according to some rules.”</em></td><td>การไล่จาก <code>browser</code> ไปจนถึง <code>catalina.out</code></td></tr>
-              <tr><td class="kw">path</td><td>ผลของการ traverse <em>“A path containing one relationship has the length of 1”</em></td><td><code>WAR → webapps → Tomcat 11</code> คือ path ยาว 2</td></tr>
-            </tbody>
-          </table>
-        </div>
       </div>
 
       <div class="breakout">
         <figure>
-          <div class="kg-ctl" role="group" aria-label="กรองตามหมวด">
-            <button type="button" class="kg-chip" data-f="all" aria-pressed="true">ทั้งหมด <span>54</span></button>
-            <button type="button" class="kg-chip kg-c-iis" data-f="iis" aria-pressed="false">IIS <span>24</span></button>
-            <button type="button" class="kg-chip kg-c-java" data-f="java" aria-pressed="false">Java <span>13</span></button>
-            <button type="button" class="kg-chip kg-c-react" data-f="react" aria-pressed="false">React <span>9</span></button>
-            <button type="button" class="kg-chip kg-c-arch" data-f="arch" aria-pressed="false">สถาปัตยกรรม <span>8</span></button>
-          </div>
           <div class="fig-frame kg-frame" id="kgFrame">
             <svg viewBox="0 0 1040 980" role="img" aria-label="Knowledge Graph ของเอกสาร ประกอบด้วย 54 node และ 65 เส้นความสัมพันธ์ แบ่งเป็นสี่หมวดคือ IIS, Java, React และสถาปัตยกรรม ตรวจแล้วเชื่อมถึงกันทั้งหมดเป็น component เดียว">
               <defs>
@@ -4052,130 +3962,11 @@ service.bat install MyService</pre>
           <div class="kg-panel">
             <div class="kg-p-head">
               <span class="kg-p-title" id="kgTitle">ยังไม่ได้เลือก node</span>
-              <span class="kg-p-meta" id="kgMeta">ทั้งกราฟ · 54 node · 65 relationship · WCC = 1 component</span>
+              <span class="kg-p-meta" id="kgMeta">54 node · 65 relationship</span>
             </div>
-            <div class="kg-p-body" id="kgBody">
-              <p class="kg-hint">
-                คลิกที่กล่องใดก็ได้ในภาพ เพื่อดูว่าสิ่งนั้นต่อกับอะไรบ้าง ด้วย relationship ชื่ออะไร
-                และอยู่ในส่วนที่เท่าไรของเอกสาร · ชี้ที่เส้นเพื่ออ่านชื่อ relationship บนภาพ
-              </p>
-            </div>
+            <div class="kg-p-body" id="kgBody"></div>
           </div>
-          <figcaption>
-            <b>รูปที่ 16 — Knowledge Graph ของเอกสารทั้งฉบับ</b> ·
-            54 node และ 65 relationship แบ่งด้วยสีตามหมวด
-            ตำแหน่งของกล่องคำนวณด้วย force layout แบบ deterministic นอกเบราว์เซอร์
-            แล้วตรึงพิกัดไว้ จึงตรวจได้ว่าไม่มีกล่องทับกันและไม่มีเส้นพาดผ่านกล่องใด
-            ชื่อ relationship ไม่ถูกวาดค้างไว้บนภาพด้วยเหตุผลเดียวกัน ให้ชี้ที่เส้นเพื่ออ่านทีละเส้น
-          </figcaption>
         </figure>
-      </div>
-
-      <div class="col">
-        <h3>รายการ relationship ทั้งหมด</h3>
-        <p>
-          ตารางนี้คือกราฟเดียวกับภาพด้านบน เขียนในรูป triple ทุกแถวคือหนึ่งเส้น
-          ค้นคำใน predicate เพื่อหาความสัมพันธ์ชนิดเดียวกันได้ทั้งหมด
-        </p>
-        <div class="tbl">
-          <table class="tripletbl">
-            <thead><tr><th>subject</th><th>predicate</th><th>object</th><th>หมวด</th></tr></thead>
-            <tbody>
-              <tr><td class="kw">Windows Server</td><td class="k">SHIPS_WITH</td><td class="kw">IIS</td><td>สถาปัตยกรรม</td></tr>
-              <tr><td class="kw">IIS</td><td class="k">HOSTS</td><td class="kw">Site</td><td>สถาปัตยกรรม</td></tr>
-              <tr><td class="kw">IIS</td><td class="k">ACTS_AS</td><td class="kw">Reverse proxy</td><td>สถาปัตยกรรม</td></tr>
-              <tr><td class="kw">IIS</td><td class="k">PROVIDES</td><td class="kw">Same-origin</td><td>สถาปัตยกรรม</td></tr>
-              <tr><td class="kw">browser</td><td class="k">REQUESTS</td><td class="kw">HTTP.sys</td><td>สถาปัตยกรรม</td></tr>
-              <tr><td class="kw">browser</td><td class="k">LOADS</td><td class="kw">dist</td><td>สถาปัตยกรรม</td></tr>
-              <tr><td class="kw">HTTP.sys</td><td class="k">QUEUES_TO</td><td class="kw">w3wp.exe</td><td>IIS</td></tr>
-              <tr><td class="kw">HTTP.sys</td><td class="k">LOGS_TO</td><td class="kw">httperr</td><td>IIS</td></tr>
-              <tr><td class="kw">W3SVC</td><td class="k">READS</td><td class="kw">applicationHost.config</td><td>IIS</td></tr>
-              <tr><td class="kw">W3SVC</td><td class="k">NOTIFIES</td><td class="kw">WAS</td><td>IIS</td></tr>
-              <tr><td class="kw">WAS</td><td class="k">SPAWNS</td><td class="kw">w3wp.exe</td><td>IIS</td></tr>
-              <tr><td class="kw">w3wp.exe</td><td class="k">BELONGS_TO</td><td class="kw">Application Pool</td><td>IIS</td></tr>
-              <tr><td class="kw">w3wp.exe</td><td class="k">LOADS</td><td class="kw">URL Rewrite</td><td>IIS</td></tr>
-              <tr><td class="kw">w3wp.exe</td><td class="k">LOADS</td><td class="kw">StaticFileModule</td><td>IIS</td></tr>
-              <tr><td class="kw">w3wp.exe</td><td class="k">WRITES</td><td class="kw">IIS log</td><td>IIS</td></tr>
-              <tr><td class="kw">Application Pool</td><td class="k">RUNS_AS</td><td class="kw">ApplicationPoolIdentity</td><td>IIS</td></tr>
-              <tr><td class="kw">applicationHost.config</td><td class="k">DEFINES</td><td class="kw">Site</td><td>IIS</td></tr>
-              <tr><td class="kw">Site</td><td class="k">HAS</td><td class="kw">Binding</td><td>IIS</td></tr>
-              <tr><td class="kw">Site</td><td class="k">CONTAINS</td><td class="kw">Application</td><td>IIS</td></tr>
-              <tr><td class="kw">Application</td><td class="k">CONTAINS</td><td class="kw">Virtual Directory</td><td>IIS</td></tr>
-              <tr><td class="kw">Application</td><td class="k">ASSIGNED_TO</td><td class="kw">Application Pool</td><td>IIS</td></tr>
-              <tr><td class="kw">web.config</td><td class="k">CONFIGURES</td><td class="kw">Site</td><td>IIS</td></tr>
-              <tr><td class="kw">web.config</td><td class="k">CONTAINS</td><td class="kw">rewrite rule</td><td>IIS</td></tr>
-              <tr><td class="kw">URL Rewrite</td><td class="k">EVALUATES</td><td class="kw">rewrite rule</td><td>IIS</td></tr>
-              <tr><td class="kw">ARR</td><td class="k">REQUIRES</td><td class="kw">URL Rewrite</td><td>IIS</td></tr>
-              <tr><td class="kw">ARR</td><td class="k">PROXIES_TO</td><td class="kw">Tomcat 11</td><td>IIS</td></tr>
-              <tr><td class="kw">SPA fallback</td><td class="k">IS_A</td><td class="kw">rewrite rule</td><td>IIS</td></tr>
-              <tr><td class="kw">StaticFileModule</td><td class="k">SERVES</td><td class="kw">dist</td><td>IIS</td></tr>
-              <tr><td class="kw">StaticFileModule</td><td class="k">CHECKS</td><td class="kw">mimeMap</td><td>IIS</td></tr>
-              <tr><td class="kw">Binding</td><td class="k">TERMINATES</td><td class="kw">TLS</td><td>IIS</td></tr>
-              <tr><td class="kw">TLS</td><td class="k">SELECTED_BY</td><td class="kw">SNI</td><td>IIS</td></tr>
-              <tr><td class="kw">Reverse proxy</td><td class="k">ADDS</td><td class="kw">X-Forwarded-For</td><td>สถาปัตยกรรม</td></tr>
-              <tr><td class="kw">Reverse proxy</td><td class="k">TARGETS</td><td class="kw">127.0.0.1</td><td>สถาปัตยกรรม</td></tr>
-              <tr><td class="kw">X-Forwarded-For</td><td class="k">READ_BY</td><td class="kw">forward-headers-strategy</td><td>IIS</td></tr>
-              <tr><td class="kw">Failed Request Tracing</td><td class="k">TRACES</td><td class="kw">w3wp.exe</td><td>IIS</td></tr>
-              <tr><td class="kw">Spring Boot</td><td class="k">PACKAGED_AS</td><td class="kw">WAR</td><td>Java</td></tr>
-              <tr><td class="kw">Spring Boot</td><td class="k">EXTENDS</td><td class="kw">SpringBootServletInitializer</td><td>Java</td></tr>
-              <tr><td class="kw">forward-headers-strategy</td><td class="k">CONFIGURES</td><td class="kw">Spring Boot</td><td>Java</td></tr>
-              <tr><td class="kw">DevTools</td><td class="k">RESTARTS</td><td class="kw">Spring Boot</td><td>Java</td></tr>
-              <tr><td class="kw">WAR</td><td class="k">DEPLOYED_TO</td><td class="kw">webapps</td><td>Java</td></tr>
-              <tr><td class="kw">WAR</td><td class="k">DERIVES</td><td class="kw">context path</td><td>Java</td></tr>
-              <tr><td class="kw">Tomcat 11</td><td class="k">SCANS</td><td class="kw">webapps</td><td>Java</td></tr>
-              <tr><td class="kw">Tomcat 11</td><td class="k">ENABLES</td><td class="kw">autoDeploy</td><td>Java</td></tr>
-              <tr><td class="kw">Tomcat 11</td><td class="k">LISTENS_ON</td><td class="kw">Connector</td><td>Java</td></tr>
-              <tr><td class="kw">Tomcat 11</td><td class="k">RUNS_ON</td><td class="kw">JVM</td><td>Java</td></tr>
-              <tr><td class="kw">Tomcat 11</td><td class="k">IMPLEMENTS</td><td class="kw">Servlet 6.1</td><td>Java</td></tr>
-              <tr><td class="kw">Tomcat 11</td><td class="k">WRITES</td><td class="kw">catalina.out</td><td>Java</td></tr>
-              <tr><td class="kw">autoDeploy</td><td class="k">WATCHES</td><td class="kw">webapps</td><td>Java</td></tr>
-              <tr><td class="kw">Connector</td><td class="k">BINDS</td><td class="kw">127.0.0.1</td><td>Java</td></tr>
-              <tr><td class="kw">context path</td><td class="k">MATCHED_BY</td><td class="kw">rewrite rule</td><td>Java</td></tr>
-              <tr><td class="kw">React</td><td class="k">BUILT_BY</td><td class="kw">Vite</td><td>React</td></tr>
-              <tr><td class="kw">React</td><td class="k">ROUTED_BY</td><td class="kw">React Router</td><td>React</td></tr>
-              <tr><td class="kw">React</td><td class="k">RENDERS_VIA</td><td class="kw">CSR</td><td>React</td></tr>
-              <tr><td class="kw">Vite</td><td class="k">OUTPUTS</td><td class="kw">dist</td><td>React</td></tr>
-              <tr><td class="kw">Vite</td><td class="k">APPLIES</td><td class="kw">base path</td><td>React</td></tr>
-              <tr><td class="kw">Vite</td><td class="k">SERVES_DEV</td><td class="kw">Vite dev server</td><td>React</td></tr>
-              <tr><td class="kw">dist</td><td class="k">CONTAINS</td><td class="kw">hashed assets</td><td>React</td></tr>
-              <tr><td class="kw">server.proxy</td><td class="k">CONFIGURES</td><td class="kw">Vite dev server</td><td>React</td></tr>
-              <tr><td class="kw">Vite dev server</td><td class="k">FORWARDS_TO</td><td class="kw">Spring Boot</td><td>React</td></tr>
-              <tr><td class="kw">React Router</td><td class="k">NEEDS</td><td class="kw">SPA fallback</td><td>React</td></tr>
-              <tr><td class="kw">Decoupled architecture</td><td class="k">COMBINES</td><td class="kw">React</td><td>สถาปัตยกรรม</td></tr>
-              <tr><td class="kw">Decoupled architecture</td><td class="k">COMBINES</td><td class="kw">Spring Boot</td><td>สถาปัตยกรรม</td></tr>
-              <tr><td class="kw">Decoupled architecture</td><td class="k">REQUIRES</td><td class="kw">Reverse proxy</td><td>สถาปัตยกรรม</td></tr>
-              <tr><td class="kw">Same-origin</td><td class="k">ELIMINATES</td><td class="kw">CORS</td><td>สถาปัตยกรรม</td></tr>
-              <tr><td class="kw">Vite dev server</td><td class="k">WOULD_HIT</td><td class="kw">CORS</td><td>React</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>การตรวจสอบกราฟนี้</h3>
-        <p>
-          ทุกบรรทัดในตารางนี้ได้จากการรันสคริปต์กับข้อมูลกราฟจริง มิใช่การประเมินด้วยสายตา
-        </p>
-        <div class="tbl">
-          <table>
-            <thead><tr><th>เกณฑ์</th><th>เหตุผลที่ต้องตรวจ</th><th>ผล</th></tr></thead>
-            <tbody>
-              <tr><td>id ของ node ไม่ซ้ำ</td><td>ถ้าซ้ำ สิ่งเดียวกันจะกลายเป็นสอง node แล้วกราฟขาดตรงนั้น</td><td class="k">54 / 54 ไม่ซ้ำ</td></tr>
-              <tr><td>ปลายเส้นทุกเส้นชี้ไป id ที่มีอยู่จริง</td><td>เส้นที่ชี้ไป id ผิดจะกลายเป็นเส้นลอย</td><td class="k">65 / 65 ถูกต้อง</td></tr>
-              <tr><td>ไม่มี node ที่ไม่มีเส้นเลย</td><td>กฎข้อ 4 ของ Linked Data</td><td class="k">degree ต่ำสุด = 1</td></tr>
-              <tr><td>Weakly Connected Components</td><td>เกณฑ์ชี้ขาดว่าข้อมูลถึงกันหมดหรือไม่</td><td class="k">1 component · ขนาด 54</td></tr>
-              <tr><td>กล่องทับกัน</td><td>ข้อกำหนดการแสดงผลของเอกสารนี้</td><td class="k">0 คู่</td></tr>
-              <tr><td>เส้นพาดผ่านกล่องที่ไม่ใช่ปลายทางตัวเอง</td><td>ทำให้อ่านผิดว่าเส้นนั้นเชื่อมกับกล่องที่มันพาดผ่าน</td><td class="k">0 จุด</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="callout">
-          <span class="ttl">ทำไมไม่เขียนชื่อ relationship ค้างไว้บนภาพ</span>
-          <p>
-            ลองวางป้ายชื่อทั้ง 65 เส้นแล้วตรวจดู พบว่า <strong>30 จาก 54 กรณีมีป้ายทับกันหรือทับกล่อง</strong>
-            ซึ่งขัดกับข้อกำหนดของเอกสารนี้ จึงเปลี่ยนเป็นคำนวณตำแหน่งที่ว่างของแต่ละเส้นไว้ล่วงหน้า
-            แล้วแสดงทีละเส้นตอนชี้ ส่วนภาพรวมของความสัมพันธ์ทั้งหมดอ่านได้จากตาราง triple ด้านบน
-          </p>
-        </div>
       </div>
     </section>
 
@@ -4317,7 +4108,7 @@ service.bat install MyService</pre>
   show(start, false);
 })();
 
-/* ---------- Knowledge Graph : เลือก node · กรองหมวด · อ่านชื่อ relationship ---------- */
+/* ---------- Knowledge Graph : คลิก node แล้วอ่าน property กับ relationship ของ node นั้น ---------- */
 (function () {
   var gNodes = document.getElementById('kgNodes');
   var gEdges = document.getElementById('kgEdges');
@@ -4327,7 +4118,6 @@ service.bat install MyService</pre>
   var svgNS = 'http://www.w3.org/2000/svg';
   var nodes = Array.prototype.slice.call(gNodes.querySelectorAll('.kg-node'));
   var edges = Array.prototype.slice.call(gEdges.querySelectorAll('.kg-e'));
-  var chips = Array.prototype.slice.call(document.querySelectorAll('.kg-chip'));
   var elTitle = document.getElementById('kgTitle');
   var elMeta = document.getElementById('kgMeta');
   var elBody = document.getElementById('kgBody');
@@ -4336,10 +4126,67 @@ service.bat install MyService</pre>
   nodes.forEach(function (n) { byId[n.dataset.id] = n; });
 
   var GROUP = { iis: 'IIS', java: 'Java', react: 'React', arch: 'สถาปัตยกรรม' };
-  var HINT = elBody.innerHTML;
+
+  /* คำอ่านของ predicate อ่านจากฝั่ง subject ไปหาฝั่ง object */
+  var MEANS = {
+    ACTS_AS: 'ทำหน้าที่เป็น',
+    ADDS: 'เติม header ให้',
+    APPLIES: 'ใส่ค่าให้',
+    ASSIGNED_TO: 'ถูกกำหนดให้รันอยู่ใน',
+    BELONGS_TO: 'เป็นสมาชิกของ',
+    BINDS: 'ผูก socket ไว้ที่',
+    BUILT_BY: 'ถูก build ด้วย',
+    CHECKS: 'ตรวจค่าจาก',
+    COMBINES: 'ประกอบขึ้นจาก',
+    CONFIGURES: 'กำหนดค่าให้',
+    CONTAINS: 'บรรจุ',
+    DEFINES: 'นิยาม',
+    DEPLOYED_TO: 'ถูก deploy ลงใน',
+    DERIVES: 'ถูกใช้คำนวณออกมาเป็น',
+    ELIMINATES: 'ทำให้ไม่ต้องเจอ',
+    ENABLES: 'เปิดใช้งาน',
+    EVALUATES: 'ประเมินเงื่อนไขของ',
+    EXTENDS: 'สืบทอดคลาสจาก',
+    FORWARDS_TO: 'ส่งต่อ request ไปยัง',
+    HAS: 'มี',
+    HOSTS: 'รับ host ให้',
+    IMPLEMENTS: 'ทำตามสเปกของ',
+    IS_A: 'เป็นชนิดหนึ่งของ',
+    LISTENS_ON: 'รอรับ connection ผ่าน',
+    LOADS: 'โหลดเข้ามาใช้งาน',
+    LOGS_TO: 'เขียน log ลงที่',
+    MATCHED_BY: 'ถูกจับคู่ด้วย',
+    NEEDS: 'ทำงานไม่ได้ถ้าไม่มี',
+    NOTIFIES: 'แจ้งเหตุไปยัง',
+    OUTPUTS: 'สร้างผลลัพธ์ออกมาเป็น',
+    PACKAGED_AS: 'ถูกแพ็กเป็น',
+    PROVIDES: 'ให้ผลเป็น',
+    PROXIES_TO: 'proxy ต่อไปยัง',
+    QUEUES_TO: 'เข้าคิวรอส่งต่อให้',
+    READS: 'อ่านค่าจาก',
+    READ_BY: 'ถูกอ่านโดย',
+    RENDERS_VIA: 'render ด้วยวิธี',
+    REQUESTS: 'ยิง request ไปที่',
+    REQUIRES: 'ทำงานไม่ได้ถ้าไม่มี',
+    RESTARTS: 'สั่ง restart ให้',
+    ROUTED_BY: 'จัดเส้นทางหน้าเว็บด้วย',
+    RUNS_AS: 'รันด้วยสิทธิ์ของ',
+    RUNS_ON: 'รันอยู่บน',
+    SCANS: 'สแกนหา application ใน',
+    SELECTED_BY: 'ถูกเลือกด้วย',
+    SERVES: 'ส่งไฟล์ให้ client จาก',
+    SERVES_DEV: 'ให้บริการตอน dev ผ่าน',
+    SHIPS_WITH: 'มาพร้อมกับ',
+    SPAWNS: 'สร้าง process ของ',
+    TARGETS: 'ชี้ปลายทางไปที่',
+    TERMINATES: 'จบการเข้ารหัส',
+    TRACES: 'เก็บ trace ของ',
+    WATCHES: 'เฝ้าดูความเปลี่ยนแปลงใน',
+    WOULD_HIT: 'จะไปชนปัญหา',
+    WRITES: 'เขียนข้อมูลลง'
+  };
 
   var sel = null;
-  var filter = 'all';
 
   function label(id) { return byId[id] ? byId[id].dataset.label : id; }
 
@@ -4352,65 +4199,63 @@ service.bat install MyService</pre>
     return out;
   }
 
+  function prop(k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; }
+
+  function panel() {
+    if (!sel) {
+      elTitle.textContent = 'ยังไม่ได้เลือก node';
+      elMeta.textContent = nodes.length + ' node · ' + edges.length + ' relationship';
+      elBody.innerHTML = '';
+      return;
+    }
+
+    var n = byId[sel];
+    var rs = relsOf(sel);
+    var out = rs.filter(function (r) { return r.dir === 'out'; }).length;
+
+    elTitle.textContent = n.dataset.label;
+    elMeta.textContent = rs.length + ' relationship · ออก ' + out + ' · เข้า ' + (rs.length - out);
+
+    var html = '<dl class="kg-props">'
+      + prop('id', n.dataset.id)
+      + prop('label', GROUP[n.dataset.g])
+      + prop('ส่วนที่', n.dataset.secs)
+      + prop('degree', rs.length)
+      + '</dl><ul class="kg-rel">';
+
+    rs.forEach(function (r) {
+      var isOut = r.dir === 'out';
+      var subj = isOut ? n.dataset.label : label(r.other);
+      var obj = isOut ? label(r.other) : n.dataset.label;
+      html += '<li><span class="kg-dir">' + (isOut ? '→' : '←') + '</span>'
+           + '<span class="kg-trip">'
+           + '<span class="' + (isOut ? 'kg-a' : 'kg-b') + '">' + subj + '</span> '
+           + '<span class="kg-pred">' + r.p + '</span> '
+           + '<span class="' + (isOut ? 'kg-b' : 'kg-a') + '">' + obj + '</span></span>'
+           + '<span class="kg-gloss">' + (MEANS[r.p] || r.p) + '</span></li>';
+    });
+
+    elBody.innerHTML = html + '</ul>';
+  }
+
   function render() {
     var onNodes = null, onEdges = null;
-
     if (sel) {
       onNodes = {}; onNodes[sel] = 1;
       onEdges = [];
       relsOf(sel).forEach(function (r) { onNodes[r.other] = 1; onEdges.push(r.el); });
-    } else if (filter !== 'all') {
-      onNodes = {};
-      nodes.forEach(function (n) { if (n.dataset.g === filter) { onNodes[n.dataset.id] = 1; } });
-      onEdges = edges.filter(function (e) { return onNodes[e.dataset.s] && onNodes[e.dataset.o]; });
     }
 
     var dim = onNodes !== null;
     gNodes.classList.toggle('dim', dim);
     gEdges.classList.toggle('dim', dim);
-    nodes.forEach(function (n) { n.classList.toggle('on', dim && !!onNodes[n.dataset.id]); });
+    nodes.forEach(function (x) { x.classList.toggle('on', dim && !!onNodes[x.dataset.id]); });
     edges.forEach(function (e) {
       var on = dim && onEdges.indexOf(e) > -1;
       e.classList.toggle('on', on);
       e.setAttribute('marker-end', on ? 'url(#kgha)' : 'url(#kgh)');
     });
-
-    chips.forEach(function (c) { c.setAttribute('aria-pressed', String(c.dataset.f === filter)); });
     panel();
-  }
-
-  function panel() {
-    if (sel) {
-      var n = byId[sel];
-      var rs = relsOf(sel);
-      var out = rs.filter(function (r) { return r.dir === 'out'; }).length;
-      elTitle.textContent = n.dataset.label;
-      elMeta.textContent = 'degree ' + rs.length + ' · ออก ' + out + ' · เข้า ' + (rs.length - out)
-        + ' · หมวด ' + GROUP[n.dataset.g] + ' · ส่วนที่ ' + n.dataset.secs;
-      var html = '<ul class="kg-rel">';
-      rs.forEach(function (r) {
-        html += '<li><span class="kg-dir">' + (r.dir === 'out' ? '→' : '←') + '</span>'
-             + '<span class="kg-pred">' + r.p + '</span>'
-             + '<span class="kg-other">' + label(r.other) + '</span></li>';
-      });
-      html += '</ul><p class="kg-sub">อ่านว่า ' + n.dataset.label
-           + ' · predicate · ปลายทาง — กด Esc หรือคลิกพื้นที่ว่างเพื่อกลับไปดูทั้งกราฟ</p>';
-      elBody.innerHTML = html;
-      return;
-    }
-    if (filter !== 'all') {
-      var cnt = nodes.filter(function (x) { return x.dataset.g === filter; }).length;
-      var ecnt = edges.filter(function (e) {
-        return byId[e.dataset.s].dataset.g === filter && byId[e.dataset.o].dataset.g === filter;
-      }).length;
-      elTitle.textContent = 'หมวด ' + GROUP[filter];
-      elMeta.textContent = cnt + ' node · ' + ecnt + ' relationship ภายในหมวดเดียวกัน';
-      elBody.innerHTML = HINT;
-      return;
-    }
-    elTitle.textContent = 'ยังไม่ได้เลือก node';
-    elMeta.textContent = 'ทั้งกราฟ · 54 node · 65 relationship · WCC = 1 component';
-    elBody.innerHTML = HINT;
   }
 
   function pick(id) { sel = (sel === id) ? null : id; render(); }
@@ -4422,15 +4267,7 @@ service.bat install MyService</pre>
     });
   });
 
-  chips.forEach(function (c) {
-    c.addEventListener('click', function () {
-      filter = (filter === c.dataset.f) ? 'all' : c.dataset.f;
-      sel = null;
-      render();
-    });
-  });
-
-  /* ป้ายชื่อ relationship — แสดงทีละเส้นตอนชี้ ตำแหน่งคำนวณไว้แล้วว่าไม่ทับกล่องใด */
+  /* ป้ายชื่อ relationship แสดงทีละเส้นตอนชี้ ตำแหน่งคำนวณไว้แล้วว่าไม่ทับกล่องใด */
   function clearLab() { while (gLab.firstChild) { gLab.removeChild(gLab.firstChild); } }
 
   function showLab(e) {
@@ -4459,7 +4296,7 @@ service.bat install MyService</pre>
   edges.forEach(function (e) {
     var h = document.createElementNS(svgNS, 'line');
     h.setAttribute('class', 'kg-hit');
-    ['x1', 'y1', 'x2', 'y2'].forEach(function (a) { h.setAttribute(a, e.getAttribute(a)); });
+    ['x1', 'y1', 'x2', 'y2'].forEach(function (at) { h.setAttribute(at, e.getAttribute(at)); });
     h.addEventListener('mouseenter', function () { showLab(e); });
     h.addEventListener('mouseleave', clearLab);
     gHit.appendChild(h);
